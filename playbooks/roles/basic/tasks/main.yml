@@ -1,0 +1,8 @@
+- name: Install base packages
+  pacman:
+    name:
+    - htop
+    - vim
+    - unzip
+    - docker
+    - git

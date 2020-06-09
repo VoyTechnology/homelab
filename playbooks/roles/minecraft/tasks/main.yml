@@ -1,0 +1,45 @@
+- name: Install Java
+  pacman:
+    name:
+    - jdk-openjdk
+
+- name: Create minecraft user
+  user:
+    name: mc
+
+- name: Create Minecraft folder
+  file:
+    path: /var/data/minecraft
+    state: directory
+    owner: mc
+    group: mc
+    mode: 0700
+
+- name: Copy EULA
+  copy:
+    src: ../files/eula.txt
+    dest: /var/data/minecraft
+    owner: mc
+    group: mc
+    mode: '0644'
+
+- name: Download PaperMC
+  get_url:
+    url: https://papermc.io/ci/job/Paper-1.14/lastBuild/artifact/paperclip.jar
+    dest: /var/data/minecraft/paper.jar
+    owner: mc
+    group: mc
+
+- name: Copy systemd config file
+  copy:
+    src: ../files/minecraft.service
+    dest: /lib/systemd/system/minecraft.service
+    owner: mc
+    group: mc
+    mode: '0644'
+
+- name: Start Minecraft
+  systemd:
+    state: started
+    name: minecraft
+    enabled: true

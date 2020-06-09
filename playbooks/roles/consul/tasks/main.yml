@@ -1,0 +1,55 @@
+- name: Create Consul Group
+  group:
+    name: consul
+    state: present
+
+- name: Create Consul User
+  user:
+    name: consul
+    group: consul
+    state: present
+
+- name: Create Config Dir
+  file:
+    path: /etc/consul.d
+    state: directory
+    owner: consul
+    group: consul
+    mode: 0700
+
+- name: Create Data Dir
+  file:
+    path: /opt/consul
+    state: directory
+    owner: consul
+    group: consul
+    mode: 0700
+
+################################################################################
+
+- name: Download Consul (amd64)
+  when: ansible_architecture == "x86_64"
+  unarchive:
+    remote_src: true
+    src: https://releases.hashicorp.com/consul/{{ version }}/consul_{{ version }}_linux_amd64.zip
+    dest: /opt/consul
+    owner: consul
+    group: consul
+
+- name: Download Consul (arm)
+  when: ansible_architecture == "armv7l"
+  unarchive:
+    remote_src: true
+    src: https://releases.hashicorp.com/consul/{{ version }}/consul_{{ version }}_linux_armhfv6.zip
+    dest: /opt/consul
+    owner: consul
+    group: consul
+
+- name: Download Consul (arm64)
+  when: ansible_architecture == "aarch64"
+  unarchive:
+    remote_src: true
+    src: https://releases.hashicorp.com/consul/{{ version }}/consul_{{ version }}_linux_arm64.zip
+    dest: /opt/consul
+    owner: consul
+    group: consul

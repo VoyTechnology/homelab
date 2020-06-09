@@ -1,0 +1,7 @@
+- name: Install Consul agents
+  hosts: consul-agent
+  become: true
+  roles:
+  - role: consul
+    version: "1.7.3"
+  - consul-agent

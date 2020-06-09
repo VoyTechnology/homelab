@@ -1,0 +1,15 @@
+[Unit]
+Description="Adguard Home"
+Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty=/opt/adguardhome/AdGuardHome/AdGuardHome.yaml
+
+[Service]
+ExecStart=/opt/adguardhome/AdGuardHome/AdGuardHome -c /opt/adguardhome/AdGuardHome/AdGuardHome.yaml -w /opt/adguardhome/AdGuardHome/
+ExecReload=/opt/adguardhome/AdGuardHome/AdGuardHome -s restart
+KillMode=process
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
