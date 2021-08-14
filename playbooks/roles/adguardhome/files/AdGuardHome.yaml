@@ -41,14 +41,12 @@ dns:
   rewrites:
   - domain: router
     answer: 192.168.1.1
-  - domain: s1-nvn
+  - domain: nas
     answer: 192.168.1.10
-  - domain: s2-nvn1
+  - domain: s1-nvn1
     answer: 192.168.1.11
-  - domain: s3-nvn1
-    answer: 192.168.1.12
   - domain: '*.corp.rnet'
-    answer: 192.168.1.10
+    answer: 192.168.1.11
   # - domain: *.rnet
   #   answer: 192.168.1.10
   upstream_dns:
@@ -91,17 +89,7 @@ dhcp:
   range_end: ""
   lease_duration: 86400
   icmp_timeout_msec: 1000
-clients:
-- name: tenebrae
-  ip: 192.168.1.100
-  mac: ""
-  use_global_settings: true
-  filtering_enabled: false
-  parental_enabled: false
-  safebrowsing_enabled: false
-  safesearch_enabled: false
-  use_global_blocked_services: true
-  blocked_services: []
+clients: []
 log_file: "/var/log/adguardhome.log"
 verbose: false
 schema_version: 5

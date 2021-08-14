@@ -1,0 +1,7 @@
+- name: Install K3S Master
+  hosts: k3s-master
+  become: yes
+  gather_facts: yes
+  roles:
+  - k3s/setup
+  - k3s/master

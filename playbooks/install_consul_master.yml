@@ -2,6 +2,5 @@
   hosts: consul-server
   become: true
   roles:
-  - role: consul
-    version: "1.7.3"
-  - consul-server
+  - consul/setup
+  - consul/server

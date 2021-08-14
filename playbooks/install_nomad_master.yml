@@ -2,6 +2,5 @@
   hosts: nomad-server
   become: true
   roles:
-  - role: nomad
-    version: 0.11.3
-  - nomad-server
+  - nomad/setup
+  - nomad/server

@@ -1,4 +1,0 @@
-- name: Install vault
-  pacman:
-    name:
-    - vault

@@ -6,3 +6,10 @@
     - unzip
     - docker
     - git
+
+- name: Enable Docker service
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

@@ -1,0 +1,15 @@
+---
+# Consul variables
+consul_version: 1.9.6
+consul_dc: nvn1
+
+# Nomad Variables
+nomad_version: 1.1.1
+nomad_region: eu-west
+nomad_dc: nvn1
+
+# k3s setup
+k3s_version: v1.19.3+k3s2
+
+# Extracted variables
+master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"

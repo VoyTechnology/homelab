@@ -1,0 +1,17 @@
+[Unit]
+Description="Consul Server"
+Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty=/etc/consul.d/server.hcl
+
+[Service]
+User=consul
+Group=consul
+ExecStart=/opt/consul/consul agent -config-dir=/etc/consul.d/server.hcl -advertise {{ ansible_default_ipv4.address }}
+ExecReload=/opt/consul/consul reload
+KillMode=process
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

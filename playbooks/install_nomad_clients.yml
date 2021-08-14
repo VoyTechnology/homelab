@@ -1,8 +1,6 @@
 - name: Install Nomad clients
-  hosts: nomad-client
+  hosts: nomad-clients
   become: true
   roles:
-  - role: nomad
-    version: 0.11.3
-  - role: nomad-client
-    class: "{{ nomad_class | default('generic') }}"
+  - nomad/setup
+  - nomad/client
