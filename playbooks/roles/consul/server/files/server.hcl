@@ -12,6 +12,8 @@ domain             = "rnet"
 // acl_default_policy = "deny"
 acl_down_policy = "extend-cache"
 
+recursors = ["{{ consul_dns_recursors | join(',') }}"]
+
 ports {
     grpc = 8502
 }

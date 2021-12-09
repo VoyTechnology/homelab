@@ -7,7 +7,7 @@ ConditionFileNotEmpty=/etc/consul.d/agent.hcl
 [Service]
 User=consul
 Group=consul
-ExecStart=/opt/consul/consul agent -config-dir=/etc/consul.d/agent.hcl
+ExecStart=/opt/consul/consul agent -config-dir=/etc/consul.d/agent.hcl -advertise '{{ GetInterfaceIP "tailscale0" }}'
 ExecReload=/opt/consul/consul reload
 KillMode=process
 Restart=on-failure

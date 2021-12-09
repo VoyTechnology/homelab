@@ -7,7 +7,7 @@ ConditionFileNotEmpty=/etc/consul.d/server.hcl
 [Service]
 User=consul
 Group=consul
-ExecStart=/opt/consul/consul agent -config-dir=/etc/consul.d/server.hcl -advertise {{ ansible_default_ipv4.address }}
+ExecStart=/opt/consul/consul agent -config-dir=/etc/consul.d/server.hcl -advertise '{{ GetInterfaceIP "tailscale0" }}'
 ExecReload=/opt/consul/consul reload
 KillMode=process
 Restart=on-failure

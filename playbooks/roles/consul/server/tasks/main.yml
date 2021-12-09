@@ -7,7 +7,7 @@
     mode: '0644'
 
 - name: Copy systemd config file
-  template:
+  copy:
     src: ../files/consul-server.service
     dest: /lib/systemd/system/consul-server.service
     owner: consul

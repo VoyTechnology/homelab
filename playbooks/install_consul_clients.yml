@@ -1,5 +1,5 @@
 - name: Install Consul agents
-  hosts: consul-agents
+  hosts: workers
   become: true
   roles:
   - consul/setup
