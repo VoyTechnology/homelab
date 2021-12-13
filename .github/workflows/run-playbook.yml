@@ -22,11 +22,16 @@ jobs:
       with:
         authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
+    - name: Read inventory file
+      id: inventory
+      run: echo "::set-output name=inventory::$(cat ./playbooks/${{ github.event.inputs.playbook }}.yml)"
+
     - name: Run Playbook
       uses: dawidd6/action-ansible-playbook@v2
       with:
         # Required, playbook filepath
-        playbook: "./playbooks/${{github.event.inputs.playbook}}.yml"
+        playbook: |
+          ${{ steps.inventory.outputs.inventory }}
         # Optional, directory where playbooks live
         directory: ./
         # Optional, SSH private key
