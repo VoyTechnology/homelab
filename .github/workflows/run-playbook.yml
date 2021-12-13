@@ -24,17 +24,17 @@ jobs:
 
     - name: Read inventory file
       id: inventory
-      run: echo "::set-output name=inventory::$(cat ./playbooks/${{ github.event.inputs.playbook }}.yml)"
+      run: echo "::set-output name=inventory::$(cat ./inventory/${{ github.event.inputs.cluster }}/hosts.ini)"
 
     - name: Run Playbook
       uses: dawidd6/action-ansible-playbook@v2
       with:
         # Required, playbook filepath
-        playbook: |
-          ${{ steps.inventory.outputs.inventory }}
+        playbook: "./playbooks/${{github.event.inputs.playbook}}.yml"
         # Optional, directory where playbooks live
         directory: ./
         # Optional, SSH private key
         key: ${{secrets.SSH_PRIVATE_KEY}}
         # Optional, literal inventory file contents
-        inventory: "./inventory/${{github.event.inputs.cluster}}/hosts.ini"
+        inventory: |
+           ${{ steps.inventory.outputs.inventory }}
