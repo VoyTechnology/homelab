@@ -1,0 +1,27 @@
+name: Playbook
+
+on:
+  workflow_dispatch:
+    inputs:
+      cluster:
+        description: Cluster
+        required: true
+      playbook:
+        description: Playbook Name (with _, no extension)
+        required: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Playbook
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+        # Required, playbook filepath
+        playbook: "./playbooks/${{github.event.inputs.playbook}}.yml"
+        # Optional, directory where playbooks live
+        directory: ./
+        # Optional, SSH private key
+        key: ${{secrets.SSH_PRIVATE_KEY}}
+        # Optional, literal inventory file contents
+        inventory: "./inventory/${{github.event.inputs.cluster}}/hosts.ini"
