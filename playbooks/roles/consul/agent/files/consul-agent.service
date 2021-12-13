@@ -1,7 +1,9 @@
 [Unit]
 Description="Consul Agent"
 Requires=network-online.target
+Requires=tailscaled.service
 After=network-online.target
+After=tailscaled.service
 ConditionFileNotEmpty=/etc/consul.d/agent.hcl
 
 [Service]
