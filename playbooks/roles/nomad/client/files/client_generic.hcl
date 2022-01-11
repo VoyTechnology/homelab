@@ -2,6 +2,20 @@ datacenter = "{{ nomad_dc }}"
 data_dir   = "/opt/nomad"
 region     = "{{ nomad_region }}"
 
+bind_addr = "0.0.0.0"
+
+addresses {
+    http = {% raw %}"{{ GetInterfaceIP \"tailscale0\" }}"{% endraw %}
+    rpc  = {% raw %}"{{ GetInterfaceIP \"tailscale0\" }}"{% endraw %}
+    serf = {% raw %}"{{ GetInterfaceIP \"tailscale0\" }}"{% endraw %}
+}
+
+advertise {
+    http = {% raw %}"{{ GetInterfaceIP \"tailscale0\" }}"{% endraw %}
+    rpc  = {% raw %}"{{ GetInterfaceIP \"tailscale0\" }}"{% endraw %}
+    serf = {% raw %}"{{ GetInterfaceIP \"tailscale0\" }}"{% endraw %}
+}
+
 client {
     enabled = true
 

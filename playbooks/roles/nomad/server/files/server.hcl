@@ -1,5 +1,8 @@
+datacenter = "{{ nomad_dc }}"
 data_dir   = "/opt/nomad"
-region     = "eu-west"
+region     = "{{ nomad_region }}"
+
+bind_addr = {% raw %}"{{ GetInterfaceIP \"tailscale0\" }}"{% endraw %}
 
 server {
     enabled          = true

@@ -1,5 +1,5 @@
 - name: Copy config file
-  copy:
+  template:
     src: ../files/server.hcl
     dest: /etc/nomad.d/server.hcl
     owner: nomad

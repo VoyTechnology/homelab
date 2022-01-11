@@ -8,6 +8,6 @@ consul_servers:
   - 100.65.238.29 # s1-dub1, DNS doesn't want to work.
 
 # Nomad Variables
-nomad_version: 1.2.2
+nomad_version: 1.2.3
 nomad_region: eu-west
 nomad_dc: dub1
