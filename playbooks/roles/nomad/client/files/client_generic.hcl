@@ -9,6 +9,8 @@ client {
         docker.privileged.enabled = "true"
         docker.volumes.enabled    = "true"
     }
+
+    network_interface = "tailscale0"
 }
 
 consul {
