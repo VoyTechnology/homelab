@@ -1,6 +1,6 @@
 ---
 # Consul variables
-consul_version: 1.10.4
+consul_version: 1.11.4
 consul_dc: dub1
 consul_dns_recursors:
   - 100.100.100.100 # Tailscale
@@ -8,6 +8,6 @@ consul_servers:
   - 100.65.238.29 # s1-dub1, DNS doesn't want to work.
 
 # Nomad Variables
-nomad_version: 1.2.3
+nomad_version: 1.2.6
 nomad_region: eu-west
 nomad_dc: dub1
