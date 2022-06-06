@@ -25,6 +25,10 @@ jobs:
     - name: Read inventory file
       id: inventory
       run: echo "::set-output name=inventory::$(cat ./inventory/${{ github.event.inputs.cluster }}/hosts.ini)"
+      
+    - name: Debug Inventory Data
+      run: |
+        echo ${{ steps.inventory.outputs.inventory }}
 
     - name: Run Playbook
       uses: dawidd6/action-ansible-playbook@v2
