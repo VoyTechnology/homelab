@@ -24,7 +24,12 @@ jobs:
 
     - name: Read inventory file
       id: inventory
-      run: echo "::set-output name=inventory::$(cat ./inventory/${{ github.event.inputs.cluster }}/hosts.ini)"
+      run: |
+        content="$(cat ./inventory/${{ github.event.inputs.cluster }}/hosts.ini"
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        echo "::set-output name=inventory::${content}"
       
     - name: Debug Inventory Data
       run: |
