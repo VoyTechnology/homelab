@@ -25,16 +25,11 @@ jobs:
     - name: Read inventory file
       id: inventory
       run: |
-        content="$(cat ./inventory/${{ github.event.inputs.cluster }}/hosts.ini"
-        content="${content//'%'/'%25'}"
-        content="${content//$'\n'/'%0A'}"
-        content="${content//$'\r'/'%0D'}"
-        echo "::set-output name=inventory::${content}"
+        CONTENT="$(cat ./inventory/${{ github.event.inputs.cluster }}/hosts.ini)"
+        echo "INVENTORY<<EOF" >> $GITHUB_ENV
+        echo "$CONTENT" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV 
       
-    - name: Debug Inventory Data
-      run: |
-        echo ${{ steps.inventory.outputs.inventory }}
-
     - name: Run Playbook
       uses: dawidd6/action-ansible-playbook@v2
       with:
@@ -46,4 +41,4 @@ jobs:
         key: ${{secrets.SSH_PRIVATE_KEY}}
         # Optional, literal inventory file contents
         inventory: |
-           ${{ steps.inventory.outputs.inventory }}
+          echo ${{ env.INVENTORY }}
