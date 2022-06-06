@@ -25,7 +25,7 @@ jobs:
     - name: Read inventory file
       id: inventory
       run: |
-        CONTENT="$(cat ./inventory/${{ github.event.inputs.cluster }}/hosts.ini)"
+        CONTENT="$(cat ./inventory/${{ github.event.inputs.cluster }}/hosts.yaml)"
         echo "INVENTORY<<EOF" >> $GITHUB_ENV
         echo "$CONTENT" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV 

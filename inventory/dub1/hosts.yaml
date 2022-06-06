@@ -1,0 +1,30 @@
+all:
+  children:
+    s1-dub1:
+      hosts:
+        s1-dub1.razoft.com.beta.tailscale.net:
+          ansible_user: root
+    s2-dub1:
+      hosts:
+        s2-dub1.razoft.com.beta.tailscale.net:
+          ansible_user: root
+    
+    leaders:
+      children:
+        s1-dub1:
+    workers:
+      children:
+        s1-dub1:
+        s2-dub1:
+    consul-server:
+      children:
+        leaders:
+    nomad-server:
+      children:
+        leaders:
+    nomad-clients:
+      children:
+        workers:
+    mediaserver:
+      children:
+        s1-dub1:
