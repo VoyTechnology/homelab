@@ -1,6 +1,6 @@
 ---
 # Consul variables
-consul_version: 1.12.2
+consul_version: 1.13.2
 consul_dc: dub1
 consul_dns_recursors:
   - 100.100.100.100 # Tailscale
