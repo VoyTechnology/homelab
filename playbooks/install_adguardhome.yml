@@ -1,5 +1,0 @@
-- name: Install Adguard Home
-  hosts: s1-nvn
-  become: true
-  roles:
-  - adguardhome

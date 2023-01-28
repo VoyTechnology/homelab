@@ -1,2 +1,0 @@
-# Automatically accepted by ansible.
-eula=true
