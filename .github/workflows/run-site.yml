@@ -1,0 +1,41 @@
+name: Run site.yml
+
+on:
+  workflow_dispatch:
+    inputs:
+      cluster:
+        description: Cluster
+        required: true
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Connect to Tailscale
+      uses: tailscale/github-action@v1
+      with:
+        authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+    - name: Read inventory file
+      id: inventory
+      run: |
+        CONTENT="$(cat ./inventory/${{ github.event.inputs.cluster }}/hosts.yaml)"
+        echo "INVENTORY<<EOF" >> $GITHUB_ENV
+        echo "$CONTENT" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV 
+      
+    - name: Run Playbook
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+        # Required, playbook filepath
+        playbook: "./site.yml"
+        # Optional, directory where playbooks live
+        directory: ./
+        # Optional, SSH private key
+        key: ${{secrets.SSH_PRIVATE_KEY}}
+        # Optional, literal inventory file contents
+        inventory: |
+          echo ${{ env.INVENTORY }}
