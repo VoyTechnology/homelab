@@ -1,7 +1,7 @@
 [Unit]
 Description="Consul Server"
-Requires=network-online.target
-After=network-online.target
+Requires=tailscaled.service
+After=tailscaled.service
 ConditionFileNotEmpty=/etc/consul.d/server.hcl
 
 [Service]

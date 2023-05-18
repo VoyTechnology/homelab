@@ -1,7 +1,7 @@
 [Unit]
 Description="Nomad Client"
-Requires=network-online.target
-After=network-online.target
+Requires=tailscaled.service
+After=tailscaled.service
 ConditionFileNotEmpty=/etc/nomad.d/client.hcl
 
 [Service]
