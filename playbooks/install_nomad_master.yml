@@ -1,6 +1,0 @@
-- name: Install Nomad Master
-  hosts: nomad-server
-  become: true
-  roles:
-  - nomad/setup
-  - nomad/server

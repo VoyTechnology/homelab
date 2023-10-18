@@ -6,6 +6,9 @@
     - unzip
     - docker
     - git
+    - helm
+    # Install necessary python packages
+    - python-kubernetes
 
 - name: Enable Docker service
   systemd:

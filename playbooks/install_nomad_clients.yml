@@ -1,6 +1,0 @@
-- name: Install Nomad clients
-  hosts: nomad-clients
-  become: true
-  roles:
-  - nomad/setup
-  - nomad/client

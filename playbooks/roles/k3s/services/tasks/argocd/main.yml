@@ -1,0 +1,38 @@
+---
+# - name: ArgoCD | Check is installed
+#   shell: k3s kubectl get po -n {{ argocd_k8s_namespace }} | wc -l
+#   changed_when: false
+#   register: argocd_status
+#   run_once: yes
+
+# - name: ArgoCD | Install ArgoCD
+#   import_tasks: install.yml
+#   when: argocd_action == "present"
+
+- name: ArgoCD | Add Helm Repo
+  kubernetes.core.helm_repository:
+    name: argo
+    repo_url: https://argoproj.github.io/argo-helm
+
+- name: ArgoCD | Create Namespace
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ argocd_k8s_namespace }}"
+  run_once: yes
+
+- name: ArgoCD | Deploy Helm Chart
+  kubernetes.core.helm:
+    name: argocd
+    chart_ref: argo/argo-cd
+    chart_version: "{{ argocd_chart_version }}"
+    release_namespace: "{{ argocd_k8s_namespace }}"
+    values:
+      server:
+        extraArgs:
+        - --insecure
+        ingress:
+          enabled: true
+          hosts:
+          - "{{ argocd_host }}"
+        

@@ -1,6 +1,0 @@
-- name: Install Consul Master
-  hosts: consul-server
-  become: true
-  roles:
-  - consul/setup
-  - consul/server

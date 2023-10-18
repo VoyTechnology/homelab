@@ -1,0 +1,19 @@
+---
+
+###
+# ARGOCD
+###
+
+# Action
+argocd_action: present # Value : present / absent
+
+# Namespace
+argocd_k8s_namespace: argocd
+
+# Service
+argocd_k8s_service_type: LoadBalancer
+
+# User
+# argocd_admin_name: admin
+argocd_current_admin_password: ""
+# argocd_new_admin_password: admin # CAUTION : Encrypt the password with vault

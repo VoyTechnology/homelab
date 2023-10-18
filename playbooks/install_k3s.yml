@@ -1,0 +1,28 @@
+---
+- name: Install 
+  hosts: k3s_cluster
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: k3s/prereq
+    - role: k3s/download
+
+- name: Install K3s Master
+  hosts: master
+  become: yes
+  roles:
+    - role: k3s/master
+
+- name: Install K3s Node
+  hosts: node
+  become: yes
+  roles:
+    - role: k3s/node
+
+- name: Install Base K8S services
+  collections:
+    - kubernetes.core
+  hosts: master
+  become: yes
+  roles:
+    - role: k3s/services

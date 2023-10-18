@@ -1,9 +1,0 @@
----
-- name: Restart Nomad Servers
-  hosts: nomad-server
-  become: true
-  tasks:
-    - name: Restart Nomad Service
-      ansible.builtin.service:
-        name: nomad-server
-        state: restarted
