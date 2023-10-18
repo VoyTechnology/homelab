@@ -1,9 +1,0 @@
----
-- name: ArgoCD | Deploy Namespace
-  import_tasks: namespace.yml
-
-- name: ArgoCD | Install Kubernetes objects
-  import_tasks: Kubernetes.yml
-
-- name: ArgoCD | Ingress
-  import_tasks: ingress.yml

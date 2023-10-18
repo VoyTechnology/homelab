@@ -21,4 +21,4 @@ Create a full Hashicorp stack locally.
 This is done via Github Actions. The action will connect to the cluster with
 Ephemeral Key (this will expire one day, make sure to update). Then run it by
 providing the cluster name, and the playbook name to run (include the `_` in the
-name, but exclude the `.yml` extension).
+name, but exclude the `.yml` extension)

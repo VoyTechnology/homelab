@@ -1,14 +1,4 @@
 ---
-# - name: ArgoCD | Check is installed
-#   shell: k3s kubectl get po -n {{ argocd_k8s_namespace }} | wc -l
-#   changed_when: false
-#   register: argocd_status
-#   run_once: yes
-
-# - name: ArgoCD | Install ArgoCD
-#   import_tasks: install.yml
-#   when: argocd_action == "present"
-
 - name: ArgoCD | Add Helm Repo
   kubernetes.core.helm_repository:
     name: argo
