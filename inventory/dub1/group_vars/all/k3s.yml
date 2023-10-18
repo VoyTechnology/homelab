@@ -5,8 +5,3 @@ systemd_dir: /etc/systemd/system
 master_ip: 100.65.238.29 # Hardcoded from tailscale, assuming to never change
 extra_server_args: ""
 extra_agent_args: ""
-
-argocd_admin_name: admin
-argocd_new_admin_password: admin # Not safe, but the Ingress is also not exposed.
-argocd_chart_version: "5.46.8"
-argocd_host: "argocd.dub1.bednarzak.com"

@@ -5,7 +5,7 @@
     repo_url: https://argoproj.github.io/argo-helm
 
 - name: ArgoCD | Create Namespace
-  k8s:
+  kubernetes.core.k8s:
     api_version: v1
     kind: Namespace
     name: "{{ argocd_k8s_namespace }}"
@@ -25,4 +25,48 @@
           enabled: true
           hosts:
           - "{{ argocd_host }}"
-        
+
+- name: ArgoCD | Setup Applications
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: ApplicationSet
+      metadata:
+        name: applications
+        namespace: "{{ argocd_k8s_namespace }}"
+      spec:
+        generators:
+          - list:
+              elements: |
+                {{ argocd_applications }}
+        template:
+          metadata:
+            name: !unsafe "{{ name }}"
+          spec:
+            project: default
+            source:
+              repoURL: !unsafe "{{ repo }}"
+              targetRevision: HEAD
+              path: !unsafe "{{ path }}"
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: "{{ argocd_k8s_namespace }}"
+
+- name: ArgoCD | Add Deploy Keys
+  no_log: true # Do not show logs as they contain private ssh keys
+  with_items: "{{ argocd_applications }}"
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ item.name }}-repo"
+        namespace: "{{ argocd_k8s_namespace }}"
+        labels:
+          argocd.argoproj.io/secret-type: repository
+      stringData:
+        type: git
+        url: "{{ item.repo }}"
+        sshPrivateKey: "{{ item.sshPrivateKey }}"
