@@ -26,6 +26,13 @@
           hosts:
           - "{{ argocd_host }}"
 
+- name: ArgoCD | Setup Projects
+  with_items: "{{ argocd_projects }}"
+  kubernetes.core.k8s:
+    state: present
+    template:
+    - path: 'argo-project.yaml.j2'
+
 - name: ArgoCD | Setup Applications
   kubernetes.core.k8s:
     state: present
@@ -44,7 +51,7 @@
           metadata:
             name: !unsafe "{{ name }}"
           spec:
-            project: default
+            project: !unsafe "{{ project }}"
             source:
               repoURL: !unsafe "{{ repo }}"
               targetRevision: HEAD
@@ -52,6 +59,12 @@
             destination:
               server: https://kubernetes.default.svc
               namespace: "{{ argocd_k8s_namespace }}"
+            syncPolicy:
+              automated:
+                prune: true
+                selfHeal: true
+            syncOptions:
+              - CreateNamespace=true
 
 - name: ArgoCD | Add Deploy Keys
   no_log: true # Do not show logs as they contain private ssh keys
