@@ -1,7 +1,8 @@
 ---
 k3s_version: v1.28.2+k3s1
+helm_version: v3.13.1
 ansible_user: root
 systemd_dir: /etc/systemd/system
-master_ip: 100.65.238.29 # Hardcoded from tailscale, assuming to never change
+master_ip: 100.122.232.149 # Hardcoded from tailscale, assuming to never change
 extra_server_args: ""
 extra_agent_args: ""
