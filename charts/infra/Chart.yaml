@@ -1,0 +1,4 @@
+apiVersion: v2
+name: infra
+description: Infrastucture meta chart
+version: 0.0.1
