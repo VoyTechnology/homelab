@@ -1,14 +1,21 @@
 - name: Install base packages
-  pacman:
+  ansible.builtin.apt:
     name:
     - htop
-    - vim
+    - neovim
     - unzip
-    - docker
+    - docker.io
     - git
-    - helm
-    # Install necessary python packages
-    - python-kubernetes
+    - python3-pip
+    - python3-kubernetes
+
+- name: Setup installation folders
+  file:
+    path: /usr/local/bin
+    state: directory
+
+- name: Install helm if not exists
+  import_tasks: helm.yml
 
 - name: Enable Docker service
   systemd:

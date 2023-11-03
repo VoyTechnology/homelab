@@ -1,0 +1,54 @@
+---
+- name: Check is version downloaded
+  stat:
+    path: /usr/local/bin/helm-{{ helm_version }}
+  register: helm_exists
+
+- name: Create Download folder
+  file:
+    path: /usr/local/bin/helm-{{ helm_version }}
+    state: directory
+
+- name: Download Helm binary x64
+  unarchive:
+    src: https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz
+    extra_opts: "--strip-components=1"
+    dest: /usr/local/bin/helm-{{ helm_version }}
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  when: ansible_facts.architecture == "x86_64"
+
+- name: Download Helm binary arm64
+  unarchive:
+    src: https://get.helm.sh/helm-{{ helm_version }}-linux-arm64.tar.gz
+    extra_opts: "--strip-components=1"
+    dest: /usr/local/bin/helm-{{ helm_version }}
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  when:
+    - (( ansible_facts.architecture is search("arm") and
+        ansible_facts.userspace_bits == "64" ) or
+      ansible_facts.architecture is search("aarch64"))
+
+- name: Download Helm binary armhf
+  unarchive:
+    src: https://get.helm.sh/helm-{{ helm_version }}-linux-arm.tar.gz
+    extra_opts: "--strip-components=1"
+    dest: /usr/local/bin/helm-{{ helm_version }}
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  when:
+    - ansible_facts.architecture is search("arm")
+    - ansible_facts.userspace_bits == "32"
+
+- name: Symlink Helm binary
+  ansible.builtin.file:
+    src: /usr/local/bin/helm-{{ helm_version }}/helm
+    dest: /usr/local/bin/helm
+    state: link
