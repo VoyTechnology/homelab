@@ -2,3 +2,7 @@ apiVersion: v2
 name: infra
 description: Infrastucture meta chart
 version: 0.0.1
+dependencies:
+  - name: kube-prometheus-stack
+    version: "1.2.3"
+    repository: https://prometheus-community.github.io/helm-charts

@@ -1,0 +1,5 @@
+kube-prometheus-stack:
+  grafana:
+    ingress:
+      hosts:
+      - grafana.dub1.bednarzak.com
