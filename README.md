@@ -6,13 +6,13 @@ Create a full Hashicorp stack locally.
 
 ## Creating new Cluster
 
-1. Provision individual machine with Arch (Manjaro is easiest)
-2. Change the hostname to match the naming scheme (`s{n}-{cluster}.razoft.net`)
-3. Install, start and enable Tailscale on each node
-4. Create a new folder in inventory named `{cluster}`, add the `group_vars` and
-   `hosts.ini` file. Each hostname should be using the Tailscale DNS entry
-   `{host}.razoft.com.beta.tailscale.net`.
-5. Run the `site.yml` on the cluster to initialize the initial state
+1. Provision individual machine with Debian
+   - Ensure that the `root` user can be logged into using the SSH key
+   - Change the hostname to match the naming scheme (`s{n}-{cluster}`)
+   - Install, start and enable Tailscale on each node
+1. Create a new folder in inventory named `{cluster}`, add the `group_vars` and
+   `hosts.ini` file. Refer to each machine using the hostname
+1. Run the `site.yml` on the cluster to initialize the initial state
 
 ---
 
