@@ -6,6 +6,7 @@
     - unzip
     - docker.io
     - git
+    - open-iscsi
     - python3-pip
     - python3-kubernetes
 
