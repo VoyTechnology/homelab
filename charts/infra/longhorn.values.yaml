@@ -1,0 +1,3 @@
+ingress:
+  enabled: true
+  host: longhorn.dub1.bednarzak.com
