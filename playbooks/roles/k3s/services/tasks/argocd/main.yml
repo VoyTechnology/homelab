@@ -37,12 +37,9 @@
   no_log: true # Do not show logs as they contain private ssh keys
   with_items: "{{ argocd_applications }}"
   kubernetes.core.k8s:
-    state: present
-    definition:
-      api_version: v1
-      kind: Namespace
-      metadata:
-        name: "{{ item.namespace }}"
+    api_version: v1
+    kind: Namespace
+    name: "{{ item.namespace }}"
 
 - name: ArgoCD | Setup Applications
   no_log: true # Do not show logs as they contain private ssh keys
