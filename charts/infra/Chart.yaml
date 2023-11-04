@@ -3,6 +3,9 @@ name: infra
 description: Infrastucture meta chart
 version: 0.0.1
 dependencies:
+  - name: prometheus-operator-crds
+    version: "6.0.0"
+    repository: https://prometheus-community.github.io/helm-charts
   - name: kube-prometheus-stack
     version: "52.1.0"
     repository: https://prometheus-community.github.io/helm-charts
