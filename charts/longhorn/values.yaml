@@ -7,4 +7,4 @@ longhorn:
     kubeletRootDir: /var/lib/kubelet 
   persistence:
     # Use 2 replicas as its unlikely we will have more storage anytime soon
-    numberOfReplicas: 2 
+    defaultClassReplicaCount: 2 
