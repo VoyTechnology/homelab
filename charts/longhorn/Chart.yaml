@@ -1,0 +1,14 @@
+apiVersion: v2
+name: longhorn
+description: Longhorn Metachart
+version: 0.0.1
+dependencies:
+  # - name: prometheus-operator-crds
+  #   version: "6.0.0"
+  #   repository: https://prometheus-community.github.io/helm-charts
+  # - name: kube-prometheus-stack
+  #   version: "52.1.0"
+  #   repository: https://prometheus-community.github.io/helm-charts
+  - name: longhorn
+    version: "1.5.2"
+    repository: https://charts.longhorn.io

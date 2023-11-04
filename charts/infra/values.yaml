@@ -1,0 +1,10 @@
+destination: https://kubernetes.default.svc
+repoURL: git@github.com:VoyTechnology/home-ansible.git
+project: infra
+apps:
+  longhorn:
+    namespace: longhorn-system
+    path: charts/longhorn
+  # monitoring:
+  #   namespace: monitoring
+  #   path: charts/monitoring
