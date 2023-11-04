@@ -5,6 +5,6 @@ longhorn:
   csi:
     # Specific to k3s installations.
     kubeletRootDir: /var/lib/kubelet 
-  persistance:
+  persistence:
     # Use 2 replicas as its unlikely we will have more storage anytime soon
     numberOfReplicas: 2 
