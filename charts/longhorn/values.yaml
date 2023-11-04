@@ -4,7 +4,7 @@ longhorn:
     host: longhorn.dub1.bednarzak.com
   csi:
     # Specific to k3s installations.
-    kubeletRootDir: /var/lib/kubelet 
+    kubeletRootDir: /var/lib/rancher/k3s/agent/kubelet
   persistence:
     # Use 2 replicas as its unlikely we will have more storage anytime soon
     defaultClassReplicaCount: 2 
