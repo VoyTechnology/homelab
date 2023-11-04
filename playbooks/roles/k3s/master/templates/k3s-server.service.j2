@@ -8,7 +8,6 @@ Type=notify
 ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
 ExecStart=/usr/local/bin/k3s-{{ k3s_version }} server \
-            --data-dir {{ k3s_server_location }} \
             --tls-san {{ master_ip }} \
             --node-ip {{ hostvars[inventory_hostname]['ansible_tailscale0'].ipv4.address }} \
             {{ extra_server_args | default("") }} 
