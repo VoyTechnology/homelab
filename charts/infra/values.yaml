@@ -2,5 +2,6 @@ kube-prometheus-stack:
   namespaceOverride: monitoring
   grafana:
     ingress:
+      enabled: true
       hosts:
       - grafana.dub1.bednarzak.com
