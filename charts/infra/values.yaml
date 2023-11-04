@@ -1,5 +1,5 @@
 kube-prometheus-stack:
-  namespaceOverride: monitoring
+  nameOverride: monitoring
   grafana:
     ingress:
       enabled: true

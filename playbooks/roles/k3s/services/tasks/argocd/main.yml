@@ -58,7 +58,7 @@
               path: !unsafe "{{ path }}"
             destination:
               server: https://kubernetes.default.svc
-              namespace: "{{ argocd_k8s_namespace }}"
+              namespace: !unsafe "{{ namespace }}"
             syncPolicy:
               automated:
                 prune: true
