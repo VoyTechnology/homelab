@@ -2,3 +2,5 @@ longhorn:
   ingress:
     enabled: true
     host: longhorn.dub1.bednarzak.com
+  csi:
+    kubeletRootDir: /var/lib/rancher/k3s/agent/kubelet # Specific to k3s installations.
