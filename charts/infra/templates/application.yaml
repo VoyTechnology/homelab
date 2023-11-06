@@ -1,11 +1,4 @@
 {{- range $name, $app := $.Values.apps }}
-{{- if not $app.skipNamespaceCreation }}
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: {{ $app.namespace }}
----
-{{- end }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -28,4 +21,11 @@ spec:
   ignoreDifferences:
     {{ toYaml $app.ignoreDifferences | indent 4 }}
   {{- end }}
+---
+{{- if not $app.skipNamespaceCreation }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $app.namespace }}
+{{- end }}
 {{- end }}
