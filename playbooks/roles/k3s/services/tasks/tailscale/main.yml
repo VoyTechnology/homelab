@@ -1,0 +1,20 @@
+---
+- name: Tailscale | Namespace Creation
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ tailscale_ingress_namespace }}"
+
+- name: Tailscale | OAuth Secrets
+  no_log: true
+  kubernetes.core.k8s:
+    state: present
+    definition: 
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: operator-oauth
+        namespace: "{{ tailscale_ingress_namespace }}"
+      stringData:
+        client_id: "{{ tailscale_ingress_client_id }}"
+        client_secret: "{{ tailscale_ingress_client_secret }}"

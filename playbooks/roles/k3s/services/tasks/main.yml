@@ -2,3 +2,6 @@
 - name: Setup Argo
   import_tasks: argocd/main.yml
   tags: services
+- name: Setup Tailscale
+  import_tasks: tailscale/main.yml
+  tags: services
