@@ -5,7 +5,7 @@ apps:
   longhorn:
     namespace: longhorn-system
     path: charts/longhorn
-  ingress-public:
+  ingress-internal:
     namespace: tailscale
     # Namespace is created using Ansible to allow for OAuth Secret creation.
     skipNamespaceCreation: true
