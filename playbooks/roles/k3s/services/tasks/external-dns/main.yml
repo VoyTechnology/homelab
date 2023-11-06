@@ -1,0 +1,19 @@
+---
+- name: external-dns | Namespace Creation
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ cloudflare_external_dns_namespace }}"
+
+- name: external-dns | Secrets
+  no_log: true
+  kubernetes.core.k8s:
+    state: present
+    definition: 
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cloudflare-secret
+        namespace: "{{ cloudflare_external_dns_namespace }}"
+      stringData:
+        token: "{{ cloudflare_external_dns_api_token }}"

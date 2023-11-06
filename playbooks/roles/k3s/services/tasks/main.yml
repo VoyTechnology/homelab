@@ -2,6 +2,11 @@
 - name: Setup Argo
   import_tasks: argocd/main.yml
   tags: services
+
 - name: Setup Tailscale
   import_tasks: tailscale/main.yml
+  tags: services
+
+- name: Setup External DNS
+  import_tasks: external-dns/main.yml
   tags: services
