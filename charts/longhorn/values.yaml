@@ -2,6 +2,7 @@ longhorn:
   ingress:
     enabled: true
     host: longhorn.dub1.bednarzak.com
+    ingressClassName: tailscale # Use ingress-internal
   csi:
     # Specific to k3s installations.
     kubeletRootDir: /var/lib/kubelet
