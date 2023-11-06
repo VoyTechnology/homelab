@@ -1,0 +1,11 @@
+apiVersion: v2
+name: ingress-internal
+description: |
+  Ingress Internal Meta chart deploys the Tailscale operator. It uses the secret defined in Ansible
+  For the deployments to not expose any secrets.
+version: "0.0.1"
+dependencies:
+  - name: tailscale-operator
+    version: "0.1.0"
+    # Use this repository until Tailscale decides to publish their own one.
+    repository: https://jacobcolvin.com/helm-charts
