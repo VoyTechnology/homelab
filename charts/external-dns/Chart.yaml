@@ -1,0 +1,7 @@
+apiVersion: v2
+version: "0.0.1"
+name: external-dns
+dependencies:
+  - name: external-dns
+    version: "1.13.1"
+    repository: https://kubernetes-sigs.github.io/external-dns/

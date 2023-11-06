@@ -10,6 +10,11 @@ apps:
     # Namespace is created using Ansible to allow for OAuth Secret creation.
     skipNamespaceCreation: true
     path: charts/ingress-internal
+  external-dns:
+    namespace: external-dns-system
+    # Namespace managed by Ansible for secret generation
+    skipNamespaceCreation: true
+    path: charts/external-dns
   # monitoring:
   #   namespace: monitoring
   #   path: charts/monitoring
