@@ -9,7 +9,7 @@ apps:
     namespace: tailscale
     # Namespace is created using Ansible to allow for OAuth Secret creation.
     skipNamespaceCreation: true
-    path: charts/ingress-public
+    path: charts/ingress-internal
   # monitoring:
   #   namespace: monitoring
   #   path: charts/monitoring
