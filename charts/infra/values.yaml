@@ -8,7 +8,7 @@ apps:
     skipNamespaceCreation: true
     path: charts/longhorn
   ingress-public:
-    namespace: Tailscale
+    namespace: tailscale
     path: charts/ingress-public
   # monitoring:
   #   namespace: monitoring
