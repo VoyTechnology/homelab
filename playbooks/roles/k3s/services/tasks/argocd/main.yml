@@ -31,6 +31,9 @@
           - hosts:
             - "{{ argocd_host }}"
             secretName: argocd-cert
+      controller:
+        extraArgs:
+        - --repo-server-timeout-seconds 500 # account for slow Argo with multiple deps.
 
 - name: ArgoCD | Setup Projects
   with_items: "{{ argocd_projects }}"
