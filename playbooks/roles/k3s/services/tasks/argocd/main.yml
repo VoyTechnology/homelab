@@ -33,7 +33,13 @@
             secretName: argocd-cert
       controller:
         extraArgs:
-        - --repo-server-timeout-seconds 500 # account for slow Argo with multiple deps.
+        - --repo-server-timeout-seconds
+        - "500" # account for slow Argo with multiple deps.
+      repoServer:
+        replicas: 2
+        env:
+          - name: "ARGOCD_EXEC_TIMEOUT"
+            value: "5m"
 
 - name: ArgoCD | Setup Projects
   with_items: "{{ argocd_projects }}"
