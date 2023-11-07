@@ -1,4 +1,8 @@
 ---
+- name: Setup Cert Manager
+  import_tasks: cert-manager/main.yml
+  tags: services
+
 - name: Setup Argo
   import_tasks: argocd/main.yml
   tags: services

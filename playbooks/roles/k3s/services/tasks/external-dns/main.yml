@@ -16,4 +16,4 @@
         name: cloudflare-secret
         namespace: "{{ cloudflare_external_dns_namespace }}"
       stringData:
-        token: "{{ cloudflare_external_dns_api_token }}"
+        token: "{{ cloudflare_api_token }}"

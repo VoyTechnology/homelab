@@ -23,8 +23,14 @@
         - --insecure
         ingress:
           enabled: true
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt
           hosts:
           - "{{ argocd_host }}"
+          tls:
+          - hosts:
+            - "{{ argocd_host }}"
+            secretName: argocd-cert
 
 - name: ArgoCD | Setup Projects
   with_items: "{{ argocd_projects }}"
