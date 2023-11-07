@@ -2,3 +2,5 @@ ingress-nginx:
   controller:
     service:
       loadBalancerClass: tailscale
+    ingressClassResource:
+      name: internal
