@@ -1,0 +1,9 @@
+dependencies:
+- name: ingress-nginx
+  repository: https://kubernetes.github.io/ingress-nginx
+  version: 4.8.3
+- name: tailscale-operator
+  repository: https://jacobcolvin.com/helm-charts
+  version: 0.1.0
+digest: sha256:47dd657ff69e9603d23488671567a06fd22e3723a72274dc212fdf1fa38dc006
+generated: "2023-11-07T12:35:16.163493Z"
