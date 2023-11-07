@@ -3,6 +3,11 @@ longhorn:
     enabled: true
     host: longhorn.dub1.bednarzak.com
     ingressClassName: tailscale # Use ingress-internal
+    secureBackends: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    tls: true
+    tlsSecret: longhorn-cert
   csi:
     # Specific to k3s installations.
     kubeletRootDir: /var/lib/kubelet
