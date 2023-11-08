@@ -33,6 +33,15 @@
     release_namespace: "{{ cert_manager_namespace }}"
     values:
       installCRDs: true
+      webhook:
+        networkPolicy:
+          enabled: true
+      extraArgs:
+      - --dns01-recursive-nameservers-only
+      - --dns01-recursive-nameservers=1.1.1.1:53
+      ingressShim:
+        defaultIssuerName: letsencrypt
+        defaultIssuerKind: ClusterIssuer
 
 - name: cert-manager | Cloudflare Issuer
   kubernetes.core.k8s:
