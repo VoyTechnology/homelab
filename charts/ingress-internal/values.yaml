@@ -1,4 +1,5 @@
 ingress-nginx:
+  fullnameOverride: internal
   controller:
     service:
       loadBalancerClass: tailscale
