@@ -1,6 +1,7 @@
 ingress-nginx:
   fullnameOverride: internal
   controller:
+    name: ingress
     service:
       loadBalancerClass: tailscale
     ingressClassResource:
