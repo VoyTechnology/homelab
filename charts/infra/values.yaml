@@ -15,6 +15,6 @@ apps:
     # Namespace managed by Ansible for secret generation
     skipNamespaceCreation: true
     path: charts/external-dns
-  # monitoring:
-  #   namespace: monitoring
-  #   path: charts/monitoring
+  monitoring:
+    namespace: monitoring
+    path: charts/monitoring
