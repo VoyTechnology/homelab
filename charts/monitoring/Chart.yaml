@@ -3,9 +3,6 @@ name: monitoring
 description: Monitoring Metachart
 version: 0.0.1
 dependencies:
-  - name: prometheus-operator-crds
-    version: "6.0.0"
-    repository: https://prometheus-community.github.io/helm-charts
   - name: kube-prometheus-stack
-    version: "52.1.0"
+    version: "54.0.1"
     repository: https://prometheus-community.github.io/helm-charts
