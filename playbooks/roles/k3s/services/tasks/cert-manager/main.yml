@@ -23,7 +23,7 @@
         namespace: "{{ cert_manager_namespace }}"
       type: Opaque
       stringData:
-        token: "{{ cloudflare_api_token }}"
+        token: "{{ cloudflare_global_token }}"
 
 - name: cert-manager | Deploy Helm Chart
   kubernetes.core.helm:
