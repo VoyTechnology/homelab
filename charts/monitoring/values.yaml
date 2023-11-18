@@ -7,4 +7,5 @@ kube-prometheus-stack:
       - grafana.dub1.bednarzak.com
       tls:
       - secretName: grafana-tls
-        hosts: grafana.dub1.bednarzak.com
+        hosts:
+        - grafana.dub1.bednarzak.com
