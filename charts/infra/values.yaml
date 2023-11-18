@@ -1,5 +1,5 @@
 destination: https://kubernetes.default.svc
-repoURL: git@github.com:VoyTechnology/home-ansible.git
+repoURL: git@github.com:VoyTechnology/homelab.git
 project: infra
 apps:
   longhorn:
