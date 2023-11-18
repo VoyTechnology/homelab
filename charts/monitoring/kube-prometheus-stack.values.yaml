@@ -1,6 +1,0 @@
-nameOverride: monitoring
-grafana:
-  ingress:
-    enabled: true
-    hosts:
-    - grafana.dub1.bednarzak.com
