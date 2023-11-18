@@ -1,6 +1,6 @@
-# Home Ansible setup
+# Homelab
 
-Create a full Hashicorp stack locally.
+Homelab running on k3s
 
 ---
 
