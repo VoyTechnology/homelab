@@ -1,6 +1,15 @@
 # Temporarily disable everything other than grafana
 grafana:
   enabled: true
+  ingress:
+    enabled: true
+    hosts:
+    - grafana.dub1.bednarzak.com
+    ingressClassName: internal
+    tls:
+    - secretName: grafana-tls
+      hosts:
+      - grafana.dub1.bednarzak.com
 mimir:
   enabled: false
 tempo:
