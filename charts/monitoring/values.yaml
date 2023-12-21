@@ -1,1 +1,9 @@
-monitoring:
+# Temporarily disable everything other than grafana
+grafana:
+  enabled: true
+mimir:
+  enabled: false
+tempo:
+  enabled: false
+loki:
+  enabled: false
