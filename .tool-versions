@@ -1,1 +1,2 @@
-helm 3.13.1
+helm    3.13.1
+kubectl 1.29
