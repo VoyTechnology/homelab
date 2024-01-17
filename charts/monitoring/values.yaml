@@ -1,22 +1,18 @@
 # Temporarily disable everything other than grafana
-lgtm-distributed:
-  grafana:
-    enabled: false
-    ingress:
-      enabled: true
+grafana:
+  enabled: true
+  ingress:
+    enabled: true
+    hosts:
+    - grafana.dub1.bednarzak.com
+    ingressClassName: internal
+    tls:
+    - secretName: grafana-tls
       hosts:
       - grafana.dub1.bednarzak.com
-      ingressClassName: internal
-      tls:
-      - secretName: grafana-tls
-        hosts:
-        - grafana.dub1.bednarzak.com
-  mimir:
-    enabled: false
-  tempo:
-    enabled: false
-  loki:
-    enabled: false
-
-grafana:
+mimir:
+  enabled: false
+tempo:
+  enabled: false
+loki:
   enabled: false

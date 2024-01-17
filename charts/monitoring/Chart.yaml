@@ -3,7 +3,23 @@ name: monitoring
 description: Monitoring Metachart
 version: 0.0.1
 dependencies:
-  - name: lgtm-distributed
-    version: "1.0.1"
-    alias: monitoring
+  - name: grafana
+    alias: grafana
+    condition: grafana.enabled
     repository: https://grafana.github.io/helm-charts
+    version: "^6.59.4"
+  - name: loki-distributed
+    alias: loki
+    condition: loki.enabled
+    repository: "https://grafana.github.io/helm-charts"
+    version: "^0.74.3"
+  - name: mimir-distributed
+    alias: mimir
+    condition: mimir.enabled
+    repository: "https://grafana.github.io/helm-charts"
+    version: "^5.0.0"
+  - name: tempo-distributed
+    alias: tempo
+    condition: tempo.enabled
+    repository: "https://grafana.github.io/helm-charts"
+    version: "^1.6.4"
