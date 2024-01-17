@@ -4,6 +4,6 @@ description: Monitoring Metachart
 version: 0.0.1
 dependencies:
   - name: lgtm-distributed
-    version: "1.0.0"
+    version: "1.0.1"
     alias: monitoring
     repository: https://grafana.github.io/helm-charts
