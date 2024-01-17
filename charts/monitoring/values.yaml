@@ -1,7 +1,7 @@
 # Temporarily disable everything other than grafana
 lgtm-distributed:
   grafana:
-    enabled: true
+    enabled: false
     ingress:
       enabled: true
       hosts:
@@ -17,3 +17,6 @@ lgtm-distributed:
     enabled: false
   loki:
     enabled: false
+
+grafana:
+  enabled: false
