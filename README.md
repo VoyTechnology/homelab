@@ -4,6 +4,15 @@ Homelab running on k3s
 
 ---
 
+## Tools
+
+Necessary tools and their versions are managed using [mise], This way we only have to run one
+command to install all the necessary tooling.
+
+```sh
+mise install
+```
+
 ## Creating new Cluster
 
 1. Provision individual machine with Debian
@@ -22,3 +31,5 @@ This is done via Github Actions. The action will connect to the cluster with
 Ephemeral Key (this will expire one day, make sure to update). Then run it by
 providing the cluster name, and the playbook name to run (include the `_` in the
 name, but exclude the `.yml` extension)
+
+[mise]: https://github.com/jdx/mise
