@@ -1,2 +1,3 @@
 helm    3.13.1
 kubectl 1.29
+yq      4.40.5
