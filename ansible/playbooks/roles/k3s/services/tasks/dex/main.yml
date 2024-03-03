@@ -1,0 +1,52 @@
+---
+- name: Dex | Add Helm Repo
+  kubernetes.core.helm_repository:
+    name: dex
+    repo_url: https://charts.dexidp.io
+
+- name: Dex | Deploy Helm Chart
+  kubernetes.core.helm:
+    name: dex
+    chart_ref: dex/dex
+    chart_version: "{{ dex_chart_version }}"
+    release_namespace: "{{ dex_k8s_namespace }}"
+    values:
+      config:
+        issuer: "https://login.{{ cluster_domain }}"
+        web:
+          http: 0.0.0.0:5556
+        frontend:
+          theme: "coreos"
+          issuer: "homelab"
+          issuerUrl: "https://bednarzak.com"
+        logger:
+          level: debug
+          format: json
+        # Testing only
+        storage:
+          type: memory
+        staticClients:
+        - id: argocd
+          name: ArgoCD
+          redirectURIs:
+          - "https://argocd.{{ cluster_domain }}/auth/callback"
+          secret: somesuperinsecurenotsecret
+        enablePasswordDB: true
+        staticPasswords:
+        - email: wojtek@bednarzak.com
+          hash: "$2y$10$P.qKqSNIDf2Kp/uxZ6x5N.dK7bPCRMoLgwKBisH82B8P3aoUpqprW"
+          username: admin
+          userID: "08a8684b-db88-4b73-90a9-3cd1661f5466"
+      ingress:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt
+        hosts:
+        - host: "login.{{ cluster_domain }}"
+          paths:
+            - pathType: Prefix
+              path: /
+        tls:
+        - hosts:
+          - "login.{{ cluster_domain }}"
+          secretName: dex-cert

@@ -26,10 +26,10 @@
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt
           hosts:
-          - "{{ argocd_host }}"
+          - "argocd.{{ cluster_domain }}"
           tls:
           - hosts:
-            - "{{ argocd_host }}"
+            - "argocd.{{ cluster_domain }}"
             secretName: argocd-cert
       controller:
         extraArgs:
@@ -40,6 +40,14 @@
         env:
           - name: "ARGOCD_EXEC_TIMEOUT"
             value: "5m"
+      configs:
+        cm:
+          url: "https://argocd.{{ cluster_domain }}"
+          oidc.config: |
+            name: dex
+            issuer: "https://login.{{ cluster_domain }}"
+            clientID: argocd
+            clientSecret: somesuperinsecurenotsecret
 
 - name: ArgoCD | Setup Projects
   with_items: "{{ argocd_projects }}"
