@@ -1,20 +1,20 @@
 ---
+- name: Setup Namespaces
+  import_tasks: namespaces/main.yml
+  tags: k8s_namespaces
+
+- name: Setup Secrets
+  import_tasks: secrets/main.yml
+  tags: k8s_secrets
+  
 - name: Setup Cert Manager
   import_tasks: cert-manager/main.yml
-  tags: services
+  tags: k8s_cert_manager
 
 - name: Setup dex
   import_tasks: dex/main.yml
-  tags: services
+  tags: k8s_dex
 
 - name: Setup Argo
   import_tasks: argocd/main.yml
-  tags: services
-
-- name: Setup Tailscale
-  import_tasks: tailscale/main.yml
-  tags: services
-
-- name: Setup External DNS
-  import_tasks: external-dns/main.yml
-  tags: services
+  tags: k8s_argo

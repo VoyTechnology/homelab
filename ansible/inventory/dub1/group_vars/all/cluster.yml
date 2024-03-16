@@ -1,3 +1,10 @@
 # Shared cluster values
 ---
+# Cluster domain is the top level configuration from which all other URLs are created
 cluster_domain: "dub1.bednarzak.com"
+# List of infra namespaces to craete which are pre-created in Ansible
+infra_namespaces:
+- "{{ tailscale_ingress_namespace }}"
+- "{{ argocd_k8s_namespace }}"
+- "{{ cert_manager_namespace }}"
+- "{{ cloudflare_external_dns_namespace }}"

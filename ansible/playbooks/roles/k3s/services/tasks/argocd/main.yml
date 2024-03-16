@@ -4,13 +4,6 @@
     name: argo
     repo_url: https://argoproj.github.io/argo-helm
 
-- name: ArgoCD | Create Namespace
-  kubernetes.core.k8s:
-    api_version: v1
-    kind: Namespace
-    name: "{{ argocd_k8s_namespace }}"
-  run_once: yes
-
 - name: ArgoCD | Deploy Helm Chart
   kubernetes.core.helm:
     name: argocd
@@ -46,8 +39,47 @@
           oidc.config: |
             name: dex
             issuer: "https://login.{{ cluster_domain }}"
-            clientID: argocd
-            clientSecret: somesuperinsecurenotsecret
+            clientID: $oidc.dex.clientID
+            clientSecret:  $oidc.dex.clientSecret
+          admin:
+            enabled: false
+        secret:
+          extra:
+            oidc.dex.clientID: "{{ dex_argo_client_id }}"
+            oidc.dex.clientSecret: "{{ dex_argo_client_secret }}"
+        rbac:
+          policy.csv: |
+            p, role:admin, applications, create, */*, allow
+            p, role:admin, applications, update, */*, allow
+            p, role:admin, applications, delete, */*, allow
+            p, role:admin, applications, sync, */*, allow
+            p, role:admin, applications, override, */*, allow
+            p, role:admin, applications, action/*, */*, allow
+            p, role:admin, applicationsets, get, */*, allow
+            p, role:admin, applicationsets, create, */*, allow
+            p, role:admin, applicationsets, update, */*, allow
+            p, role:admin, applicationsets, delete, */*, allow
+            p, role:admin, certificates, create, *, allow
+            p, role:admin, certificates, update, *, allow
+            p, role:admin, certificates, delete, *, allow
+            p, role:admin, clusters, create, *, allow
+            p, role:admin, clusters, update, *, allow
+            p, role:admin, clusters, delete, *, allow
+            p, role:admin, repositories, create, *, allow
+            p, role:admin, repositories, update, *, allow
+            p, role:admin, repositories, delete, *, allow
+            p, role:admin, projects, create, *, allow
+            p, role:admin, projects, update, *, allow
+            p, role:admin, projects, delete, *, allow
+            p, role:admin, accounts, update, *, allow
+            p, role:admin, gpgkeys, create, *, allow
+            p, role:admin, gpgkeys, delete, *, allow
+            p, role:admin, exec, create, */*, allow
+
+            g, {{ argocd_admin_email }}, role:admin
+          scopes: "[email,groups]"
+      dex:
+        enabled: false # We use our own dex instance
 
 - name: ArgoCD | Setup Projects
   with_items: "{{ argocd_projects }}"
@@ -108,7 +140,9 @@
       kind: Secret
       metadata:
         name: "{{ item.name }}-repo"
-        namespace: "{{ argocd_k8s_namespace }}"
+        # 
+        # TODO: Revisit this as its weird to pull the namespace like that for tailscale.
+        namespace: "{{ tailscale_ingress_namespace }}"
         labels:
           argocd.argoproj.io/secret-type: repository
       stringData:
