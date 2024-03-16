@@ -51,12 +51,9 @@
           redirectURIs:
           - "https://argocd.{{ cluster_domain }}/auth/callback"
           - "https://argocd.{{ cluster_domain }}/auth/login"
+          - "http://127.0.0.1:8085/auth/callback" # CLI
+          - "http://localhost:8085/auth/callback" # CLI
           secret: "{{ dex_argo_client_secret }}"
-        enablePasswordDB: true
-        staticPasswords:
-        - email: wojtek@bednarzak.com
-          hash: "$2y$10$P.qKqSNIDf2Kp/uxZ6x5N.dK7bPCRMoLgwKBisH82B8P3aoUpqprW"
-          username: admin
       ingress:
         enabled: true
         annotations:
