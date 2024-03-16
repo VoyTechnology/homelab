@@ -21,10 +21,11 @@ spec:
   - host: auth.{{ .Values.cluster_domain }}
     http:
       paths:
-      - backend:
-          service: oauth2-proxy
-          port:
-            number: 4180
-          path: /oauth2
-          pathType: Prefix
+      - path: /oauth2
+        pathType: Prefix
+        backend:
+          service:
+            name: oauth2-proxy
+            port:
+              number: 4180
 ---
