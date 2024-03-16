@@ -13,6 +13,13 @@ spec:
     path: {{ $app.path }}
     repoURL: {{ $.Values.repoURL }}
     targetRevision: HEAD
+    {{- if $app.helm }}
+    helm:
+      {{- if $app.helm.values }}
+      values: |
+        {{ tpl (toYaml $app.helm.values) $ }}
+      {{- end }}
+    {{- end }}
   syncPolicy:
     automated:
       prune: true

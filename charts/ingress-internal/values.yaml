@@ -1,3 +1,6 @@
+# -- domain of the cluster on which the rest of the configuration is built.
+cluster_domain: REPLACEME
+
 ingress-nginx:
   fullnameOverride: internal
   controller:
@@ -6,3 +9,57 @@ ingress-nginx:
       loadBalancerClass: tailscale
     ingressClassResource:
       name: internal
+    config:
+      http-snippet: |
+        add_header              Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        proxy_cache_path        /var/run/cache levels=1:2 keys_zone=authentication:10m inactive=3s;
+      server-snippet: |
+        {{ include "serverSnippet" . | indent 8 }}
+    global-auth-url: http://127.0.0.1:4180/oauth2/auth
+    global-auth-signin: "https://auth.{{ .Values.cluster_domain }}/oauth2/start?rd=https://$host$request_uri$is_args$args"
+    global-auth-response-headers: X-FORWARDED-EMAIL, X-FORWARDED-USER
+  extraContainers:
+  - name: oauth2-proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:latest
+    args:
+      - --reverse-proxy
+      - --cookie-domain=.{{ .Values.cluster_domain }}
+      - --whitelist-domain=.{{ .Values.cluster_domain }}
+      - --redeem-url=https://login.{{ .Values.cluster_domain }}/token
+      - --redirect-url=https://auth.{{ .Values.cluster_domain }}/oauth2/callback
+      - --oidc-issuer-url=https://login.{{ .Values.cluster_domain }}
+      - --login-url=https://login.{{ .Values.cluster_domain }}/auth
+      - --http-address=0.0.0.0:4180
+      - --proxy-prefix=/oauth2
+      - --pass-access-token=true
+      - --pass-authorization-header=true
+      - --pass-host-header=true
+      - --provider=oidc
+      - --cookie-secure=false
+      - --request-logging=true
+      - --scope=email profile openid groups offline_access
+      - --set-authorization-header=true
+      - --set-xauthrequest=true
+      - --prefer-email-to-user=true
+      - --silence-ping-logging=true
+    env:
+    - name: OAUTH2_PROXY_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          key: client_id
+          name: oauth2-proxy
+    - name: OAUTH2_PROXY_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          key: client_secret
+          name: oauth2-proxy
+    - name: OAUTH2_PROXY_COOKIE_SECRET
+      valueFrom:
+        secretKeyRef:
+          key: cookie_secret
+          name: oauth2-proxy
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 4180
+      name: http
+      protocol: TCP

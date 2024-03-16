@@ -1,0 +1,8 @@
+# Ignore the downloaded charts
+*.tgz
+
+# Ignore Chart.lock, for now we don't care, might lock later
+Chart.lock
+
+# Ignore the rendered helm templates.
+rendered.yaml

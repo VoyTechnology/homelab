@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-proxy
+  labels:
+    app.kubernetes.io/component: oauth2-proxy
+spec:
+  selector:
+    app.kubernetes.io/component: controller
+  ports:
+  - port: 4180
+    targetPort: 4180
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-proxy
+spec:
+  ingressClassName: internal
+  rules:
+  - host: auth.{{ .Values.cluster_domain }}
+    http:
+      paths:
+      - backend:
+          service: oauth2-proxy
+          port:
+            number: 4180
+          path: /oauth2
+          pathType: Prefix
+---
