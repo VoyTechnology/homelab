@@ -6,15 +6,6 @@ apps:
     namespace: longhorn-system
     path: charts/longhorn
   # ---
-  ingress-internal:
-    namespace: tailscale
-    # Namespace is created using Ansible to allow for OAuth Secret creation.
-    skipNamespaceCreation: true
-    path: charts/ingress-internal
-    helm:
-      values:
-        cluster_domain: dub1.bednarzak.com
-  # ---
   external-dns:
     namespace: external-dns-system
     # Namespace managed by Ansible for secret generation
