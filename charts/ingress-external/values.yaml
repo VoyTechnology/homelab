@@ -4,4 +4,4 @@ cloudflare-tunnel-ingress-controller:
       name: ingress-public-secret
       accountIDKey: account_id
       tunnelNameKey: tunnel_name
-      apiTokenKey: api_token
+      apiTokenKey: token
