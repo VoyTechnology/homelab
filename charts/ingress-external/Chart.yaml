@@ -3,6 +3,6 @@ name: public-ingress
 version: 0.0.1
 description: Public Ingress Over Cloudflare Tunnels meta chart
 dependencies:
-  - name: argo-tunnel
-    version: ""
-    repository: https://cloudflare.github.io/helm-charts
+  - name: cloudflare-tunnel-ingress-controller
+    version: "0.0.9"
+    repository: https://helm.strrl.dev
