@@ -1,0 +1,4 @@
+---
+internal_ingress_namespace: "ingress-internal"
+internal_ingress_tailscale_chart_version: "1.62.0"
+internal_ingress_nginx_chart_version: "4.10.0"

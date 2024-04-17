@@ -1,20 +1,24 @@
 ---
 - name: Setup Namespaces
-  import_tasks: namespaces/main.yml
+  import_tasks: namespaces.yml
   tags: k8s_namespaces
 
 - name: Setup Secrets
-  import_tasks: secrets/main.yml
+  import_tasks: secrets.yml
   tags: k8s_secrets
   
 - name: Setup Cert Manager
-  import_tasks: cert-manager/main.yml
+  import_tasks: cert_manager.yml
   tags: k8s_cert_manager
 
 - name: Setup dex
-  import_tasks: dex/main.yml
+  import_tasks: dex.yml
   tags: k8s_dex
 
+- name: Setup internal ingress
+  import_tasks: ingress_internal.yml
+  tags: k8s_ingress_internal
+
 - name: Setup Argo
-  import_tasks: argocd/main.yml
+  import_tasks: argocd.yml
   tags: k8s_argo
