@@ -9,3 +9,4 @@ infra_namespaces:
 - "{{ argocd_k8s_namespace }}"
 - "{{ cert_manager_namespace }}"
 - "{{ cloudflare_external_dns_namespace }}"
+- "{{ external_ingress_namespace }}"
