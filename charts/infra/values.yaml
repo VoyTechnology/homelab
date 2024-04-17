@@ -8,9 +8,12 @@ apps:
   # ---
   external-dns:
     namespace: external-dns-system
-    # Namespace managed by Ansible for secret generation
-    skipNamespaceCreation: true
+    skipNamespaceCreation: true # Managed by Ansible
     path: charts/external-dns
   monitoring:
     namespace: monitoring
     path: charts/monitoring
+  ingress-external:
+    namespace: ingress-external
+    skipNamespaceCreation: true # Managed by Ansible
+    path: charts/ingress-external
