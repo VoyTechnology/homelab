@@ -75,7 +75,7 @@
               set $target http://127.0.0.1:4180/oauth2/auth;
               proxy_pass $target;
             }
-          global-auth-url: http://127.0.0.1:4180/oauth2/auth
+          global-auth-url: https://auth.{{ cluster_domain }}/oauth2/auth
           global-auth-signin: "https://auth.{{ cluster_domain }}/oauth2/start?rd=https://$host$request_uri$is_args$args"
           global-auth-response-headers: X-FORWARDED-EMAIL, X-FORWARDED-USER
         extraVolumeMounts:
@@ -159,12 +159,12 @@
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt
       spec:
-        ingressClassName: tailscale # is this ok or will this cause an infinite loop?
+        # ingressClassName: '' # is this ok or will this cause an infinite loop?
         rules:
         - host: "auth.{{ cluster_domain }}"
           http:
             paths:
-            - path: /oauth2
+            - path: /
               pathType: Prefix
               backend:
                 service:

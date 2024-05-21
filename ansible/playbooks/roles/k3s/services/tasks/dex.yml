@@ -55,6 +55,13 @@
           - "http://127.0.0.1:8085/auth/callback" # CLI
           - "http://localhost:8085/auth/callback" # CLI
           secret: "{{ dex_argo_client_secret }}"
+        - id: "{{ dex_oauth2_proxy_client_id }}"
+          name: oauth2-proxy
+          redirectURIs:
+          - "https://login.{{ cluster_domain }}/callback/{{ cluster_domain }}"
+          - "https://login.{{ cluster_domain }}/oauth2/callback"
+          - "https://auth.{{ cluster_domain }}/oauth2/callback"
+          secret: "{{ dex_oauth2_proxy_client_secret }}"
       ingress:
         enabled: true
         annotations:
