@@ -6,6 +6,8 @@ grafana:
     hosts:
     - grafana.dub1.bednarzak.com
     ingressClassName: internal
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
     tls:
     - secretName: grafana-tls
       hosts:
