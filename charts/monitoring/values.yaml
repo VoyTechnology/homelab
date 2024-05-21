@@ -12,6 +12,12 @@ grafana:
     - secretName: grafana-tls
       hosts:
       - grafana.dub1.bednarzak.com
+  grafana.ini:
+    auth.proxy:
+      enabled: true
+      header_name: X-FORWARDED-EMAIL
+      header_property: email
+      headers: "Email:X-FORWARDED-EMAIL Name:X-FORWARDED-USER"
 mimir:
   enabled: false
 tempo:
