@@ -13,11 +13,16 @@ grafana:
       hosts:
       - grafana.dub1.bednarzak.com
   grafana.ini:
+    users:
+      allow_sign_up: false
+      auto_assign_org: true
+      auto_assign_org_role: Editor
     auth.proxy:
       enabled: true
       header_name: X-FORWARDED-EMAIL
       header_property: email
       headers: "Email:X-FORWARDED-EMAIL Name:X-FORWARDED-USER"
+      auto_sign_up: true
 mimir:
   enabled: false
 tempo:
