@@ -11,6 +11,7 @@
     chart_ref: tailscale/tailscale-operator
     chart_version: "{{ internal_ingress_tailscale_chart_version }}"
     release_namespace: "{{ internal_ingress_namespace }}"
+    update_repo_cache: true
 
 - name: Ingress Internal | Add Nginx Ingress Chart
   kubernetes.core.helm_repository:
@@ -24,6 +25,7 @@
     chart_ref: ingress-nginx/ingress-nginx
     chart_version: "{{ internal_ingress_nginx_chart_version }}"
     release_namespace: "{{ internal_ingress_namespace }}"
+    update_repo_cache: true
     values:
       fullnameOverride: internal
       controller:
@@ -157,7 +159,7 @@
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt
       spec:
-        ingressClassName: internal # is this ok or will this cause an infinite loop?
+        ingressClassName: tailscale # is this ok or will this cause an infinite loop?
         rules:
         - host: "auth.{{ cluster_domain }}"
           http:

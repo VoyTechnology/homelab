@@ -10,6 +10,7 @@
     chart_ref: jetstack/cert-manager
     chart_version: "{{ cert_manager_version }}"
     release_namespace: "{{ cert_manager_namespace }}"
+    update_repo_cache: true
     values:
       installCRDs: true
       webhook:

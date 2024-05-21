@@ -10,6 +10,7 @@
     chart_ref: dex/dex
     chart_version: "{{ dex_chart_version }}"
     release_namespace: "{{ dex_k8s_namespace }}"
+    update_repo_cache: true
     values:
       config:
         issuer: "https://login.{{ cluster_domain }}"

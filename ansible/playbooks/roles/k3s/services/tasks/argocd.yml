@@ -10,6 +10,7 @@
     chart_ref: argo/argo-cd
     chart_version: "{{ argocd_chart_version }}"
     release_namespace: "{{ argocd_k8s_namespace }}"
+    update_repo_cache: true
     values:
       server:
         extraArgs:
