@@ -34,6 +34,7 @@
           loadBalancerClass: tailscale
         ingressClassResource:
           name: internal
+        allowSnippetAnnotations: true
         config:
           http-snippet: |
             add_header              Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
