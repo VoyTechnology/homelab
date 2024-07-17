@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
 spec:
   goTemplate: true
-  goTemplateOptions: ["missingkey=error"]
+  # goTemplateOptions: ["missingkey=error"]
   generators:
   - git:
       repoURL: https://github.com/voytechnology/homelab.git
@@ -23,7 +23,7 @@ spec:
       destination:
         namespace: monitoring
         server: {{ .server }}
-      project: infra
+      project: apps
       sources:
       - repoURL: https://github.com/voytechnology/homelab.git
         targetRevision: HEAD
