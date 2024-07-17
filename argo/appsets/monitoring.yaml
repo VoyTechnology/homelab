@@ -16,7 +16,7 @@ spec:
   template:
     metadata:
       name: '{{ .cluster }}-monitoring'
-      namespace: 'argo'
+      namespace: argocd
       finalizers:
       - resources-finalizers.argocd.argoproj.io
     spec:
