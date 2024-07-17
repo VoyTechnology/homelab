@@ -125,8 +125,9 @@
               automated:
                 prune: true
                 selfHeal: true
-            syncOptions:
-              - CreateNamespace=true
+              syncOptions:
+                - CreateNamespace=true
+            revisionHistoryLimit: 3
 
 - name: ArgoCD | Add Deploy Keys
   no_log: true # Do not show logs as they contain private ssh keys
