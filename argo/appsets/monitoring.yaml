@@ -28,6 +28,20 @@ spec:
         namespace: monitoring
         server: '{{ .server }}'
       project: apps
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: true
+
+        syncOptions:
+        - CreateNamespace=true
+        retry:
+          limit: 3
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 30m
+      revisionHistoryLimit: 3
       sources:
 
       - repoURL: https://github.com/voytechnology/homelab.git
@@ -40,21 +54,18 @@ spec:
           # Optional value overrides in order of least to most precedence.
           - 'argo/apps/monitoring/{{ .cluster }}.values.yaml'
           valuesObject:
-            domain: {{ .domain }}
+            grafana:
+              ingress:
+                hosts:
+                - grafana.{{ .domain }}
+                tls:
+                - secretName: grafana-tls
+                  hosts:
+                  - grafana.{{ .domain }}
+              grafana.ini:
+                server:
+                  domain: grafana.{{ .domain }}
+                  root_url: https://grafana.{{ .domain }}
 
-      syncPolicy:
-        automated:
-          prune: false
-          selfHeal: true
 
-        syncOptions:
-        - CreateNamespace=true
-
-        retry:
-          limit: 3
-          backoff:
-            duration: 10s
-            factor: 2
-            maxDuration: 30m
-
-      revisionHistoryLimit: 3
+      
