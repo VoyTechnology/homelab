@@ -39,8 +39,17 @@
           http-snippet: |
             add_header              Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
             proxy_cache_path        /var/run/cache levels=1:2 keys_zone=authentication:10m inactive=3s;
+
+            map "$http_host:$http_x_sent_from" $is_external {
+              default "1";
+              "127.0.0.1:nginx-ingress-controller"  "0";
+            }
           server-snippet: |
             location = /oauth2/auth {
+              if ($is_external) {
+                return 403;
+              }
+
               set $proxy_upstream_name "oauth-proxy";
 
               proxy_pass_request_body     off;
@@ -76,7 +85,7 @@
               set $target http://127.0.0.1:4180/oauth2/auth;
               proxy_pass $target;
             }
-          global-auth-url: https://auth.{{ cluster_domain }}/oauth2/auth
+          global-auth-url: http://127.0.0.1:4180/oauth2/auth
           global-auth-signin: "https://auth.{{ cluster_domain }}/oauth2/start?rd=https://$host$request_uri$is_args$args"
           global-auth-response-headers: X-FORWARDED-EMAIL, X-FORWARDED-USER
         extraVolumeMounts:
