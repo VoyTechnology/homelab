@@ -18,6 +18,8 @@ grafana:
       hosts:
       - grafana.{{ $.Values.domain }}
   grafana.ini:
+    server:
+      root_url: https://grafana.{{ $.Values.domain }}
     users:
       allow_sign_up: false
       auto_assign_org: true
