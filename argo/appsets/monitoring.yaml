@@ -7,11 +7,17 @@ spec:
   goTemplate: true
   # goTemplateOptions: ["missingkey=error"]
   generators:
-  - git:
-      repoURL: https://github.com/voytechnology/homelab.git
-      revision: HEAD
-      files:
-      - path: 'argo/clusters/*.yaml'
+  - list:
+      elements:
+      - cluster: dub1
+        domain: dub1.bednarzak.com
+        server: https://kubernetes.default.svc # in-cluster
+
+  # - git:
+  #     repoURL: https://github.com/voytechnology/homelab.git
+  #     revision: HEAD
+  #     files:
+  #     - path: 'argo/clusters/*.yaml'
   
   template:
     metadata:
@@ -35,9 +41,9 @@ spec:
       #     valueObject: {}
             # domain: {{ .domain }}
     
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
-      syncOptions:
-      - CreateNamespace=true
+    # syncPolicy:
+    #   automated:
+    #     prune: true
+    #     selfHeal: true
+    #   syncOptions:
+    #   - CreateNamespace=true
