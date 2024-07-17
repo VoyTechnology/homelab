@@ -1,4 +1,4 @@
 ---
 argocd_admin_name: admin
 argocd_new_admin_password: admin # Not safe, but the Ingress is also not exposed.
-argocd_chart_version: "6.10.0"
+argocd_chart_version: "7.3.7"
