@@ -25,14 +25,14 @@ spec:
         server: {{ .server }}
       project: apps
       sources:
-      - repoURL: https://github.com/voytechnology/homelab.git
-        targetRevision: HEAD
-        path: argo/apps/monitoring
-        helm:
-          ignoreMissingValueFiles: true
-          valueFiles:
-          - 'apps/monitoring/{{ .cluster }}.values.yaml'
-          valueObject: {}
+      # - repoURL: https://github.com/voytechnology/homelab.git
+      #   targetRevision: HEAD
+      #   path: argo/apps/monitoring
+      #   helm:
+      #     ignoreMissingValueFiles: true
+      #     valueFiles:
+      #     - 'apps/monitoring/{{ .cluster }}.values.yaml'
+      #     valueObject: {}
             # domain: {{ .domain }}
     
     syncPolicy:
