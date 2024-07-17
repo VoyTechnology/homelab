@@ -12,19 +12,14 @@
     release_namespace: "{{ argocd_k8s_namespace }}"
     update_repo_cache: true
     values:
+      global:
+        domain: "argocd.{{ cluster_domain }}"
       server:
-        extraArgs:
-        - --insecure
         ingress:
           enabled: true
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt
-          hosts:
-          - "argocd.{{ cluster_domain }}"
-          tls:
-          - hosts:
-            - "argocd.{{ cluster_domain }}"
-            secretName: argocd-cert
+          tls: true
       controller:
         extraArgs:
         - --repo-server-timeout-seconds
@@ -44,6 +39,8 @@
             clientSecret:  $oidc.dex.clientSecret
           admin:
             enabled: false
+        params:
+          server.insecure: "true"
         secret:
           extra:
             oidc.dex.clientID: "{{ dex_argo_client_id }}"
