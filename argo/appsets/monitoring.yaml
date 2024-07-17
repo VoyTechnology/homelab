@@ -39,7 +39,8 @@ spec:
           valueFiles:
           # Optional value overrides in order of least to most precedence.
           - 'argo/apps/monitoring/{{ .cluster }}.values.yaml'
-          valuesObject: {}
+          valuesObject:
+            domain: {{ .domain }}
 
       syncPolicy:
         automated:
