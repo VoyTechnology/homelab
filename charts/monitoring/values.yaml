@@ -1,4 +1,6 @@
 # Temporarily disable everything other than grafana
+domain: REPLACE_ME
+
 grafana:
   enabled: true
   ingress:

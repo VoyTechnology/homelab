@@ -17,7 +17,7 @@ apps:
     path: charts/monitoring
     helm:
       # TODO: Extract somewhere else
-      domain: {{ .Values.domain }}
+      domain: {{ $.Values.domain }}
   ingress-external:
     namespace: ingress-external
     skipNamespaceCreation: true # Managed by Ansible
