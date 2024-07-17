@@ -1,0 +1,3 @@
+cluster: dub1
+domain: dub1.bednarzak.com
+server: https://kubernetes.default.svc # in-cluster

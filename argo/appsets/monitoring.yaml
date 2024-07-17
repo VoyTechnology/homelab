@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: monitoring
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - git:
+      repoURL: https://github.com/voytechnology/homelab.git
+      revision: HEAD
+      files:
+      - path: 'argo/clusters/*.yaml'
+  
+  template:
+    metadata:
+      name: '{{ .cluster }}-monitoring'
+      namespace: 'argo'
+    spec:
+      destination:
+        namespace: monitoring
+        server: {{ .server }}
+      project: infra
+      sources:
+      - repoURL: https://github.com/voytechnology/homelab.git
+        targetRevision: HEAD
+        path: argo/apps/monitoring/chart
+        helm:
+          valueFiles:
+          - 'apps/observability/values.yaml'
+          - 'apps/observability/{{ .cluster }}.yaml'
+          valueObject:
+            domain: {{ .domain }}
