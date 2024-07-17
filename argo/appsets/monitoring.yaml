@@ -27,12 +27,11 @@ spec:
       sources:
       - repoURL: https://github.com/voytechnology/homelab.git
         targetRevision: HEAD
-        path: argo/apps/monitoring/chart
+        path: argo/apps/monitoring
         helm:
           ignoreMissingValueFiles: true
           valueFiles:
-          - 'apps/observability/values.yaml'
-          - 'apps/observability/{{ .cluster }}.yaml'
+          - 'apps/monitoring/{{ .cluster }}.values.yaml'
           valueObject:
             domain: {{ .domain }}
     
