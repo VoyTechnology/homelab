@@ -29,6 +29,8 @@
         env:
           - name: "ARGOCD_EXEC_TIMEOUT"
             value: "5m"
+          - name: "ARGOCD_HELM_ALLOW_CONCURRENCY"
+            value: "true"
       configs:
         cm:
           url: "https://argocd.{{ cluster_domain }}"

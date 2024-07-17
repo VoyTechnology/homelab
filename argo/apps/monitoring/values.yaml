@@ -6,7 +6,7 @@ grafana:
   ingress:
     enabled: true
     hosts:
-    - grafana.{{ $.Values.domain }}
+    - grafana.REPLACE_ME
     ingressClassName: internal
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
@@ -18,10 +18,11 @@ grafana:
     tls:
     - secretName: grafana-tls
       hosts:
-      - grafana.{{ $.Values.domain }}
+      - grafana.REPLACE_ME
   grafana.ini:
     server:
-      root_url: https://grafana.{{ $.Values.domain }}
+      domain: https://REPLACE_ME
+      root_url: REPLACE_ME
     users:
       allow_sign_up: false
       auto_assign_org: true
