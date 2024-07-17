@@ -17,6 +17,8 @@ spec:
     metadata:
       name: '{{ .cluster }}-monitoring'
       namespace: 'argo'
+      finalizers:
+      - resources-finazlier.argocd.argoproj.io
     spec:
       destination:
         namespace: monitoring
@@ -38,6 +40,5 @@ spec:
       automated:
         prune: true
         selfHeal: true
-
-    syncOptions:
-    - CreateNamespace=true
+      syncOptions:
+      - CreateNamespace=true
