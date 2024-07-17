@@ -19,7 +19,7 @@ spec:
     metadata:
       finalizers:
       - resources-finalizer.argocd.argoproj.io
-      name: '{{ .name }}-monitoring'
+      name: '{{ .cluster }}-monitoring'
       namespace: argocd
       labels:
         argocd.argoproj.io/application-set-name: "monitoring"
@@ -38,7 +38,7 @@ spec:
           ignoreMissingValueFiles: true
           valueFiles:
           # Optional value overrides in order of least to most precedence.
-          - 'argo/apps/monitoring/{{ .name }}.values.yaml'
+          - 'argo/apps/monitoring/{{ .cluster }}.values.yaml'
           valuesObject: {}
 
       syncPolicy:
@@ -57,54 +57,3 @@ spec:
             maxDuration: 30m
 
       revisionHistoryLimit: 3
-
-
-# apiVersion: argoproj.io/v1alpha1
-# kind: ApplicationSet
-# metadata:
-#   name: monitoring
-#   namespace: argocd
-# spec:
-#   goTemplate: true
-#   # goTemplateOptions: ["missingkey=error"]
-#   generators:
-#   - list:
-#       elements:
-#       - cluster: dub1
-#         domain: dub1.bednarzak.com
-#         server: https://kubernetes.default.svc # in-cluster
-
-#   # - git:
-#   #     repoURL: https://github.com/voytechnology/homelab.git
-#   #     revision: HEAD
-#   #     files:
-#   #     - path: 'argo/clusters/*.yaml'
-  
-#   template:
-#     metadata:
-#       name: '{{ .cluster }}-monitoring'
-#       namespace: argocd
-#       finalizers:
-#       - resources-finalizers.argocd.argoproj.io
-#     spec:
-#       destination:
-#         namespace: monitoring
-#         server: {{ .server }}
-#       project: apps
-#       sources:
-#       # - repoURL: https://github.com/voytechnology/homelab.git
-#       #   targetRevision: HEAD
-#       #   path: argo/apps/monitoring
-#       #   helm:
-#       #     ignoreMissingValueFiles: true
-#       #     valueFiles:
-#       #     - 'apps/monitoring/{{ .cluster }}.values.yaml'
-#       #     valueObject: {}
-#             # domain: {{ .domain }}
-    
-#     # syncPolicy:
-#     #   automated:
-#     #     prune: true
-#     #     selfHeal: true
-#     #   syncOptions:
-#     #   - CreateNamespace=true
