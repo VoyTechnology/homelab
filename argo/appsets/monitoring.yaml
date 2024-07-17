@@ -18,7 +18,7 @@ spec:
       name: '{{ .cluster }}-monitoring'
       namespace: 'argo'
       finalizers:
-      - resources-finazlier.argocd.argoproj.io
+      - resources-finalizers.argocd.argoproj.io
     spec:
       destination:
         namespace: monitoring
@@ -32,8 +32,8 @@ spec:
           ignoreMissingValueFiles: true
           valueFiles:
           - 'apps/monitoring/{{ .cluster }}.values.yaml'
-          valueObject:
-            domain: {{ .domain }}
+          valueObject: {}
+            # domain: {{ .domain }}
     
     syncPolicy:
       automated:
