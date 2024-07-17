@@ -1,3 +1,5 @@
+domain: dub1.bednarzak.com
+
 destination: https://kubernetes.default.svc
 repoURL: git@github.com:VoyTechnology/homelab.git
 project: infra
@@ -15,8 +17,7 @@ apps:
     path: charts/monitoring
     helm:
       # TODO: Extract somewhere else
-      domain: dub1.bednarzak.com
-
+      domain: {{ .Values.domain }}
   ingress-external:
     namespace: ingress-external
     skipNamespaceCreation: true # Managed by Ansible

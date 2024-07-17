@@ -10,14 +10,14 @@ spec:
     namespace: {{ $app.namespace }}
     server: https://kubernetes.default.svc
   source:
-    path: {{ $app.path }}
-    repoURL: {{ $.Values.repoURL }}
+    path: {{ tpl $app.path $ }}
+    repoURL: {{ tpl $.Values.repoURL $ }}
     targetRevision: HEAD
     {{- if $app.helm }}
     helm:
-      {{- if $app.helm.values }}
+      {{- if $app.helm }}
       values: |
-        {{ tpl (toYaml $app.helm.values) $ }}
+        {{ tpl (toYaml $app.helm) $ }}
       {{- end }}
     {{- end }}
   syncPolicy:
@@ -26,14 +26,14 @@ spec:
       selfHeal: true
   {{- if $app.ignoreDifferences }}
   ignoreDifferences:
-    {{ toYaml $app.ignoreDifferences | indent 4 }}
+    {{ tpl (toYaml $app.ignoreDifferences) $ | indent 4 }}
   {{- end }}
 ---
 {{- if not $app.skipNamespaceCreation }}
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ $app.namespace }}
+  name: {{ tpl $app.namespace $ }}
 ---
 {{- end }}
 {{- end }}
