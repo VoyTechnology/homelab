@@ -27,8 +27,17 @@ spec:
         targetRevision: HEAD
         path: argo/apps/monitoring/chart
         helm:
+          ignoreMissingValueFiles: true
           valueFiles:
           - 'apps/observability/values.yaml'
           - 'apps/observability/{{ .cluster }}.yaml'
           valueObject:
             domain: {{ .domain }}
+    
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+
+    syncOptions:
+    - CreateNamespace=true
