@@ -8,7 +8,7 @@ spec:
   goTemplateOptions: ["missingkey=error"]
   generators:
   - git:
-      repoURL: https://github.com/voytechnology/homelab.git
+      repoURL: git@github.com:Voytechnology/homelab.git
       revision: HEAD
       files:
       - path: "argo/clusters/*.yaml"
