@@ -43,7 +43,7 @@ grafana:
   plugins:
     - grafana-oncall-app
 mimir:
-  enabled: false
+  enabled: true
 tempo:
   enabled: false
 loki:
