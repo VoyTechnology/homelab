@@ -66,6 +66,14 @@ spec:
                 server:
                   domain: grafana.{{ .domain }}
                   root_url: https://grafana.{{ .domain }}
+            mimir:
+              ingress:
+                hosts:
+                - metrics.{{ .domain }}
+                tls:
+                - secretName: mimir-tls
+                  hosts:
+                  - metrics.{{ .domain }}
 
 
       
