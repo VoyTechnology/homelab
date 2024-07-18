@@ -40,8 +40,9 @@ grafana:
       header_property: email
       headers: "Email:X-FORWARDED-EMAIL Name:X-FORWARDED-USER"
       auto_sign_up: true
-  plugins:
-    - grafana-oncall-app
+  # Disable as its not currently working
+  # plugins:
+  #   - grafana-oncall-app
 
 mimir:
   enabled: true
