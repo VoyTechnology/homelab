@@ -44,7 +44,7 @@ spec:
       revisionHistoryLimit: 3
       sources:
 
-      - repoURL: https://github.com/voytechnology/homelab.git
+      - repoURL: git@github.com:Voytechnology/homelab.git
         targetRevision: '{{ .values.targetRevision }}'
         path: argo/apps/monitoring
         helm:
