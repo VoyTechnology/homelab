@@ -7,7 +7,7 @@ dependencies:
     alias: grafana
     condition: grafana.enabled
     repository: https://grafana.github.io/helm-charts
-    version: "^7.3.11"
+    version: "^8.3.5"
   - name: loki-distributed
     alias: loki
     condition: loki.enabled
