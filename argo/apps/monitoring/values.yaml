@@ -10,11 +10,6 @@ grafana:
     ingressClassName: internal
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
-      nginx.ingress.kubernetes.io/configuration-snippet: |
-          auth_request_set $user             $upstream_http_x_auth_request_user;
-          auth_request_set $email            $upstream_http_x_auth_request_email;
-          proxy_set_header X-FORWARDED-EMAIL $email;
-          proxy_set_header X-FORWARDED-NAME  $user;
     tls:
     - secretName: grafana-tls
       hosts:
@@ -32,14 +27,19 @@ grafana:
     auth:
       disable_login_form: true
       oauth_auto_login: true
+    auth.generic_oauth:
+      name: Dex
+      enabled: true
+      client_id: $__file{/etc/secrets/dex_oauth/client_id}
+      client_secret: $__file{/etc/secrets/dex_oauth/client_secret}
     auth.basic:
       enabled: false
-    auth.proxy:
-      enabled: true
-      header_name: X-FORWARDED-EMAIL
-      header_property: email
-      headers: "Email:X-FORWARDED-EMAIL Name:X-FORWARDED-USER"
-      auto_sign_up: true
+  extraSecretMounts:
+    - name: dex_oauth
+      secretName: grafana-dex-oauth-secret
+      defaultMode: 0440
+      mountPath: /etc/secrets/dex_oauth
+      readOnly: true
   # Disable as its not currently working
   # plugins:
   #   - grafana-oncall-app
@@ -51,8 +51,8 @@ mimir:
     ingressClassName: internal
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
-   # Low traffic home clustes, no need for more than 1 replica and there are probably no zones.
-   # downtime on upgrade is tolerated
+  # Low traffic home clustes, no need for more than 1 replica and there are probably no zones.
+  # downtime on upgrade is tolerated
   ingester:
     replicas: 1
     zoneAwareReplication:
