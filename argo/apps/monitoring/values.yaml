@@ -25,7 +25,6 @@ grafana:
       auto_assign_org_role: Admin
       allow_assign_grafana_admin: true
     auth:
-      disable_login_form: true
       oauth_auto_login: true
     auth.generic_oauth:
       name: Dex
