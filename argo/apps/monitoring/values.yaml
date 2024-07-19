@@ -7,7 +7,7 @@ grafana:
     enabled: true
     hosts:
     - grafana.REPLACE_ME
-    ingressClassName: internal
+    # ingressClassName: internal
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
     tls:
