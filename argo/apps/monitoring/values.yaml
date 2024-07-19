@@ -34,7 +34,7 @@ grafana:
     auth.basic:
       enabled: false
   extraSecretMounts:
-    - name: dex_oauth
+    - name: dex-oauth
       secretName: grafana-dex-oauth-secret
       defaultMode: 0440
       mountPath: /etc/secrets/dex_oauth
