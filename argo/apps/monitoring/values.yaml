@@ -49,6 +49,8 @@ mimir:
   ingress:
     enabled: true
     ingressClassName: internal
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
    # Low traffic home clustes, no need for more than 1 replica and there are probably no zones.
    # downtime on upgrade is tolerated
   ingester:
