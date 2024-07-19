@@ -62,6 +62,11 @@
           - "https://login.{{ cluster_domain }}/oauth2/callback"
           - "https://auth.{{ cluster_domain }}/oauth2/callback"
           secret: "{{ dex_oauth2_proxy_client_secret }}"
+        - id: "{{ dex_grafana_client_id }}"
+          name: Grafana
+          redirectURIs:
+          - "https://grafana.{{ cluster_domain }}/login/generic_oauth"
+          secret: "{{ dex_grafana_client_secret }}"
       ingress:
         enabled: true
         annotations:

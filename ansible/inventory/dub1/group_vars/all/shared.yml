@@ -3,6 +3,9 @@
 # Cluster domain is the top level configuration from which all other URLs are created
 cluster_domain: "dub1.bednarzak.com"
 
+# Namespaces which are used across the cluster
+monitoring_namespace: "monitoring"
+
 # List of infra namespaces to craete which are pre-created or used in Ansible
 infra_namespaces:
 - "{{ internal_ingress_namespace }}"
@@ -10,3 +13,4 @@ infra_namespaces:
 - "{{ cert_manager_namespace }}"
 - "{{ cloudflare_external_dns_namespace }}"
 - "{{ external_ingress_namespace }}"
+- "{{ monitoring_namespace }}"
