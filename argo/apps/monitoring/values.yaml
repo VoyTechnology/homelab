@@ -31,6 +31,10 @@ grafana:
       enabled: true
       client_id: $__file{/etc/secrets/dex_oauth/client_id}
       client_secret: $__file{/etc/secrets/dex_oauth/client_secret}
+      scopes: openid email profile groups offline_access
+      auth_url: https://login.REPLACE_ME/auth
+      token_url: https://login.REPLACE_ME/token
+      api_url: https://login.REPLACE_ME/userinfo
     auth.basic:
       enabled: false
   extraSecretMounts:

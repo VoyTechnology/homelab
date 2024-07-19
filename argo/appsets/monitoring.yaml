@@ -66,6 +66,10 @@ spec:
                 server:
                   domain: grafana.{{ .domain }}
                   root_url: https://grafana.{{ .domain }}
+                auth.generic_oauth:
+                  auth_url: https://login.{{ .domain }}/auth
+                  token_url: https://login.{{ .domain }}/token
+                  api_url: https://login.{{ .domain }}/userinfo
             mimir:
               ingress:
                 hosts:
