@@ -7,7 +7,7 @@ grafana:
     enabled: true
     hosts:
     - grafana.REPLACE_ME
-    # ingressClassName: internal
+    ingressClassName: internal # Auth using Dex
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
     tls:
@@ -51,7 +51,7 @@ mimir:
   enabled: true
   ingress:
     enabled: true
-    ingressClassName: internal
+    ingressClassName: internal-login
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
   # Low traffic home clustes, no need for more than 1 replica and there are probably no zones.

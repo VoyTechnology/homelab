@@ -2,7 +2,7 @@ longhorn:
   ingress:
     enabled: true
     host: longhorn.dub1.bednarzak.com
-    ingressClassName: internal # Use ingress-internal
+    ingressClassName: internal-login # Use ingress-internal
     secureBackends: true
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
