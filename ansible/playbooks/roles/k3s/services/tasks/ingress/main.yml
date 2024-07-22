@@ -1,0 +1,33 @@
+---
+- name: Ingress | Add Tailscale Operator Chart
+  kubernetes.core.helm_repository:
+    name: tailscale
+    # Use this repository until Tailscale decides to publish their own one.
+    repo_url: https://pkgs.tailscale.com/helmcharts
+
+- name: Ingress | Deploy Tailscale Operator
+  kubernetes.core.helm:
+    name: tailscale-operator
+    chart_ref: tailscale/tailscale-operator
+    chart_version: "{{ internal_ingress_tailscale_chart_version }}"
+    release_namespace: "{{ internal_ingress_namespace }}"
+    update_repo_cache: true
+
+- name: Ingress | Add Nginx Ingress Chart
+  kubernetes.core.helm_repository:
+    name: ingress-nginx
+    repo_url: https://kubernetes.github.io/ingress-nginx
+
+- name: Ingress | Setup internal ingress
+  import_tasks: internal.yml
+  tags: k8s_ingress_internal
+
+- name: Ingress | Setup internal shared ingress
+  import_tasks: internal_shared.yml
+  tags: k8s_ingress_internal_shared
+
+- name: Ingress | Setup internal login ingress
+  import_tasks: internal_login.yml
+  tags: k8s_ingress_internal_login
+
+

@@ -1,40 +1,28 @@
 ---
-- name: Ingress Internal | Add Tailscale Operator Chart
-  kubernetes.core.helm_repository:
-    name: tailscale
-    # Use this repository until Tailscale decides to publish their own one.
-    repo_url: https://pkgs.tailscale.com/helmcharts
-
-- name: Ingress Internal | Deploy Tailscale Operator
+- name: Ingress Internal Login | Deploy Internal Ingress
   kubernetes.core.helm:
-    name: tailscale-operator
-    chart_ref: tailscale/tailscale-operator
-    chart_version: "{{ internal_ingress_tailscale_chart_version }}"
-    release_namespace: "{{ internal_ingress_namespace }}"
-    update_repo_cache: true
-
-- name: Ingress Internal | Add Nginx Ingress Chart
-  kubernetes.core.helm_repository:
-    name: ingress-nginx
-    repo_url: https://kubernetes.github.io/ingress-nginx
-
-- name: Ingress Internal | Deploy Internal Ingress
-  kubernetes.core.helm:
-    name: ingress-nginx
+    # state: absent
+    name: nginx-ingress-internal-login
     force: true
     chart_ref: ingress-nginx/ingress-nginx
     chart_version: "{{ internal_ingress_nginx_chart_version }}"
     release_namespace: "{{ internal_ingress_namespace }}"
     update_repo_cache: true
     values:
-      fullnameOverride: internal
+      fullnameOverride: internal-login
       controller:
-        name: ingress
+        name: internal-login
         service:
           loadBalancerClass: tailscale
+          annotations:
+            tailscale.com/hostname: "{{ cluster_name }}-internal-login"
+        ingressClass: internal-login
         ingressClassResource:
-          name: internal
+          name: internal-login
+          controllerValue: k8s.io/internal-login-ingress-nginx
         allowSnippetAnnotations: true
+        labels:
+          ingressName: internal-login
         config:
           http-snippet: |
             add_header              Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
@@ -141,7 +129,7 @@
             name: http
             protocol: TCP
 
-- name: Internal Ingress | Deploy oauth2-proxy service
+- name: Internal Ingress Login | Deploy oauth2-proxy service
   kubernetes.core.k8s:
     state: present
     definition: 
@@ -152,12 +140,12 @@
         namespace: "{{ internal_ingress_namespace }}"
       spec:
         selector:
-          app.kubernetes.io/component: controller
+          ingressName: internal-login
         ports:
           - port: 4180
             targetPort: 4180
 
-- name: Internal Ingress | Deploy oauth2-proxy ingress
+- name: Internal Ingress Login | Deploy oauth2-proxy ingress
   kubernetes.core.k8s:
     state: present
     definition: 
@@ -169,7 +157,7 @@
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt
       spec:
-        # ingressClassName: '' # is this ok or will this cause an infinite loop?
+        ingressClassName: internal # Exposed internally
         rules:
         - host: "auth.{{ cluster_domain }}"
           http:

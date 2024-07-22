@@ -1,0 +1,30 @@
+---
+- name: Ingress Internal Shared | Deploy Internal Ingress
+  kubernetes.core.helm:
+    # state: absent
+    name: nginx-ingress-internal-shared
+    force: true
+    chart_ref: ingress-nginx/ingress-nginx
+    chart_version: "{{ internal_ingress_nginx_chart_version }}"
+    release_namespace: "{{ internal_ingress_namespace }}"
+    update_repo_cache: true
+    values:
+      fullnameOverride: internal-shared
+      controller:
+        name: internal-shared
+        service:
+          loadBalancerClass: tailscale
+          annotations:
+            tailscale.com/hostname: "{{ cluster_name }}-internal-shared"
+        electionID: internal-shared-ingress-controller-leader
+        ingressClass: internal-shared
+        ingressClassResource:
+          name: internal-shared
+          controllerValue: k8s.io/internal-shared-ingress-nginx
+        allowSnippetAnnotations: true
+        extraVolumeMounts:
+        - name: cache-dir
+          mountPath: /var/run/cache
+        extraVolumes:
+        - name: cache-dir
+          emptyDir: {}
