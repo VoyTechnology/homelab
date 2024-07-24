@@ -13,7 +13,7 @@
         git: {
           repoURL: 'git@github.com:Voytechnology/homelab.git',
           revision: 'HEAD',
-          files: [{path: 'argo/clustes/*.yaml'}],
+          files: [{path: 'argo/clusters/*.yaml'}],
           values: { targetRevision: 'HEAD' },
         },
       },
