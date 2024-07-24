@@ -7,7 +7,7 @@ grafana:
     enabled: true
     hosts:
     - grafana.REPLACE_ME
-    ingressClassName: internal # Auth using Dex
+    ingressClassName: internal-shared # Auth using Dex, but we want to share the instance
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
     tls:
