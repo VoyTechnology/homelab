@@ -3,7 +3,7 @@
   kind: 'ApplicationSet',
   metadata: {
     name: 'monitoring',
-    namespace: 'argo'
+    namespace: 'argocd'
   },
   spec: {
     goTemplate: true,
