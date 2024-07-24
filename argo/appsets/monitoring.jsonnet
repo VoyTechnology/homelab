@@ -85,9 +85,9 @@
                 },
                 mimir: {
                   ingress: {
-                    hosts: ['mimir.{{ .domain }}'],
+                    hosts: ['metrics.{{ .domain }}'],
                     tls: [{
-                      secretName: 'mimir-tls', hosts: ['mimir.{{ .domain }}']
+                      secretName: 'mimir-tls', hosts: ['metrics.{{ .domain }}']
                     }],
                   },
                 },
