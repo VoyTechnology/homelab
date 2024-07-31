@@ -77,11 +77,12 @@
                       domain: 'grafana.{{ .domain }}',
                       root_url: 'https://grafana.{{ .domain }}',
                     },
-                    // 'auth.generic_oauth': {
-                    //   auth_url: 'https://login.{{ .domain }}/auth',
-                    //   token_url: 'https://login.{{ .domain }}/token',
-                    //   api_url: 'https://login.{{ .domain }}/userinfo',
-                    // },
+                    'auth.generic_oauth': {
+                      enabled: false,
+                      auth_url: 'https://login.{{ .domain }}/auth',
+                      token_url: 'https://login.{{ .domain }}/token',
+                      api_url: 'https://login.{{ .domain }}/userinfo',
+                    },
                     'auth.proxy': {
                       enabled: true,
                       header_name: 'X-FORWARDED-EMAIL',
