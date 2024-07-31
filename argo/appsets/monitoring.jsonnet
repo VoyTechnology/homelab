@@ -67,7 +67,7 @@
                 grafana: {
                   ingress: {
                     hosts: ['grafana.{{ .domain }}'],
-                    ingressClass: 'internal-login',
+                    ingressClassName: 'internal-login',
                     tls: [{
                       secretName: 'grafana-tls', hosts: ['grafana.{{ .domain }}']
                     }],
