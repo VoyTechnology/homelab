@@ -67,6 +67,7 @@
                 grafana: {
                   ingress: {
                     hosts: ['grafana.{{ .domain }}'],
+                    ingressClass: 'internal-login',
                     tls: [{
                       secretName: 'grafana-tls', hosts: ['grafana.{{ .domain }}']
                     }],
@@ -76,10 +77,16 @@
                       domain: 'grafana.{{ .domain }}',
                       root_url: 'https://grafana.{{ .domain }}',
                     },
-                    'auth.generic_oauth': {
-                      auth_url: 'https://login.{{ .domain }}/auth',
-                      token_url: 'https://login.{{ .domain }}/token',
-                      api_url: 'https://login.{{ .domain }}/userinfo',
+                    // 'auth.generic_oauth': {
+                    //   auth_url: 'https://login.{{ .domain }}/auth',
+                    //   token_url: 'https://login.{{ .domain }}/token',
+                    //   api_url: 'https://login.{{ .domain }}/userinfo',
+                    // },
+                    'auth.proxy': {
+                      enabled: true,
+                      header_name: 'X-FORWARDED-EMAIL',
+                      header_property: 'email',
+                      headers: 'Email:X-FORWARDED-EMAIL Name:X-FORWARDED-USER',
                     },
                   },
                 },
