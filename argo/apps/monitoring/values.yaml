@@ -48,6 +48,13 @@ grafana:
       defaultMode: 0440
       mountPath: /etc/secrets/dex_oauth
       readOnly: true
+  sidecar:
+    dashboards:
+      enabled: true
+      labelValue: "true"
+    datasources:
+      enabled: true
+      labelValue: "true"
   # Disable as its not currently working
   # plugins:
   #   - grafana-oncall-app
