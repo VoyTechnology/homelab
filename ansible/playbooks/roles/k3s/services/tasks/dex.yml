@@ -34,49 +34,57 @@
         oauth2:
           responseTypes: ["code", "token", "id_token"]
           skipApprovalScreen: true
-        
+
         connectors:
-        - type: google
-          id: google
-          name: Google
-          config:
-            issuer: https://accounts.google.com
-            clientID: "{{ dex_google_client_id }}"
-            clientSecret: "{{ dex_google_client_secret }}"
-            redirectURI: https://login.{{ cluster_domain }}/callback
-            # groups:
-            # - "{{ dex_google_group }}"
+          - type: google
+            id: google
+            name: Google
+            config:
+              issuer: https://accounts.google.com
+              clientID: "{{ dex_google_client_id }}"
+              clientSecret: "{{ dex_google_client_secret }}"
+              redirectURI: https://login.{{ cluster_domain }}/callback
+              # groups:
+              # - "{{ dex_google_group }}"
         staticClients:
-        - id: "{{ dex_argo_client_id }}"
-          name: ArgoCD
-          redirectURIs:
-          - "https://argocd.{{ cluster_domain }}/auth/callback"
-          - "https://argocd.{{ cluster_domain }}/auth/login"
-          - "http://127.0.0.1:8085/auth/callback" # CLI
-          - "http://localhost:8085/auth/callback" # CLI
-          secret: "{{ dex_argo_client_secret }}"
-        - id: "{{ dex_oauth2_proxy_client_id }}"
-          name: oauth2-proxy
-          redirectURIs:
-          - "https://login.{{ cluster_domain }}/callback/{{ cluster_domain }}"
-          - "https://login.{{ cluster_domain }}/oauth2/callback"
-          - "https://auth.{{ cluster_domain }}/oauth2/callback"
-          secret: "{{ dex_oauth2_proxy_client_secret }}"
-        - id: "{{ dex_grafana_client_id }}"
-          name: Grafana
-          redirectURIs:
-          - "https://grafana.{{ cluster_domain }}/login/generic_oauth"
-          secret: "{{ dex_grafana_client_secret }}"
+          - id: "{{ dex_argo_client_id }}"
+            name: ArgoCD
+            redirectURIs:
+              - "https://argocd.{{ cluster_domain }}/auth/callback"
+              - "https://argocd.{{ cluster_domain }}/auth/login"
+              - "http://127.0.0.1:8085/auth/callback" # CLI
+              - "http://localhost:8085/auth/callback" # CLI
+            secret: "{{ dex_argo_client_secret }}"
+          - id: "{{ dex_oauth2_proxy_client_id }}"
+            name: oauth2-proxy
+            redirectURIs:
+              - "https://login.{{ cluster_domain }}/callback/{{ cluster_domain }}"
+              - "https://login.{{ cluster_domain }}/oauth2/callback"
+              - "https://auth.{{ cluster_domain }}/oauth2/callback"
+            secret: "{{ dex_oauth2_proxy_client_secret }}"
+          - id: "{{ dex_grafana_client_id }}"
+            name: Grafana
+            redirectURIs:
+              - "https://grafana.{{ cluster_domain }}/login/generic_oauth"
+            secret: "{{ dex_grafana_client_secret }}"
+          - id: "{{ dex_shared_client_id }}"
+            name: "{{ cluster_name }}"
+            secret: "{{ dex_shared_client_secret }}"
+            redirectURIs:
+              - "https://login.{{ cluster_domain }}/callback/{{ cluster_domain }}"
+              - "https://login.{{ cluster_domain }}/oauth2/callback"
+              - "https://auth.{{ cluster_domain }}/oauth2/callback"
+              - "https://grafana.{{ cluster_domain }}/login/generic_oauth"
       ingress:
         enabled: true
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt
         hosts:
-        - host: "login.{{ cluster_domain }}"
-          paths:
-            - pathType: Prefix
-              path: /
+          - host: "login.{{ cluster_domain }}"
+            paths:
+              - pathType: Prefix
+                path: /
         tls:
-        - hosts:
-          - "login.{{ cluster_domain }}"
-          secretName: dex-cert
+          - hosts:
+              - "login.{{ cluster_domain }}"
+            secretName: dex-cert
