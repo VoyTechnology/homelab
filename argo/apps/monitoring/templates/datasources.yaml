@@ -1,0 +1,25 @@
+{{- if $.Values.mimir.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-{{ tpl $.Values.domain $ }}-metrics-datasource
+  namespace: monitoring
+  labels:
+    grafana_datasource: "true"
+data:
+  datasources.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: {{ tpl $.Values.domain $ }}
+      type: prometheus
+      access: proxy
+      orgId: 1
+      url: http://metrics.{{ tpl $.Values.domain $ }}/prometheus
+      basicAuth: false
+      editable: false
+      jsonData:
+        oauthPassThru: true
+        httpHeaderName1: "X-Scope-OrgID"
+        httpHeaderValue1: "fake"
+{{- end }}
