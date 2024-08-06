@@ -21,5 +21,5 @@ data:
       jsonData:
         oauthPassThru: true
         httpHeaderName1: "X-Scope-OrgID"
-        httpHeaderValue1: "fake"
+        httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
 {{- end }}
