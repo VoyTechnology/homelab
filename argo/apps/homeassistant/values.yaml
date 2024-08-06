@@ -2,10 +2,10 @@ homeassistant:
   ingress:
     enabled: true
     hosts:
-      - homeassistant.REPLACE_ME
+      - host: homeassistant.REPLACE_ME
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
-      tls:
-      - secretName: homeassistant-tls
-        hosts:
-        - homeassistant.REPLACE_ME
+    tls:
+    - secretName: homeassistant-tls
+      hosts:
+      - homeassistant.REPLACE_ME

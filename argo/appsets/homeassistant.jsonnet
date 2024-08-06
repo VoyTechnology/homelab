@@ -4,7 +4,7 @@ local helm = import '../lib/helm.libsonnet';
 local source = helm.new('homeassistant', values={
   homeassistant: {
     ingress: {
-      hosts: ['homeassistant.{{ .domain }}'],
+      hosts: [{host: 'homeassistant.{{ .domain }}'}],
       tls: {
         hosts: ['homeassistant.{{ .domain }}'],
       }
