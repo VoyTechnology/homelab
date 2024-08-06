@@ -52,8 +52,8 @@ grafana:
       enabled: true
       labelValue: "true"
   # Disable as its not currently working
-  # plugins:
-  #   - grafana-oncall-app
+  plugins:
+    - grafana-oncall-app
 
 mimir:
   enabled: true
