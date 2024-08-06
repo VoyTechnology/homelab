@@ -69,7 +69,7 @@ mimir:
     zoneAwareReplication:
       enabled: false
   querier:
-    replicas: 1
+    replicas: 2
 
 tempo:
   enabled: false
