@@ -22,8 +22,11 @@ local source = helm.new('monitoring', values={
   mimir: {
     ingress: util.ingress('metrics'),
   },
+  oncall: {
+    base_url: 'oncall.{{ .domain }}',
+    externalGrafana: { url: 'https://grafana.{{ .domain }}' },
+  },
 });
 
 appset.new('monitoring', 'monitoring')
 + appset.addSource(source)
-

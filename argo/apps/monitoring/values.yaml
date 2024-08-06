@@ -7,14 +7,14 @@ grafana:
   ingress:
     enabled: true
     hosts:
-    - grafana.REPLACE_ME
+      - grafana.REPLACE_ME
     ingressClassName: internal-shared # Auth using Dex, but we want to share the instance
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
     tls:
-    - secretName: grafana-tls
-      hosts:
-      - grafana.REPLACE_ME
+      - secretName: grafana-tls
+        hosts:
+          - grafana.REPLACE_ME
   grafana.ini:
     server:
       domain: https://REPLACE_ME
@@ -77,3 +77,28 @@ loki:
   enabled: false
 alloy:
   enabled: false
+
+oncall:
+  enabled: true
+  base_url: oncall.REPLACE_ME
+  externalGrafana:
+    url: https://grafana.REPLACE_ME
+  ingress:
+    enabled: true
+    className: internal
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    tls:
+      - secretName: oncall-tls # Follow our own conventions
+        hosts:
+          - "{{ $.Values.oncall.base_url }}"
+
+  # Disable the default stuff that is not needed
+  ingress-nginx:
+    enabled: false
+  cert-manager:
+    enabled: false
+  grafana:
+    enabled: false
+  prometheus:
+    enabled: false
