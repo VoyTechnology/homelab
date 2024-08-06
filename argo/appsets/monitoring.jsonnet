@@ -1,14 +1,10 @@
 local appset = import '../lib/appset.libsonnet';
 local helm = import '../lib/helm.libsonnet';
+local util = import '../lib/util.libsonnet';
 
 local source = helm.new('monitoring', values={
   grafana: {
-    ingress: {
-      hosts: ['grafana.{{ .domain }}'],
-      tls: [{
-        secretName: 'grafana-tls', hosts: ['grafana.{{ .domain }}']
-      }],
-    },
+    ingress: util.ingress('grafana'),
     'grafana.ini': {
       server: {
         domain: 'grafana.{{ .domain }}',
@@ -23,12 +19,7 @@ local source = helm.new('monitoring', values={
     },
   },
   mimir: {
-    ingress: {
-      hosts: ['metrics.{{ .domain }}'],
-      tls: [{
-        secretName: 'mimir-tls', hosts: ['metrics.{{ .domain }}']
-      }],
-    },
+    ingress: util.ingress('metrics'),
   },
 });
 
