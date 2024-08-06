@@ -3,6 +3,7 @@ local helm = import '../lib/helm.libsonnet';
 local util = import '../lib/util.libsonnet';
 
 local source = helm.new('monitoring', values={
+  cluster_name: '{{ .cluster }}',
   domain: '{{ .domain }}',
   grafana: {
     ingress: util.ingress('grafana'),

@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grafana-{{ tpl $.Values.domain $ }}-metrics-datasource
+  name: grafana-{{ tpl $.Values.cluster_name $ }}-metrics-datasource
   namespace: monitoring
   labels:
     grafana_datasource: "true"
@@ -11,7 +11,7 @@ data:
   datasources.yaml: |-
     apiVersion: 1
     datasources:
-    - name: {{ tpl $.Values.domain $ }}
+    - name: {{ tpl $.Values.cluster_name $ }}
       type: prometheus
       access: proxy
       orgId: 1
