@@ -5,10 +5,10 @@ local source = helm.new('homeassistant', values={
   homeassistant: {
     ingress: {
       hosts: [{
-        host:'homeassistant.{{ .domain }}'
+        host: 'homeassistant.{{ .domain }}',
         paths: [{
-          path: '/'
-          pathType: 'ImplementationSpecific'
+          path: '/',
+          pathType: 'ImplementationSpecific',
         }],
       }], # The chart is stupid and does it wrong
       tls: [], # temporary until we can figure it out
