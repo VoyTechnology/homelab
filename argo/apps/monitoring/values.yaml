@@ -101,8 +101,38 @@ oncall:
       argocd.argoproj.io/hook: PostSync
       argocd.argoproj.io/hook-delete-policy: HookSucceeded
 
+  # Copied from the config, not sure will it work
   postgresql:
+    enabled: true # Must be set to true for bundled Postgres
+    auth:
+      existingSecret: ""
+      secretKeys:
+        adminPasswordKey: ""
+        userPasswordKey: "" # Not needed
+        replicationPasswordKey: "" # Not needed with disabled replication
+      # Secret name: `<release>-postgresql`
+      postgresPassword: "" # password for admin user postgres. As non-admin user is not created, only this one is relevant.
+      password: "" # Not needed
+      replicationPassword: "" # Not needed with disabled replication
+
+  # copied from config, not sure if needed
+  rabbitmq:
     enabled: true
+    auth:
+      existingPasswordSecret: "" # Must contain `rabbitmq-password` key
+      existingErlangSecret: "" # Must contain `rabbitmq-erlang-cookie` key
+      # Secret name: `<release>-rabbitmq`
+      password: ""
+      erlangCookie: ""
+
+  # copied from config, not sure if needed
+  redis:
+    enabled: true
+    auth:
+      existingSecret: ""
+      existingSecretPasswordKey: ""
+      # Secret name: `<release>-redis`
+      password: ""
 
   # Disable the default stuff that is not needed
   ingress-nginx:
