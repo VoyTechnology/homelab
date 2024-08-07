@@ -25,7 +25,8 @@ local source = helm.new('monitoring', values={
   oncall: {
     base_url: 'oncall.{{ .domain }}',
     externalGrafana: { url: 'https://grafana.{{ .domain }}' },
-    ingress: util.ingress('oncall', class='internal-login') + {
+    ingress: util.ingress('oncall', class='internal-login') {
+        className: 'internal-login',
         annotations+: {
             # The chart automatically creates it for some stupid
             # reason...
