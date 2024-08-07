@@ -1,9 +1,10 @@
 local appset = import '../lib/appset.libsonnet';
 local helm = import '../lib/helm.libsonnet';
+local util = import '../lib/util.libsonnet';
 
 local source = helm.new('homeassistant', values={
   homeassistant: {
-    ingress: {
+    ingress: util.ingress('homeassistant', class='internal-shared') {
       hosts: [{
         host: 'homeassistant.{{ .domain }}',
         paths: [{
@@ -11,7 +12,6 @@ local source = helm.new('homeassistant', values={
           pathType: 'ImplementationSpecific',
         }],
       }], # The chart is stupid and does it wrong
-      tls: [], # temporary until we can figure it out
     },
   },
 });

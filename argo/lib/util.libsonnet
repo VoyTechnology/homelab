@@ -7,7 +7,7 @@
     hosts: [name+'.{{ .domain}}'],
     tls: [{
       secretName: name + '-tls',
-      hosts: [name+'.{{ .domain}}'],
+      hosts: [name+'.{{ .domain }}'],
     }],
   }
 }
