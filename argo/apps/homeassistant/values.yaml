@@ -1,4 +1,5 @@
 homeassistant:
+  hostNetwork: true
   ingress:
     enabled: true
     hosts:
