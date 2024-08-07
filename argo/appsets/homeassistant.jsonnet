@@ -10,7 +10,7 @@ local source = helm.new('homeassistant', values={
         host: 'homeassistant.{{ .domain }}',
         paths: [{
           path: '/',
-          pathType: 'PathPrefix',
+          pathType: 'Prefix',
         }],
       }], # The chart is stupid and does it wrong
     },
