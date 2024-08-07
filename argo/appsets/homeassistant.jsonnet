@@ -16,7 +16,7 @@ local source = helm.new('homeassistant', values={
       }],
       annotations+: {
         # Do not create the DNS entry as its being managed by the tunnel.
-        'external-dns.alpha.kubernetes.io/exclude': 'true',
+        'dns.kubernetes.io/exclude': 'true',
       },
     },
   },
