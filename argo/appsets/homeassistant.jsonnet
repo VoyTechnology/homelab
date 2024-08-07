@@ -4,7 +4,8 @@ local util = import '../lib/util.libsonnet';
 
 local source = helm.new('homeassistant', values={
   homeassistant: {
-    ingress: util.ingress('homeassistant', class='internal-shared') {
+    ingress: util.ingress('homeassistant') {
+      className: 'internal-shared', # should be ingressClassName
       hosts: [{
         host: 'homeassistant.{{ .domain }}',
         paths: [{
