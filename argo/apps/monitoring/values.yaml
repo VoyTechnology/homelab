@@ -92,6 +92,18 @@ oncall:
         hosts:
           - "{{ $.Values.oncall.base_url }}"
 
+  database:
+    type: postgresql
+
+  migrate:
+    useHook: true
+    annotations:
+      argocd.argoproj.io/hook: PostSync
+      argocd.argoproj.io/hook-delete-policy: HookSucceeded
+
+  postgresql:
+    enabled: true
+
   # Disable the default stuff that is not needed
   ingress-nginx:
     enabled: false
@@ -100,4 +112,6 @@ oncall:
   grafana:
     enabled: false
   prometheus:
+    enabled: false
+  mariadb:
     enabled: false
