@@ -20,11 +20,12 @@ local source = helm.new('monitoring', values={
     },
   },
   mimir: {
-    ingress: util.ingress('metrics'),
+    ingress: util.ingress('metrics', class='internal-login'),
   },
   oncall: {
     base_url: 'oncall.{{ .domain }}',
     externalGrafana: { url: 'https://grafana.{{ .domain }}' },
+    ingress: util.ingress('oncall', class='internal-login'),
   },
 });
 
