@@ -6,6 +6,9 @@ homeassistant:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
     tls:
-    - secretName: homeassistant-tls
-      hosts:
-      - homeassistant.REPLACE_ME
+      - secretName: homeassistant-tls
+        hosts:
+          - homeassistant.REPLACE_ME
+  configuration:
+    trusted_proxies:
+      - 10.0.0.0/8 # Too much?
