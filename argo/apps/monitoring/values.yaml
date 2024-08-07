@@ -86,8 +86,7 @@ oncall:
   ingress:
     enabled: true
     className: internal
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt
+    annotations: null # Clear the annotations because the chart is stupid
     tls:
       - secretName: oncall-tls # Follow our own conventions
         hosts:
