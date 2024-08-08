@@ -8,10 +8,14 @@ local source = helm.new('homeassistant', values={
       # The chart is stupid and does it wrong
       className: 'external', # should be ingressClassName
       hosts: [{
-        host: 'homeassistant.{{ .domain }}',
+        host: '{{ .domain }}',
         paths: [{
           path: '/',
           pathType: 'Prefix',
+        }],
+        tls: [{
+          secretName: 'homeassistant-tls',
+          hosts: ['{{ .domain }}'],
         }],
       }],
       annotations+: {
