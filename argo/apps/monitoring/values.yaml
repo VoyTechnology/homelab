@@ -169,7 +169,10 @@ alloy:
 
         prometheus.remote_write "mimir" {
           endpoint {
-            url = "http://monitoring-mimir-distributor-headless.svc:8080/api/v1/push"
+            url = "http://monitoring-mimir-distributor.svc:8080/api/v1/push"
+            headers = {
+              "X-Scope-OrgID" = "{{ $.Values.cluster_name }}"
+            }
           }
         }
 
