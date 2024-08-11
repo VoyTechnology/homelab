@@ -178,6 +178,7 @@ alloy:
 
 loki:
   global:
+    clusterDomain: cluster.local.
     # try override the DNS server settings
     dnsService: coredns
 
