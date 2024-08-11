@@ -11,6 +11,7 @@ data:
     datasources:
     {{- if $.Values.mimir.enabled }}
     - name: {{ tpl $.Values.cluster_name $ }}
+      uid: {{ tpl $.Values.cluster_name $ }}-metrics
       type: prometheus
       access: proxy
       orgId: 1
@@ -25,6 +26,7 @@ data:
     {{- end }}
     {{- if $.Values.loki.enabled }}
     - name: {{ tpl $.Values.cluster_name $ }}
+      uid: {{ tpl $.Values.cluster_name $ }}-logs
       type: loki
       access: proxy
       orgId: 1
