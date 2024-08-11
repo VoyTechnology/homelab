@@ -1,9 +1,7 @@
-{{- if $.Values.mimir.enabled }}
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grafana-{{ tpl $.Values.cluster_name $ }}-metrics-datasource
+  name: grafana-{{ tpl $.Values.cluster_name $ }}-datasource
   namespace: monitoring
   labels:
     grafana_datasource: "true"
@@ -11,6 +9,7 @@ data:
   datasources.yaml: |-
     apiVersion: 1
     datasources:
+    {{- if $.Values.mimir.enabled }}
     - name: {{ tpl $.Values.cluster_name $ }}
       type: prometheus
       access: proxy
@@ -23,25 +22,13 @@ data:
         httpHeaderName1: "X-Scope-OrgID"
       secureJsonData:
         httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
-{{- end }}
-{{- if $.Values.loki.enabled }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: grafana-{{ tpl $.Values.cluster_name $ }}-logs-datasource
-  namespace: monitoring
-  labels:
-    grafana_datasource: "true"
-data:
-  datasources.yaml: |-
-    apiVersion: 1
-    datasources:
+    {{- end }}
+    {{- if $.Values.loki.enabled }}
     - name: {{ tpl $.Values.cluster_name $ }}
       type: loki
       access: proxy
       orgId: 1
-      url: http://logs.{{ tpl $.Values.domain $ }}/prometheus
+      url: http://logs.{{ tpl $.Values.domain $ }}
       basicAuth: false
       editable: false
       jsonData:
@@ -49,4 +36,4 @@ data:
         httpHeaderName1: "X-Scope-OrgID"
       secureJsonData:
         httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
-{{- end }}
+    {{- end }}
