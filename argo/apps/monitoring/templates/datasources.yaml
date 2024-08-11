@@ -10,7 +10,7 @@ data:
     apiVersion: 1
     datasources:
     {{- if $.Values.mimir.enabled }}
-    - name: {{ tpl $.Values.cluster_name $ }}
+    - name: {{ tpl $.Values.cluster_name $ }}-metrics
       uid: {{ tpl $.Values.cluster_name $ }}-metrics
       type: prometheus
       access: proxy
@@ -25,7 +25,7 @@ data:
         httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
     {{- end }}
     {{- if $.Values.loki.enabled }}
-    - name: {{ tpl $.Values.cluster_name $ }}
+    - name: {{ tpl $.Values.cluster_name $ }}-logs
       uid: {{ tpl $.Values.cluster_name $ }}-logs
       type: loki
       access: proxy
