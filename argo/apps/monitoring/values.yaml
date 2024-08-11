@@ -176,9 +176,11 @@ alloy:
           }
         }
 
-tempo:
-  enabled: false
 loki:
+  global:
+    # try override the DNS server settings
+    dnsService: coredns
+
   enabled: true
   loki:
     commonConfig:
@@ -255,3 +257,6 @@ loki:
     replicas: 0
   bloomGateway:
     replicas: 0
+
+tempo:
+  enabled: false
