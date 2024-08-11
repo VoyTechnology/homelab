@@ -203,14 +203,21 @@ loki:
       # Default is 4, if you have enough memory and CPU you can increase, reduce if OOMing
       max_concurrent: 2
 
-  #gateway:
-  #  ingress:
-  #    enabled: true
-  #    hosts:
-  #      - host: FIXME
-  #        paths:
-  #          - path: /
-  #            pathType: Prefix
+  gateway:
+    nginxConfig:
+      resolver: "127.0.0.1:8053 valid=5s ipv6=off"
+    extraContainers:
+      # resolves issues with DNS resolution of services
+      # see https://gist.github.com/joemiller/68ab3f7a7a08e4a9d5ad5d023cb14fc2
+      - name: dnsmasq
+        image: "janeczku/go-dnsmasq:release-1.0.7"
+        imagePullPolicy: IfNotPresent
+        args:
+          - --listen
+          - "127.0.0.1:8053"
+          - --hostsfile=/etc/hosts
+          - --enable-search
+          - --verbose
 
   deploymentMode: SingleBinary
   singleBinary:
