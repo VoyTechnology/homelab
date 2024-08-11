@@ -42,7 +42,7 @@ local source = helm.new('monitoring', values={
   },
   loki: {
     gateway: {
-      ingress: util.ingress('logs', class='internal-login'), {
+      ingress: util.ingress('logs', class='internal-login') {
         hosts: [{
           host: 'loki.{{ .domain }}',
           paths: [{path: '/', pathType: 'Prefix'}],
