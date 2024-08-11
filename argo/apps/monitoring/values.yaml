@@ -71,13 +71,6 @@ mimir:
   querier:
     replicas: 2
 
-tempo:
-  enabled: false
-loki:
-  enabled: false
-alloy:
-  enabled: false
-
 oncall:
   enabled: true
   base_url: oncall.REPLACE_ME
@@ -145,3 +138,42 @@ oncall:
     enabled: false
   mariadb:
     enabled: false
+
+alloy:
+  enabled: true
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    ingressClassName: internal-shared
+  alloy:
+    configMap:
+      content: |
+        logging {
+          level = "info"
+          format = "json"
+        }
+
+        discovery.kubernetes "in_cluster" {
+          role = "pod"
+        }
+
+        prometheus.scrape "in_cluster" {
+          targets    = discovery.kubernetes.in_cluster.targets
+          forward_to = [prometheus.remote_write.mimir.receiver]
+        }
+
+        prometheus.operator.servicemonitors "services" {
+          forward_to = [prometheus.remote_write.mimir.receiver]
+        }
+
+        prometheus.remote_write "mimir" {
+          endpoint {
+            url = "http://monitoring-mimir-distributor-headless.svc:8080/api/v1/push"
+          }
+        }
+
+tempo:
+  enabled: false
+loki:
+  enabled: false

@@ -34,6 +34,9 @@ local source = helm.new('monitoring', values={
         },
     },
   },
+  alloy: {
+    ingress: util.ingress('alloy', class='internal-login'),
+  },
 });
 
 appset.new('monitoring', 'monitoring')
