@@ -40,6 +40,16 @@ local source = helm.new('monitoring', values={
       'CLUSTER_NAME={{ .cluster }}',
     ],
   },
+  loki: {
+    gateway: {
+      ingress: util.ingress('loki-gateway') {
+        hosts: [{
+          host: 'loki.{{ .domain }}',
+          paths: [{path: '/', pathType: 'Prefix'}],
+        }],
+      },
+    },
+  },
 });
 
 appset.new('monitoring', 'monitoring')
