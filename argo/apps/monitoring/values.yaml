@@ -72,7 +72,7 @@ mimir:
     replicas: 2
 
 oncall:
-  enabled: true
+  enabled: false
   base_url: oncall.REPLACE_ME
   externalGrafana:
     url: https://grafana.REPLACE_ME
