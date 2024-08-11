@@ -24,3 +24,29 @@ data:
       secureJsonData:
         httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
 {{- end }}
+{{- if $.Values.loki.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-{{ tpl $.Values.cluster_name $ }}-logs-datasource
+  namespace: monitoring
+  labels:
+    grafana_datasource: "true"
+data:
+  datasources.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: {{ tpl $.Values.cluster_name $ }}
+      type: loki
+      access: proxy
+      orgId: 1
+      url: http://logs.{{ tpl $.Values.domain $ }}/prometheus
+      basicAuth: false
+      editable: false
+      jsonData:
+        oauthPassThru: true
+        httpHeaderName1: "X-Scope-OrgID"
+      secureJsonData:
+        httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
+{{- end }}
