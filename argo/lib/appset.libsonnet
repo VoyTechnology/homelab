@@ -30,6 +30,7 @@
           },
         },
         spec: {
+          ignoreDifferences: [],
           destination: {
             server: '{{ .server }}',
             namespace: namespace,
@@ -64,6 +65,15 @@
       template+: {
         spec+: {
           sources+: [source],
+        },
+      },
+    },
+  },
+  addIgnoreDifferences(ignoreDifferences = []): {
+    spec+: {
+      template+: {
+        spec+: {
+          ignoreDifferences+: ignoreDifferences,
         },
       },
     },

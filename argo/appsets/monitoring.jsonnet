@@ -52,5 +52,10 @@ local source = helm.new('monitoring', values={
   },
 });
 
+local ignoreDifferences = [
+  {group: '*', kind: 'Secret', jsonPointers: ['/data/admin-password']},
+];
+
 appset.new('monitoring', 'monitoring')
 + appset.addSource(source)
++ appset.addIgnoreDifferences(ignoreDifferences)
