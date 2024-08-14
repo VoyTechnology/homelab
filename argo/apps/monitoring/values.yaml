@@ -166,6 +166,10 @@ alloy:
           format = "json"
         }
 
+        livedebugging {
+          enabled = true
+        }
+
         discovery.kubernetes "in_cluster" {
           role = "pod"
         }
