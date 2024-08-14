@@ -32,6 +32,8 @@ data:
       basicAuth: false
       editable: false
       jsonData:
+        handleGrafanaManagedAlerts: true
+        implementation: prometheus
         oauthPassThru: true
         httpHeaderName1: "X-Scope-OrgID"
       secureJsonData:
