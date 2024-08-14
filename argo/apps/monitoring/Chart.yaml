@@ -26,7 +26,7 @@ dependencies:
   - name: alloy
     condition: alloy.enabled
     repository: https://grafana.github.io/helm-charts
-    version: "1.3.0"
+    version: "0.6.0"
   - name: oncall
     condition: oncall.enabled
     repository: https://grafana.github.io/helm-charts
