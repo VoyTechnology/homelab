@@ -220,6 +220,8 @@ loki:
       max_concurrent: 2
 
   gateway:
+    ingress:
+      enabled: true
     nginxConfig:
       resolver: "127.0.0.1:8053 valid=5s ipv6=off"
     extraContainers:
