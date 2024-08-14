@@ -36,9 +36,9 @@ local source = helm.new('monitoring', values={
   },
   alloy: {
     ingress: util.ingress('alloy', class='internal-login'),
-    alloy: { extraEnv: [
-      'CLUSTER_NAME={{ .cluster }}',
-    ] },
+    alloy: { extraEnv: {
+      CLUSTER_NAME: '{{ .cluster }}',
+    } },
   },
   loki: { gateway: {
     ingress: util.ingress('logs', class='internal-login') {
