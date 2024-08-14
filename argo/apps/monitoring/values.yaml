@@ -71,6 +71,9 @@ mimir:
   querier:
     replicas: 2
 
+  memberlist:
+    cluster_label: mimir
+
 oncall:
   enabled: false
   base_url: oncall.REPLACE_ME
@@ -230,6 +233,9 @@ loki:
       # Keep a little bit lower than memory limits
       - name: GOMEMLIMIT
         value: 1850MiB
+
+  memberlist:
+    cluster_label: loki
 
   chunksCache:
     # default is 500MB, with limited memory keep this smaller
