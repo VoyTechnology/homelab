@@ -149,6 +149,14 @@ alloy:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
     ingressClassName: internal-shared
+    faroPort: 12345 # Fake faro so we have access to the UI
+    extraPaths:
+      - path: /faro
+        pathType: Prefix
+        backend:
+          service:
+            name: monitoring-alloy
+            port: 12347
   alloy:
     configMap:
       content: |
