@@ -23,6 +23,19 @@ data:
         httpHeaderName1: "X-Scope-OrgID"
       secureJsonData:
         httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
+    - name: {{ tpl $.Values.cluster_name $ }}-alerts
+      uid: {{ tpl $.Values.cluster_name $ }}-alerts
+      type: alertmanager
+      access: proxy
+      orgId: 1
+      url: http://metrics.{{ tpl $.Values.domain $ }}/alertmanager
+      basicAuth: false
+      editable: false
+      jsonData:
+        oauthPassThru: true
+        httpHeaderName1: "X-Scope-OrgID"
+      secureJsonData:
+        httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
     {{- end }}
     {{- if $.Values.loki.enabled }}
     - name: {{ tpl $.Values.cluster_name $ }}-logs
