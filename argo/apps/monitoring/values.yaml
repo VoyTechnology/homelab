@@ -16,6 +16,8 @@ grafana:
         hosts:
           - grafana.REPLACE_ME
   grafana.ini:
+    security:
+      disable_initial_admin_creation: true # Prevent helm re-create the admin user
     server:
       domain: https://REPLACE_ME
       root_url: REPLACE_ME
