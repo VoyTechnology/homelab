@@ -26,34 +26,32 @@ local source = helm.new('monitoring', values={
     base_url: 'oncall.{{ .domain }}',
     externalGrafana: { url: 'https://grafana.{{ .domain }}' },
     ingress: util.ingress('oncall', class='internal-login') {
-        className: 'internal-login',
-        annotations+: {
-            # The chart automatically creates it for some stupid
-            # reason...
-            'kubernetes.io/ingress.class': 'internal-login'
-        },
+      className: 'internal-login',
+      annotations+: {
+        // The chart automatically creates it for some stupid
+        // reason...
+        'kubernetes.io/ingress.class': 'internal-login',
+      },
     },
   },
   alloy: {
     ingress: util.ingress('alloy', class='internal-login'),
-    extraEnv: [
+    alloy: { extraEnv: [
       'CLUSTER_NAME={{ .cluster }}',
-    ],
+    ] },
   },
-  loki: {
-    gateway: {
-      ingress: util.ingress('logs', class='internal-login') {
-        hosts: [{
-          host: 'loki.{{ .domain }}',
-          paths: [{path: '/', pathType: 'Prefix'}],
-        }],
-      },
+  loki: { gateway: {
+    ingress: util.ingress('logs', class='internal-login') {
+      hosts: [{
+        host: 'loki.{{ .domain }}',
+        paths: [{ path: '/', pathType: 'Prefix' }],
+      }],
     },
-  },
+  } },
 });
 
 local ignoreDifferences = [
-  {group: '*', kind: 'Secret', name: 'monitoring-grafana', jsonPointers: ['/data/admin-password']},
+  { group: '*', kind: 'Secret', name: 'monitoring-grafana', jsonPointers: ['/data/admin-password'] },
 ];
 
 appset.new('monitoring', 'monitoring')
