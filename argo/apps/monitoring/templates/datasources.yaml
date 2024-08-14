@@ -15,7 +15,7 @@ data:
       type: prometheus
       access: proxy
       orgId: 1
-      url: http://metrics.{{ tpl $.Values.domain $ }}/prometheus
+      url: https://metrics.{{ tpl $.Values.domain $ }}/prometheus
       basicAuth: false
       editable: false
       jsonData:
@@ -28,7 +28,7 @@ data:
       type: alertmanager
       access: proxy
       orgId: 1
-      url: http://metrics.{{ tpl $.Values.domain $ }}/alertmanager
+      url: https://metrics.{{ tpl $.Values.domain $ }}/alertmanager
       basicAuth: false
       editable: false
       jsonData:
@@ -43,7 +43,7 @@ data:
       type: loki
       access: proxy
       orgId: 1
-      url: http://logs.{{ tpl $.Values.domain $ }}
+      url: https://logs.{{ tpl $.Values.domain $ }}
       basicAuth: false
       editable: false
       jsonData:
