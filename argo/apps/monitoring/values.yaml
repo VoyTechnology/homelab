@@ -156,7 +156,8 @@ alloy:
         backend:
           service:
             name: monitoring-alloy
-            port: 12347
+            port:
+              number: 12347
   alloy:
     configMap:
       content: |
