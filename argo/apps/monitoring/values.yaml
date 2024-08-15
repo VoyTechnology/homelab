@@ -94,7 +94,7 @@ mimir:
       labels:
         grafana_dashboard: "true"
     serviceMonitor:
-      enable: true
+      enabled: true
       clusterLabel: EXTERNAL
     prometheusRule:
       enable: true
