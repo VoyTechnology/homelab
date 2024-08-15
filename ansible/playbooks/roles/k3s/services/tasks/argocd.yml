@@ -22,8 +22,8 @@
           tls: true
       controller:
         extraArgs:
-        - --repo-server-timeout-seconds
-        - "500" # account for slow Argo with multiple deps.
+          - --repo-server-timeout-seconds
+          - "500" # account for slow Argo with multiple deps.
       repoServer:
         replicas: 2
         env:
@@ -81,12 +81,18 @@
       dex:
         enabled: false # We use our own dex instance
 
+      metrics:
+        enabled: true
+        # Will this work if the CRD is not yet created?
+        serviceMonitor:
+          enabled: true
+
 - name: ArgoCD | Setup Projects
   with_items: "{{ argocd_projects }}"
   kubernetes.core.k8s:
     state: present
     template:
-    - path: 'argo-project.yaml.j2'
+      - path: "argo-project.yaml.j2"
 
 - name: ArgoCD | Setup Application Namespaces
   no_log: true # Do not show logs as they contain private ssh keys
@@ -141,7 +147,7 @@
       kind: Secret
       metadata:
         name: "{{ item.name }}-repo"
-        # 
+        #
         # TODO: Revisit this as its weird to pull the namespace like that for tailscale.
         namespace: "{{ internal_ingress_namespace }}"
         labels:
