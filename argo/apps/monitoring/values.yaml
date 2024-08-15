@@ -244,7 +244,6 @@ loki:
           - --listen
           - "127.0.0.1:8053"
           - --hostsfile=/etc/hosts
-          - --enable-search
           - --verbose
 
   deploymentMode: SingleBinary
