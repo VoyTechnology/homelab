@@ -79,6 +79,7 @@ mimir:
 
   memberlist:
     cluster_label: mimir
+    cluster_label_verification_disabled: true
 
   limits:
     native_histograms_ingestion_enabled: true
@@ -277,6 +278,7 @@ loki:
 
   memberlist:
     cluster_label: loki
+    cluster_label_verification_disabled: true
 
   chunksCache:
     # default is 500MB, with limited memory keep this smaller
