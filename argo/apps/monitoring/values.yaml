@@ -215,7 +215,7 @@ alloy:
 
         loki.write "loki" {
           endpoint {
-            url = "http://monitoring-loki-gatewat.monitoring:80"
+            url = "http://monitoring-loki-gateway.monitoring.svc:80"
           }
         }
 
