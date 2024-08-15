@@ -206,7 +206,7 @@ alloy:
 
         loki.source.kubernetes "in_cluster" {
           targets = discovery.kubernetes.in_cluster.targets
-          forwards_to = [loki.write.loki.receiver]
+          forward_to = [loki.write.loki.receiver]
         }
 
         loki.write "loki" {
