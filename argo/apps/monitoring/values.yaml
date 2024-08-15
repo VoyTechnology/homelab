@@ -182,11 +182,11 @@ alloy:
           role = "pod"
         }
 
-        # Disable as we probably don't actually want to monitor every single pod
-        # prometheus.scrape "in_cluster" {
-        #   targets    = discovery.kubernetes.in_cluster.targets
-        #   forward_to = [prometheus.remote_write.mimir.receiver]
-        # }
+        // Disable as we probably don't actually want to monitor every single pod
+        // prometheus.scrape "in_cluster" {
+        //   targets    = discovery.kubernetes.in_cluster.targets
+        //   forward_to = [prometheus.remote_write.mimir.receiver]
+        // }
 
         prometheus.operator.servicemonitors "services" {
           forward_to = [prometheus.remote_write.mimir.receiver]
