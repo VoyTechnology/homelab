@@ -53,6 +53,7 @@ grafana:
     datasources:
       enabled: true
       labelValue: "true"
+  adminPassword: "UNUSED" # We only allow login via Dex
   # Disable as its not currently working
   plugins:
     - grafana-oncall-app
