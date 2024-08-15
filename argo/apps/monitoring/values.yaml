@@ -76,6 +76,12 @@ mimir:
   memberlist:
     cluster_label: mimir
 
+  limits:
+    native_histograms_ingestion_enabled: true
+    out_of_order_ingestion_enabled: 24h # Increase the limit in case something goes down
+    cardinality_analysis_enabled: true
+    compactor_blocks_retention_period: 720h # One month retention
+
 oncall:
   enabled: false
   base_url: oncall.REPLACE_ME
