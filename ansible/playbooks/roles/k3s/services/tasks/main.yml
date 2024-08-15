@@ -6,7 +6,7 @@
 - name: Setup Secrets
   import_tasks: secrets.yml
   tags: k8s_secrets
-  
+
 - name: Setup Cert Manager
   import_tasks: cert_manager.yml
   tags: k8s_cert_manager
@@ -22,3 +22,7 @@
 - name: Setup Argo
   import_tasks: argocd.yml
   tags: k8s_argo
+
+- name: Setup Extra CRDs
+  import_tasks: crds.yml
+  tags: k8s_crds

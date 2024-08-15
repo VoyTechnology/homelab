@@ -1,0 +1,16 @@
+---
+- name: CRDs | Add CRDs Repos
+  with_items: "{{ extra_crds }}"
+  kubernetes.core.helm_repository:
+    name: "{{ item.repo_name }}"
+    repo_url: "{{ item.repo_url }}"
+
+- name: CRDs | Install CRDs
+  with_items: "{{ extra_crds }}"
+  kubernetes.core.helm:
+    name: "{{ item.name }}"
+    chart_ref: "{{ item.repo_name }}/{{ item.name }}"
+    chart_version: "{{ item.version }}"
+    release_namespace: kube-system # they are cluster wide
+    update_repo_cache: true
+    # values: "{{ item.values | default(omit) }}"
