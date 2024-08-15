@@ -86,6 +86,8 @@
         # Will this work if the CRD is not yet created?
         serviceMonitor:
           enabled: true
+        rules:
+          enabled: true
 
 - name: ArgoCD | Setup Projects
   with_items: "{{ argocd_projects }}"
