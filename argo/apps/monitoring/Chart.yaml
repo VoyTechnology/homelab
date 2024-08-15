@@ -3,6 +3,9 @@ name: monitoring
 description: Monitoring Metachart
 version: 0.0.1
 dependencies:
+  - name: prometheus-operator-crds
+    repository: https://prometheus-community.github.io/helm-charts
+    version: "^13.0.2"
   - name: grafana
     alias: grafana
     condition: grafana.enabled
