@@ -67,11 +67,14 @@ mimir:
   # Low traffic home clustes, no need for more than 1 replica and there are probably no zones.
   # downtime on upgrade is tolerated
   ingester:
-    replicas: 2
+    replicas: 1
     zoneAwareReplication:
       enabled: false
   querier:
-    replicas: 2
+    replicas: 1
+  store_gateway:
+    zoneAwareReplication:
+      enabled: false
 
   memberlist:
     cluster_label: mimir
