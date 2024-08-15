@@ -209,7 +209,7 @@ alloy:
           forwards_to = [loki.write.loki.receiver]
         }
 
-        loki.write.loki "loki" {
+        loki.write "loki" {
           endpoint {
             url = "http://monitoring-loki-gatewat.monitoring:80"
           }
