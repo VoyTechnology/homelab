@@ -21,6 +21,9 @@ local source = helm.new('monitoring', values={
   },
   mimir: {
     ingress: util.ingress('metrics', class='internal-login'),
+    metaMonitoring: { serviceMonitor: {
+      clusterLabel: '{{ .cluster }}',
+    } },
   },
   oncall: {
     base_url: 'oncall.{{ .domain }}',

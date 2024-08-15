@@ -87,6 +87,19 @@ mimir:
     cardinality_analysis_enabled: true
     compactor_blocks_retention_period: 720h # One month retention
 
+  metaMonitoring:
+    dashboards:
+      enabled: true
+      labels:
+        grafana_dashboard: "true"
+    serviceMonitor:
+      enable: true
+      clusterLabel: EXTERNAL
+    prometheusRule:
+      enable: true
+      mimirAlerts: true
+      mimirRules: true
+
 oncall:
   enabled: false
   base_url: oncall.REPLACE_ME
