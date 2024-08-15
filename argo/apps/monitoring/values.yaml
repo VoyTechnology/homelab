@@ -331,3 +331,9 @@ loki:
 
 tempo:
   enabled: false
+
+node-exporter:
+  enabled: true
+  prometheus:
+    monitor:
+      enabled: true
