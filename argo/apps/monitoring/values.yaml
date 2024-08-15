@@ -167,6 +167,7 @@ alloy:
             port:
               number: 12347
   alloy:
+    stabilityLevel: experimental
     configMap:
       content: |
         logging {
