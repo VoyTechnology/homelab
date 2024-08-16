@@ -1,0 +1,8 @@
+cloudflare:
+  secretRef:
+    name: ingress-public-secret
+    accountIDKey: account_id
+    tunnelNameKey: tunnel_name
+    apiTokenKey: token
+ingressClass:
+  name: external

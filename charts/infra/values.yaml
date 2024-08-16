@@ -12,13 +12,3 @@ apps:
     namespace: external-dns-system
     skipNamespaceCreation: true # Managed by Ansible
     path: charts/external-dns
-  # monitoring:
-  #   namespace: monitoring
-  #   path: charts/monitoring
-  #   helm:
-  #     # TODO: Extract somewhere else
-  #     domain: dub1.bednarzak.com
-  ingress-external:
-    namespace: ingress-external
-    skipNamespaceCreation: true # Managed by Ansible
-    path: charts/ingress-external

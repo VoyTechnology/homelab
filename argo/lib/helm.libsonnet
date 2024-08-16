@@ -2,12 +2,19 @@
   new(
     name,
     repoURL='git@github.com:Voytechnology/homelab.git',
+    chart=null,
     targetRevision='HEAD',
+    path=null,
     values={},
   ): {
     repoURL: repoURL,
     targetRevision: targetRevision,
-    path: 'argo/apps/%s' % name,
+    [if chart != null then 'chart']: chart,
+    [if chart == null then 'path']:
+      if path == null then
+        'argo/apps/%s' % name
+      else
+        path,
     helm: {
       releaseName: name,
       ignoreMissingValueFiles: true,
