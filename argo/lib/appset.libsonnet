@@ -4,17 +4,17 @@
     kind: 'ApplicationSet',
     metadata: {
       name: name,
-      namespace: 'argocd'
+      namespace: 'argocd',
     },
     spec: {
       goTemplate: true,
-      goTemplateOptions: ["missingkey=error"],
+      goTemplateOptions: ['missingkey=error'],
       generators: [
         {
           git: {
             repoURL: 'git@github.com:Voytechnology/homelab.git',
             revision: 'HEAD',
-            files: [{path: 'argo/clusters/*.yaml'}],
+            files: [{ path: 'argo/clusters/*.yaml' }],
             values: { targetRevision: 'HEAD' },
           },
         },
@@ -50,11 +50,15 @@
                 duration: '10s',
                 factor: 2,
                 maxDuration: '30m',
-              }
+              },
             },
           },
           revisionHistoryLimit: 3,
-          sources: [],
+          sources: [{
+            repoURL: 'git@github.com:Voytechnology/homelab.git',
+            targetRevision: 'HEAD',
+            ref: 'values',
+          }],
         },
       },
     },
@@ -69,7 +73,7 @@
       },
     },
   },
-  addIgnoreDifferences(ignoreDifferences = []): {
+  addIgnoreDifferences(ignoreDifferences=[]): {
     spec+: {
       template+: {
         spec+: {

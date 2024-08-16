@@ -19,9 +19,9 @@
       releaseName: name,
       ignoreMissingValueFiles: true,
       valueFiles: [
-        'argo/apps/%s/values.yaml' % name,
-        'argo/apps/%s/*.values.yaml' % name,
-        'argo/apps/%s/{{ .cluster }}/*.values.yaml' % name,
+        '$values/argo/apps/%s/values.yaml' % name,
+        '$values/argo/apps/%s/*.values.yaml' % name,
+        '$values/argo/apps/%s/{{ .cluster }}/*.values.yaml' % name,
       ],
       valuesObject: values,
     },
