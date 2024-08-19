@@ -17,6 +17,7 @@
         path,
     helm: {
       releaseName: name,
+      passCredentials: true,
       ignoreMissingValueFiles: true,
       valueFiles: [
         '$values/argo/apps/%s/values.yaml' % name,
