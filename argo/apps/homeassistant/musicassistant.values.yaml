@@ -2,10 +2,22 @@ musicassistant:
   ingress:
     main:
       enabled: true
+      hosts:
+        - host: musicassistant.REPLACE_ME
+          paths:
+            - path: /
+              pathType: Prefix
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+      tls:
+        - secretName: musicassistant-tls
+          hosts:
+            - musicassistant.REPLACE_ME
   persistence:
+    # enabled: true
     config:
       enabled: true
-    enabled: true
+
   metrics:
     enabled: true
     prometheusRule:
