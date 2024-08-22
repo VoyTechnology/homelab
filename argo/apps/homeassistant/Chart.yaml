@@ -9,5 +9,5 @@ dependencies:
     version: 0.2.73
   - name: music-assistant-server
     alias: musicassistant
-    repository: https://pajikos.github.io/music-assistant-helm-chart/
+    repository: https://lmatfy.github.io/charts
     version: 0.1.3
