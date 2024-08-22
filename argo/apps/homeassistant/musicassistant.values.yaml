@@ -1,0 +1,12 @@
+musicassistant:
+  ingress:
+    main:
+      enabled: true
+  persistence:
+    config:
+      enabled: true
+    enabled: true
+  metrics:
+    enabled: true
+    prometheusRule:
+      enabled: true

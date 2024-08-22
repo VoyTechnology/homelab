@@ -7,3 +7,7 @@ dependencies:
     alias: homeassistant
     repository: https://pajikos.github.io/home-assistant-helm-chart/
     version: 0.2.73
+  - name: music-assistant-server
+    alias: musicassistant
+    repository: https://pajikos.github.io/music-assistant-helm-chart/
+    version: 0.1.3
