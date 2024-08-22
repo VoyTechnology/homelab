@@ -3,4 +3,4 @@ extra_crds:
   - name: prometheus-operator-crds
     repo_name: prometheus-community
     repo_url: https://prometheus-community.github.io/helm-charts
-    version: 13.0.2
+    version: 14.0.0
