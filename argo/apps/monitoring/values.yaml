@@ -198,10 +198,6 @@ alloy:
           enabled = true
         }
 
-        discovery.kubernetes "pod" {
-          role = "pod"
-        }
-
         prometheus.operator.servicemonitors "services" {
           forward_to = [prometheus.remote_write.mimir.receiver]
         }
@@ -216,6 +212,10 @@ alloy:
         }
 
         // Logs
+
+        discovery.kubernetes "pod" {
+          role = "pod"
+        }
 
         discovery.relabel "pod_logs" {
           targets = discovery.kubernetes.pod.targets
@@ -275,7 +275,7 @@ alloy:
         }
 
         loki.process "pod_logs" {
-          stage.cri {}
+          // stage.cri {}
 
           forward_to = [loki.write.loki.receiver]
         }
