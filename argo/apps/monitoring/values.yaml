@@ -276,8 +276,6 @@ alloy:
 
         loki.process "pod_logs" {
           stage.cri {}
-          stage.json {}
-          stage.logfmt {}
 
           forward_to = [loki.write.loki.receiver]
         }
