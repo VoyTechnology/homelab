@@ -1,5 +1,4 @@
 ---
-
 - name: Copy K3s service file
   register: k3s_service
   template:
@@ -80,7 +79,7 @@
 
 - name: Configure DNS
   kubernetes.core.k8s:
-    state: present
+    state: absent # Delete
     definition:
       apiVersion: v1
       kind: ConfigMap
@@ -92,4 +91,3 @@
           forward . /etc/resolv.conf {
             policy sequential
           }
-
