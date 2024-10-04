@@ -9,7 +9,7 @@ ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
 ExecStart=/usr/local/bin/k3s-{{ k3s_version }} server \
             --tls-san {{ master_ip }} \
-            --node-ip {{ hostvars[inventory_hostname]['ansible_tailscale0'].ipv4.address }} \
+            -- node-ip 0.0.0.0 \
             {{ extra_server_args | default("") }} 
 KillMode=process
 Delegate=yes
