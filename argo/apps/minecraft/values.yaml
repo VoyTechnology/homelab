@@ -1,0 +1,10 @@
+minecraft:
+  minecraftServer:
+    eula: true
+  persistence:
+    dataDir:
+      enabled: true
+      size: 20Gi
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: longhorn
