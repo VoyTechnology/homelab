@@ -1,6 +1,7 @@
 minecraft:
   minecraftServer:
     eula: true
+    serviceType: LoadBalancer
   persistence:
     dataDir:
       enabled: true
