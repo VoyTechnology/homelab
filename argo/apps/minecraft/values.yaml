@@ -15,7 +15,9 @@ minecraft:
         protocol: UDP
         service:
           enabled: true
+          embedded: true
           type: LoadBalancer
+          port: 19132
         
 
   persistence:
