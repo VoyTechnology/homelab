@@ -8,7 +8,7 @@ local source = helm.new(
         motd: 'Welcome to Skynet 3!',
       },
       nodeSelector: {
-        name: 's1-dub1',
+        'kubernetes.io/hostname': 's1-dub1',
       },
     },
   }
