@@ -3,11 +3,13 @@ local helm = import '../lib/helm.libsonnet';
 
 local source = helm.new(
   'minecraft', values={
-    minecraftServer: {
-      motd: 'Welcome to Skynet 3!',
-    },
-    nodeSelector: {
-      name: 's1-dub1',
+    minecraft: {
+      minecraftServer: {
+        motd: 'Welcome to Skynet 3!',
+      },
+      nodeSelector: {
+        name: 's1-dub1',
+      },
     },
   }
 );
