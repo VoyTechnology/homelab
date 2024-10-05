@@ -5,6 +5,7 @@ minecraft:
   minecraftServer:
     eula: true
     serviceType: LoadBalancer
+    type: PAPER
 
   persistence:
     dataDir:
