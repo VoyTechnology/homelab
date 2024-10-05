@@ -6,6 +6,14 @@ minecraft:
     eula: true
     serviceType: LoadBalancer
     type: PAPER
+    pluginUrls:
+      - https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
+      - https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
+    extraPorts:
+      - name: bedrock
+        port: 19132
+        targetPort: 19132
+        protocol: UDP
 
   persistence:
     dataDir:
