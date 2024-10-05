@@ -14,7 +14,8 @@ minecraft:
         containerPort: 19132
         protocol: UDP
         service:
-          enabled: false
+          enabled: true
+          type: LoadBalancer
         
 
   persistence:
