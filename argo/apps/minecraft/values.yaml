@@ -11,9 +11,11 @@ minecraft:
       - https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
     extraPorts:
       - name: bedrock
-        port: 19132
-        targetPort: 19132
+        containerPort: 19132
         protocol: UDP
+        service:
+          enabled: false
+        
 
   persistence:
     dataDir:
