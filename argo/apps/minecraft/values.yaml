@@ -9,6 +9,7 @@ minecraft:
     pluginUrls:
       - https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
       - https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
+      - https://github.com/ViaVersion/ViaVersion/releases/download/5.0.3/ViaVersion-5.0.3.jar
     extraPorts:
       - name: bedrock
         containerPort: 19132
