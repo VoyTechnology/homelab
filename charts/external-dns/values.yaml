@@ -1,6 +1,6 @@
 external-dns:
   provider: cloudflare
-  syncPolicy: sync
+  policy: sync
   env:
     - name: CF_API_TOKEN
       valueFrom:
