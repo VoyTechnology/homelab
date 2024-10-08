@@ -65,15 +65,14 @@ mimir:
     ingressClassName: internal-login
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
-  # Reduce the replicas to 2 each as they should be fine in a home cluster
   distributor:
-    replicas: 2
+    replicas: 1
   ingester:
-    replicas: 2
+    replicas: 1
     zoneAwareReplication:
       enabled: false
   querier:
-    replicas: 2
+    replicas: 1
   store_gateway:
     zoneAwareReplication:
       enabled: false
