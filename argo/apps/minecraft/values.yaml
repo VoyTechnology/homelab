@@ -100,7 +100,7 @@ minecraft:
   persistence:
     dataDir:
       enabled: true
-      size: 20Gi
+      Size: 20Gi
       accessModes:
         - ReadWriteOnce
-      storageClassName: longhorn
+      storageClass: longhorn
