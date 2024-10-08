@@ -352,6 +352,7 @@ loki:
   # Enable minio for storage
   minio:
     enabled: true
+    fullnameOverride: loki-minio
 
   # Zero out replica counts of other deployment modes
   backend:
