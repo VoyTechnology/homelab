@@ -1,6 +1,8 @@
 local appset = import '../lib/appset.libsonnet';
 local helm = import '../lib/helm.libsonnet';
 
+local domain = 'voy.technology';
+
 local bedrockPort = {
   name: 'bedrock',
   containerPort: 19132,
@@ -25,12 +27,12 @@ local mapPort = {
     enabled: true,
     ingressClassName: 'external',
     hosts: [{
-      name: 'skynet-map.{{ .domain }}',
+      name: 'skynet-map.'+domain,
       path: '/',
     }],
     tls: [{
-      secretName: 'skynet-map-{{ .domain }}',
-      hosts: ['skynet-map.{{ .domain }}'],
+      secretName: 'skynet-map-'+domain,
+      hosts: ['skynet-map.'+domain],
     }],
   }
 };
