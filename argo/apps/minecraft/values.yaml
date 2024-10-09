@@ -39,22 +39,25 @@ minecraft:
 
   extraVolumes:
     - volumeMounts:
-        - name: floodgate-config
+        - name: extra-config
           mountPath: /data/plugins/floodgate/config.yml
-          subPath: config.yml
+          subPath: floodgate.yml
+        - name: extra-config
+          mountPath: /data/plugins/BlueMap/core.conf
+          subPath: bluemap.conf
       volumes:
         - name: floodgate-config
           configMap:
-            name: floodgate-config
+            name: extra-config
 
   extraDeploy:
     - |
       apiVersion: v1
       kind: ConfigMap
       metadata:
-        name: floodgate-config
+        name: extra-config
       data:
-        config.yml: |
+        floodgate.yml: |
           key-file-name: key.pem
 
           # Floodgate prepends a prefix to bedrock usernames to avoid conflicts
@@ -114,6 +117,8 @@ minecraft:
 
           # Do not change this
           config-version: 3
+        bluemap.conf: |
+          accept-download: true
 
   persistence:
     dataDir:
