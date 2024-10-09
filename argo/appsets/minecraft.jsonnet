@@ -22,6 +22,7 @@ local mapPort = {
     port: 8100,
   },
   ingress: {
+    enabled: true,
     ingressClassName: 'external',
     hosts: [{
       name: 'skynet-map.{{ .domain }}',
