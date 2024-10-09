@@ -10,14 +10,32 @@ minecraft:
       - https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
       - https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
       - https://github.com/ViaVersion/ViaVersion/releases/download/5.0.3/ViaVersion-5.0.3.jar
-    extraPorts:
-      - name: bedrock
-        containerPort: 19132
-        protocol: UDP
-        service:
-          enabled: true
-          type: LoadBalancer
-          port: 19132
+      - https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v5.4/bluemap-5.4-paper.jar
+    # Extra ports are configured using the jsonnet.
+    # extraPorts:
+    #   - name: bedrock
+    #     containerPort: 19132
+    #     protocol: UDP
+    #     service:
+    #       enabled: true
+    #       type: LoadBalancer
+    #       port: 19132
+    #   - name: map
+    #     containerPort: 8100
+    #     protocol: TCP
+    #     service:
+    #       enabled: true
+    #       type: ClusterIP
+    #       port: 8100
+    #     ingress:
+    #       ingressClassName: external # Expose using external ingress
+    #       hosts:
+    #         - name: skynet-{{ .Values.domain }}
+    #           path: /
+    #       tls:
+    #         - secretName: skynet-{{ .Values.domain }}
+    #           hosts:
+    #             - skynet-{{ .Values.domain }}
 
   extraVolumes:
     - volumeMounts:
