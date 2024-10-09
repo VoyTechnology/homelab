@@ -46,7 +46,7 @@ minecraft:
           mountPath: /data/plugins/BlueMap/core.conf
           subPath: bluemap.conf
       volumes:
-        - name: floodgate-config
+        - name: extra-config
           configMap:
             name: extra-config
 
