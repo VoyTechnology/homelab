@@ -7,6 +7,8 @@ minecraft:
     serviceType: LoadBalancer
     type: PAPER
     maxBuildHeight: 320
+    rcon:
+      enabled: true
     pluginUrls:
       - https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
       - https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
@@ -37,6 +39,8 @@ minecraft:
     #         - secretName: skynet-{{ .Values.domain }}
     #           hosts:
     #             - skynet-{{ .Values.domain }}
+  mcbackup:
+    enabled: true
 
   extraVolumes:
     - volumeMounts:
