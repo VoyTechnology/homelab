@@ -50,10 +50,17 @@ minecraft:
         - name: extra-config
           mountPath: /data/plugins/BlueMap/core.conf
           subPath: bluemap.conf
+        - name: backups
+          mountPath: /backups
       volumes:
         - name: extra-config
           configMap:
             name: extra-config
+        - name: backups
+          # Should be configurable, but YAML and Helm sucks so we can't extend
+          nfs:
+            server: s1-dub1
+            path: /nvme/minecraft/backups
 
   extraDeploy:
     - |
@@ -81,7 +88,7 @@ minecraft:
             invalid-arguments-length: Expected {} arguments, got {}. Is Geyser up-to-date?
 
           # Configuration for player linking
-          player-link:
+          player-link
             # Whether to enable the linking system. Turning this off will prevent
             # players from using the linking feature even if they are already linked.
             enabled: true
