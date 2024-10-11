@@ -7,12 +7,12 @@ dependencies:
     alias: grafana
     condition: grafana.enabled
     repository: https://grafana.github.io/helm-charts
-    version: "^8.4.4"
+    version: "^8.5.2"
   - name: loki
     alias: loki
     condition: loki.enabled
     repository: "https://grafana.github.io/helm-charts"
-    version: "^6.10.0"
+    version: "^6.17.1"
   - name: mimir-distributed
     alias: mimir
     condition: mimir.enabled
@@ -26,7 +26,7 @@ dependencies:
   - name: alloy
     condition: alloy.enabled
     repository: https://grafana.github.io/helm-charts
-    version: "0.6.0"
+    version: "0.9.1"
   - name: oncall
     condition: oncall.enabled
     repository: https://grafana.github.io/helm-charts
