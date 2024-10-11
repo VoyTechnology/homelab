@@ -298,7 +298,8 @@ alloy:
 
         loki.write "loki" {
           endpoint {
-            url = "http://monitoring-loki.monitoring.svc:80"
+            url = "http://monitoring-loki-gateway.monitoring.svc:80"
+            tenant_id = env("CLUSTER_NAME")
           }
         }
 
