@@ -88,7 +88,7 @@ minecraft:
             invalid-arguments-length: Expected {} arguments, got {}. Is Geyser up-to-date?
 
           # Configuration for player linking
-          player-link
+          player-link:
             # Whether to enable the linking system. Turning this off will prevent
             # players from using the linking feature even if they are already linked.
             enabled: true
