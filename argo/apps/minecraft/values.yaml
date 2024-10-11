@@ -40,7 +40,7 @@ minecraft:
     #           hosts:
     #             - skynet-{{ .Values.domain }}
   mcbackup:
-    enabled: true
+    enabled: false
 
   extraVolumes:
     - volumeMounts:
