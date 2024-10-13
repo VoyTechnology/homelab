@@ -62,6 +62,20 @@ grafana:
   # Disable as its not currently working
   plugins:
     - grafana-oncall-app
+  dnsConfig:
+    nameservers:
+      - 127.0.0.1:8053
+  extraContainers:
+    # resolves issues with DNS resolution of services
+    # see https://gist.github.com/joemiller/68ab3f7a7a08e4a9d5ad5d023cb14fc2
+    - name: dnsmasq
+      image: "janeczku/go-dnsmasq:release-1.0.7"
+      imagePullPolicy: IfNotPresent
+      args:
+        - --listen
+        - "127.0.0.1:8053"
+        - --hostsfile=/etc/hosts
+        - --verbose
 
 ####################################################################################################
 # Mimir
