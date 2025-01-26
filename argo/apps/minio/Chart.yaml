@@ -1,0 +1,8 @@
+apiVersion: v2
+name: minio
+version: 0.0.1
+description: Minio Meta Chart
+dependencies:
+  - name: minio
+    version: "8.0.10"
+    repository: https://helm.min.io/
