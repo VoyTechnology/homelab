@@ -1,0 +1,11 @@
+minio:
+  persistance:
+    size: 20Gi
+  resources:
+    requests:
+      memory: 500Mi
+      cpu: 100m
+  oidc:
+    enabled: true
+    existingClientIdKey: "oidc_client_id"
+    existingClientSecretKey: "oidc_client_secret"
