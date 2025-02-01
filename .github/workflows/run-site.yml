@@ -11,8 +11,6 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
 
     - name: Connect to Tailscale
       uses: tailscale/github-action@v3
@@ -21,10 +19,19 @@ jobs:
         oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
         tags: tag:ci
 
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Decrypt git-crypt
+      uses: amplium/git-crypt-action@master
+      with:
+        # git-crypt export-key -- - | base64
+        key_encoded: ${{ secrets.GIT_CRYPT_KEY }}
+
     - name: Read inventory file
       id: inventory
       run: |
-        CONTENT="$(cat ./ansible/inventory/${{ github.event.inputs.cluster }}/hosts.yaml)"
+        CONTENT="$(cat ./ansible/inventory/${{ github.event.inputs.cluster }}/hosts.ini)"
         echo "INVENTORY<<EOF" >> $GITHUB_ENV
         echo "$CONTENT" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV 
