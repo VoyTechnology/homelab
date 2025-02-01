@@ -31,6 +31,7 @@ jobs:
       
     - name: Run Playbook
       uses: dawidd6/action-ansible-playbook@v2
+      working-directory: ./ansible
       with:
         # Required, playbook filepath
         playbook: "./site.yml"
