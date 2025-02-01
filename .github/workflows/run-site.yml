@@ -44,6 +44,6 @@ jobs:
         ANSIBLE_HOST_KEY_CHECKING: False
       run: |
         ansible-playbook \
-          -i ./inventory/${{ github.event.inputs.cluster }}/hosts.ini) \
+          -i ./inventory/${{ github.event.inputs.cluster }}/hosts.ini \
           --private-key ../private_key.pem \
           site.yml
