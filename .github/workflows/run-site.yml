@@ -28,23 +28,22 @@ jobs:
         # git-crypt export-key -- - | base64
         key_encoded: ${{ secrets.GIT_CRYPT_KEY }}
 
-    - name: Read inventory file
-      id: inventory
+    - name: Set up SSH
       run: |
-        CONTENT="$(cat ./ansible/inventory/${{ github.event.inputs.cluster }}/hosts.ini)"
-        echo "INVENTORY<<EOF" >> $GITHUB_ENV
-        echo "$CONTENT" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV 
-      
-    - name: Run Playbook
-      uses: dawidd6/action-ansible-playbook@v2
-      with:
-        # Required, playbook filepath
-        playbook: "./ansible/site.yml"
-        # Optional, directory where playbooks live
-        directory: ./ansible
-        # Optional, SSH private key
-        key: ${{secrets.SSH_PRIVATE_KEY}}
-        # Optional, literal inventory file contents
-        inventory: |
-          echo ${{ env.INVENTORY }}
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private_key.pem
+        chmod 600 private_key.pem
+
+    - name: Install Ansible
+      run: |
+        sudo apt update
+        sudo apt install -y ansible
+
+    - name: Run Ansible Playbook
+      working-directory: ./ansible
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: False
+      run: |
+        ansible-playbook \
+          -i ./inventory/${{ github.event.inputs.cluster }}/hosts.ini) \
+          --private-key ~/.ssh/private_key.pem \
+          site.yml
