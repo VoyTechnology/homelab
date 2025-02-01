@@ -18,7 +18,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Connect to Tailscale
-      uses: tailscale/github-action@v1
+      uses: tailscale/github-action@v3
       with:
         authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
