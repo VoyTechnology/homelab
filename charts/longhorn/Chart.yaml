@@ -4,5 +4,5 @@ description: Longhorn Metachart
 version: 0.0.1
 dependencies:
   - name: longhorn
-    version: "1.7.3"
+    version: "1.6.4"
     repository: https://charts.longhorn.io
