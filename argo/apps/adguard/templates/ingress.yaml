@@ -4,12 +4,12 @@ metadata:
   name: adguardhome
   labels:
     app: adguardhome
-spec:
-  ingressClassName: {{ .Values.ingress.ingressClassName }}
   annotations:
   {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ tpl ($value | toString) $ | quote }}
   {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
   rules:
     {{- range $host := .Values.ingress.hosts }}
     - host: {{ tpl $host $ }}
