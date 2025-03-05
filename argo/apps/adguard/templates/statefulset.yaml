@@ -28,8 +28,8 @@ spec:
           volumeMounts:
             - name: adguardhome
               mountPath: /opt/adguardhome/work
-            # - name: config
-            #   mountPath: /opt/adguardhome/conf/AdGuardHome.yaml
+            - name: adguardhome-config
+              mountPath: /opt/adguardhome/conf
   volumeClaimTemplates:
     - metadata:
         name: adguardhome
@@ -39,3 +39,11 @@ spec:
         resources:
           requests:
             storage: 5Gi
+    - metadata:
+        name: adguardhome-config
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 512Mi
