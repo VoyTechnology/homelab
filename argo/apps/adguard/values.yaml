@@ -4,3 +4,5 @@ ingress:
   annotations: {}
   hosts:
     - adguard.REPLACE_ME
+
+config: {}
