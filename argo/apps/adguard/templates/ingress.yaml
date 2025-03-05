@@ -12,7 +12,7 @@ spec:
   {{- end }}
   spec:
     rules:
-      {{- for $host := .Values.ingress.hosts }}
+      {{- range $host := .Values.ingress.hosts }}
       - host: {{ tpl $host $ }}
         http:
           paths: /
