@@ -1,13 +1,13 @@
 version: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: adguard
+  name: adguardhome
   labels:
-    app: adguard
+    app: adguardhome
 spec:
   ingressClassName: {{ .Values.ingress.ingressClassName }}
   annotations:
-  {{- range $key, $value := .Values.jellyfin.ingress.annotations }}
+  {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ tpl ($value | toString) $ | quote }}
   {{- end }}
   spec:
@@ -24,7 +24,7 @@ spec:
                   number: 3000
       {{- end }}
     tls:
-      - secretName: adguard-tls
+      - secretName: adguardhome-tls
         hosts:
           {{- range $host := .Values.ingress.hosts }}
           - {{ tpl $host $ }}
