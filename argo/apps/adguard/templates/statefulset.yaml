@@ -27,7 +27,7 @@ spec:
               protocol: TCP
           volumeMounts:
             - name: adguardhome
-              mountPath: /opt/adguardhome/work
+              mountPath: /opt/adguardhome
   volumeClaimTemplates:
     - metadata:
         name: adguardhome
