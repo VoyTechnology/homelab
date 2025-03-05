@@ -1,1 +1,4 @@
 image: docker.io/adguard/adguardhome:latest
+ingress:
+  enabled: true
+  annotations: {}
