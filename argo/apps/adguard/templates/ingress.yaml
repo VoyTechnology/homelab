@@ -10,22 +10,22 @@ spec:
   {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ tpl ($value | toString) $ | quote }}
   {{- end }}
-  spec:
-    rules:
-      {{- range $host := .Values.ingress.hosts }}
-      - host: {{ $host }}
-        http:
-          paths: /
+  rules:
+    {{- range $host := .Values.ingress.hosts }}
+    - host: {{ tpl $host $ }}
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: http
                 port:
                   number: 3000
-      {{- end }}
-    tls:
-      - secretName: adguardhome-tls
-        hosts:
-          {{- range $host := .Values.ingress.hosts }}
-          - {{ $host }}
-          {{- end }}
+    {{- end }}
+  tls:
+    - secretName: adguardhome-tls
+      hosts:
+        {{- range $host := .Values.ingress.hosts }}
+        - {{ tpl $host $ }}
+        {{- end }}
