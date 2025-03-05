@@ -1,0 +1,31 @@
+version: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard
+  labels:
+    app: adguard
+spec:
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  annotations:
+  {{- range $key, $value := .Values.jellyfin.ingress.annotations }}
+    {{ $key }}: {{ tpl ($value | toString) $ | quote }}
+  {{- end }}
+  spec:
+    rules:
+      {{- for $host := .Values.ingress.hosts }}
+      - host: {{ tpl $host $ }}
+        http:
+          paths: /
+            pathType: Prefix
+            backend:
+              service:
+                name: http
+                port:
+                  number: 3000
+      {{- end }}
+    tls:
+      - secretName: adguard-tls
+        hosts:
+          {{- range $host := .Values.ingress.hosts }}
+          - {{ tpl $host $ }}
+          {{- end }}

@@ -1,0 +1,30 @@
+# This file contains the two services, one for HTTP management and one
+# with DNS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguardhome
+  labels:
+    app: adguardhome
+spec:
+  selector:
+    app.kubernetes.io/name: adguardhome
+  ports:
+    - port: 3000
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguardhome-dns
+  labels:
+    app.kubernetes.io/name: adguardhome
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: adguardhome
+  ports:
+    - port: 53
+      targetPort: 53
+      protocol: UDP

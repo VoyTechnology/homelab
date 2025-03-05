@@ -4,19 +4,19 @@ metadata:
   name: adguardhome
   namespace: {{ .Release.Namespace }}
   labels:
-    app: adguardhome
+    app.kubernetes.io/name: adguardhome
 spec:
   selector:
     matchLabels:
-      app: adguardhome
+      app.kubernetes.io/name: adguardhome
   replicas: 1
   template:
     metadata:
       labels:
-        app: adguardhome
+        app.kubernetes.io/name: adguardhome
     spec:
       containers:
-        - name: adguard
+        - name: adguardhome
           image: {{ $.Values.image }}
           ports:
             - containerPort: 53
