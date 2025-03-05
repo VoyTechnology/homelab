@@ -13,7 +13,7 @@ spec:
   spec:
     rules:
       {{- range $host := .Values.ingress.hosts }}
-      - host: {{ tpl $host $ }}
+      - host: {{ $host }}
         http:
           paths: /
             pathType: Prefix
@@ -27,5 +27,5 @@ spec:
       - secretName: adguardhome-tls
         hosts:
           {{- range $host := .Values.ingress.hosts }}
-          - {{ tpl $host $ }}
+          - {{ $host }}
           {{- end }}
