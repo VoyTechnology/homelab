@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: adguardhome
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: adguardhome
+spec:
+  selector:
+    matchLabels:
+      app: adguardhome
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: adguardhome
+    spec:
+      containers:
+        - name: adguard
+          image: {{ $.Values.image }}
+          ports:
+            - containerPort: 53
+              name: dns
+              protocol: UDP
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+          volumeMounts:
+            - name: adguardhome
+              mountPath: /opt/adguardhome/work
+  volumeClaimTemplates:
+    - metadata:
+        name: adguardhome
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi
