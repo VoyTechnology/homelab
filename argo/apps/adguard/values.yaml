@@ -2,3 +2,5 @@ image: docker.io/adguard/adguardhome:latest
 ingress:
   enabled: true
   annotations: {}
+  hosts:
+    - adguard.REPLACE_ME
