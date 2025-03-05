@@ -6,7 +6,7 @@ kind: Service
 metadata:
   name: adguardhome
   labels:
-    app: adguardhome
+    app.kubernetes.io/name: adguardhome
 spec:
   selector:
     app.kubernetes.io/name: adguardhome

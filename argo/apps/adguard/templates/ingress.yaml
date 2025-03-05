@@ -19,7 +19,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: http
+                name: adguardhome
                 port:
                   number: 3000
     {{- end }}
