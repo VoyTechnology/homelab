@@ -22,6 +22,7 @@ metadata:
     app.kubernetes.io/name: adguardhome
 spec:
   type: LoadBalancer
+  externalTrafficPolicy: Local
   selector:
     app.kubernetes.io/name: adguardhome
   ports:
