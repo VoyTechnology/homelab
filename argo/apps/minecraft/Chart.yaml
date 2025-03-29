@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: v2
 name: minecraft
 version: 4.26.1
 appVersion: SeeValues
