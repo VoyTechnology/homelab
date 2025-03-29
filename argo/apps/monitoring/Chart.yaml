@@ -7,31 +7,27 @@ dependencies:
     alias: grafana
     condition: grafana.enabled
     repository: https://grafana.github.io/helm-charts
-    version: "^8.5.2"
+    version: "^8.11.0"
   - name: loki
     alias: loki
     condition: loki.enabled
     repository: "https://grafana.github.io/helm-charts"
-    version: "^6.16.0"
+    version: "^6.29.0"
   - name: mimir-distributed
     alias: mimir
     condition: mimir.enabled
     repository: "https://grafana.github.io/helm-charts"
-    version: "^5.4.0"
+    version: "^5.8.0-weekly.335"
   - name: tempo
     alias: tempo
     condition: tempo.enabled
     repository: "https://grafana.github.io/helm-charts"
-    version: "^1.10.3"
+    version: "^1.19.0"
   - name: alloy
     condition: alloy.enabled
     repository: https://grafana.github.io/helm-charts
-    version: "0.9.1"
-  - name: oncall
-    condition: oncall.enabled
-    repository: https://grafana.github.io/helm-charts
-    version: "1.8.12"
+    version: "0.12.5"
   - name: prometheus-node-exporter
     condition: prometheus-node-exporter.enabled
     repository: https://prometheus-community.github.io/helm-charts
-    version: "4.38.0"
+    version: "4.45.0"
