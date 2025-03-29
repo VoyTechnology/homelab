@@ -20,6 +20,7 @@ local source = helm.new('monitoring', values={
     },
   },
   mimir: {
+    enabled: false # attempt to disable in metrics namespace.
     ingress: util.ingress('metrics', class='internal-login'),
     metaMonitoring: { serviceMonitor: {
       clusterLabel: '{{ .cluster }}',
