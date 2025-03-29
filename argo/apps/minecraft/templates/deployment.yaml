@@ -15,7 +15,7 @@ metadata:
     chart: {{ template "chart.fullname" . }}
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/name: "{{ .Chart.Name }}"
+    app.kubernetes.io/name: "{{ $.Chart.Name }}"
     app.kubernetes.io/instance: {{ template "minecraft.fullname" . }}
     app.kubernetes.io/version: {{ template "chart.version" . }}
   {{- if .Values.deploymentLabels }}
@@ -40,7 +40,7 @@ spec:
     metadata:
       labels:
         app: {{ template "minecraft.fullname" . }}
-        app.kubernetes.io/name: "{{ .Chart.Name }}"
+        app.kubernetes.io/name: "{{ $.Chart.Name }}"
         app.kubernetes.io/instance: {{ template "minecraft.fullname" . }}
         app.kubernetes.io/version: {{ template "chart.version" . }}
       {{- if .Values.podLabels }}
@@ -534,7 +534,7 @@ spec:
           chart: {{ template "chart.fullname" . }}
           release: "{{ .Release.Name }}"
           heritage: "{{ .Release.Service }}"
-          app.kubernetes.io/name: "{{ .Chart.Name }}"
+          app.kubernetes.io/name: "{{ $.Chart.Name }}"
           app.kubernetes.io/instance: {{ template "minecraft.fullname" . }}
           app.kubernetes.io/version: {{ template "chart.version" . }}
         annotations:
@@ -568,7 +568,7 @@ spec:
           chart: {{ template "chart.fullname" . }}
           release: "{{ .Release.Name }}"
           heritage: "{{ .Release.Service }}"
-          app.kubernetes.io/name: "{{ .Chart.Name }}"
+          app.kubernetes.io/name: "{{ $.Chart.Name }}"
           app.kubernetes.io/instance: {{ template "minecraft.fullname" . }}
           app.kubernetes.io/version: {{ template "chart.version" . }}
         annotations:
