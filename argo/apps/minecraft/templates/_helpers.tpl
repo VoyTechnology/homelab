@@ -21,7 +21,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 We change "+" with "_" for OCI compatibility
 */}}
 {{- define "chart.version" -}}
-{{- default .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- printf "4.26.1" -}}
 {{- end }}
 
 {{/*
