@@ -151,7 +151,7 @@
         name: "{{ item.name }}-repo"
         #
         # TODO: Revisit this as its weird to pull the namespace like that for tailscale.
-        namespace: "{{ internal_ingress_namespace }}"
+        namespace: "{{ argocd_k8s_namespace }}"
         labels:
           argocd.argoproj.io/secret-type: repository
       stringData:
