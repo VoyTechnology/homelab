@@ -58,7 +58,7 @@
             repoURL: 'git@github.com:Voytechnology/homelab.git',
             targetRevision: 'HEAD',
             ref: 'values',
-          }],
+          },
         },
       },
     },
