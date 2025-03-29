@@ -4,5 +4,5 @@ version: 0.0.1
 description: Public Ingress Over Cloudflare Tunnels meta chart
 dependencies:
   - name: cloudflare-tunnel-ingress-controller
-    version: "0.0.9"
+    version: "0.0.18"
     repository: https://helm.strrl.dev

@@ -3,7 +3,7 @@
 Expand the name of the chart.
 */}}
 {{- define "minecraft.name" -}}
-{{- default $.Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -12,7 +12,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 We change "+" with "_" for OCI compatibility
 */}}
 {{- define "chart.fullname" -}}
-{{- printf "%s-%s" $.Chart.Name ($.Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-") -}}
+{{- printf "minecraft-minecraft-4.26.1" -}}
 {{- end }}
 
 {{/*
@@ -21,7 +21,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 We change "+" with "_" for OCI compatibility
 */}}
 {{- define "chart.version" -}}
-{{- default $.Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- printf "4.26.1" -}}
 {{- end }}
 
 {{/*
@@ -29,12 +29,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "minecraft.fullname" -}}
-{{- $name := default $.Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- printf "minecraft-minecraft" -}}
 {{- end }}
 
 {{- define "minecraft.ingress.apiVersion" -}}
