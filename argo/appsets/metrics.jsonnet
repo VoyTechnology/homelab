@@ -5,7 +5,7 @@ local util = import '../lib/util.libsonnet';
 local mimirSource = helm.new('metrics',
   repoURL="https://grafana.github.io/helm-charts",
   chart="mimir",
-  version="5.8.0-weekly.335",
+  targetRevision="5.8.0-weekly.335",
   values={
     ingress: util.ingress('metrics', class='internal-login'),
     metaMonitoring: { serviceMonitor: {
