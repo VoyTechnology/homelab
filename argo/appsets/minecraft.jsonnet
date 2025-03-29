@@ -39,9 +39,6 @@ local mapPort = {
 
 local source = helm.new(
   'minecraft',
-  repoURL='https://itzg.github.io/minecraft-server-charts/',
-  chart='minecraft',
-  targetRevision='4.26.1',
   values={
     minecraftServer: {
       motd: 'Welcome to Skynet 3!',

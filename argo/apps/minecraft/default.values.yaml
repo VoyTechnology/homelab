@@ -1,0 +1,142 @@
+workloadAsStatefulSet: true
+strategyType: RollingUpdate
+nameOverride: minecraft
+fullnameOverride: minecraft-minecraft # I hope thats right
+
+minecraftServer:
+  eula: true
+  serviceType: LoadBalancer
+  type: PAPER
+  maxBuildHeight: 320
+  rcon:
+    enabled: true
+  pluginUrls:
+    - https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
+    - https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
+    - https://github.com/ViaVersion/ViaVersion/releases/download/5.2.1/ViaVersion-5.2.1.jar
+    - https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v5.7/bluemap-5.7-paper.jar
+  # Extra ports are configured using the jsonnet.
+  # extraPorts:
+  #   - name: bedrock
+  #     containerPort: 19132
+  #     protocol: UDP
+  #     service:
+  #       enabled: true
+  #       type: LoadBalancer
+  #       port: 19132
+  #   - name: map
+  #     containerPort: 8100
+  #     protocol: TCP
+  #     service:
+  #       enabled: true
+  #       type: ClusterIP
+  #       port: 8100
+  #     ingress:
+  #       ingressClassName: external # Expose using external ingress
+  #       hosts:
+  #         - name: skynet-{{ .Values.domain }}
+  #           path: /
+  #       tls:
+  #         - secretName: skynet-{{ .Values.domain }}
+  #           hosts:
+  #             - skynet-{{ .Values.domain }}
+mcbackup:
+  enabled: true
+
+extraVolumes:
+  - volumeMounts:
+      - name: extra-config
+        mountPath: /data/plugins/floodgate/config.yml
+        subPath: floodgate.yml
+      - name: extra-config
+        mountPath: /data/plugins/BlueMap/core.conf
+        subPath: bluemap.conf
+      - name: backups
+        mountPath: /backups
+    volumes:
+      - name: extra-config
+        configMap:
+          name: extra-config
+      - name: backups
+        # Should be configurable, but YAML and Helm sucks so we can't extend
+        nfs:
+          server: s1-dub1
+          path: /nvme/minecraft/backups
+
+extraDeploy:
+  - |
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: extra-config
+    data:
+      floodgate.yml: |
+        key-file-name: key.pem
+
+        # Floodgate prepends a prefix to bedrock usernames to avoid conflicts
+        # However, certain conflicts can cause issues with some plugins so this prefix is configurable using the property below
+        # It is recommended to use a prefix that does not contain alphanumerical to avoid the possibility of duplicate usernames.
+        username-prefix: ""
+
+        replace-spaces: true
+
+        disconnect:
+          # The disconnect message Geyser users should get when connecting
+          # to the server with an invalid key
+          invalid-key: Please connect through the official Geyser
+          # The disconnect message Geyser users should get when connecting
+          # to the server with the correct key but not with the correct data format
+          invalid-arguments-length: Expected {} arguments, got {}. Is Geyser up-to-date?
+
+        # Configuration for player linking
+        player-link:
+          # Whether to enable the linking system. Turning this off will prevent
+          # players from using the linking feature even if they are already linked.
+          enabled: true
+
+          # Whether to require a linked account in order to be able to join the server.
+          require-link: false
+
+          # Set the following option to true when you want to host your own linking database.
+          # -> This can work in addition to global linking.
+          # Note that you have to install a linking database implementation before enabling this, because
+          # it'll cause errors otherwise.
+          enable-own-linking: false
+
+          # The following three options only apply when 'enable-own-linking' is set to 'true'
+
+          # Whether to allow the use of /linkaccount and /unlinkaccount
+          # You can also use allow specific people to use the commands using the
+          # permissions floodgate.command.linkaccount and floodgate.command.unlinkaccount.
+          # This is only for linking, already connected people will stay connected
+          allowed: true
+          # The amount of time until a link code expires in seconds.
+          link-code-timeout: 300
+          # The player linking database type you want to use. This option is only used when there
+          # are multiple database implementations found in the configuration directory.
+          type: sqlite
+
+          # Whether to enable global linking. Global Linking is a central server where people can link their
+          # accounts (Java and Bedrock) and join on servers that have Global Linking enabled. The goal of
+          # Global Linking is to make linking easier by not having to link your accounts on every server.
+          # -> Your server-specific linking database will have priority over global linking.
+          # Global Linking should normally only be disabled when you don't have internet access or when
+          # you have limited internet access.
+          enable-global-linking: true
+
+        metrics:
+          enabled: true
+          uuid: e8b4417b-ff07-4522-a765-7f7f53328b39
+
+        # Do not change this
+        config-version: 3
+      bluemap.conf: |
+        accept-download: true
+
+persistence:
+  dataDir:
+    enabled: true
+    Size: 20Gi
+    accessModes:
+      - ReadWriteOnce
+    storageClass: longhorn
