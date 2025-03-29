@@ -12,7 +12,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 We change "+" with "_" for OCI compatibility
 */}}
 {{- define "chart.fullname" -}}
-{{- printf "minecraft-4.26.1" -}}
+{{- printf "minecraft-minecraft--4.26.1" -}}
 {{- end }}
 
 {{/*
@@ -29,7 +29,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "minecraft.fullname" -}}
-{{ .Release.Name }}
+{{- printf "minecraft-minecraft" -}}
 {{- end }}
 
 {{- define "minecraft.ingress.apiVersion" -}}
