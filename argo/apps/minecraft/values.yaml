@@ -1,6 +1,7 @@
 minecraft:
   workloadAsStatefulSet: true
   strategyType: RollingUpdate
+  nameOverride: minecraft
 
   minecraftServer:
     eula: true
@@ -40,7 +41,7 @@ minecraft:
     #           hosts:
     #             - skynet-{{ .Values.domain }}
   mcbackup:
-    enabled: false
+    enabled: true
 
   extraVolumes:
     - volumeMounts:
