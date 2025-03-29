@@ -22,5 +22,5 @@ local extraObjects = helm.new('metrics-extra-objects',
 );
 
 appset.new('metrics', 'metrics')
-+ appset.addSource(source)
++ appset.addSource(mimirSource)
 + appset.addSource(extraObjects)
