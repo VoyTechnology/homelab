@@ -1,7 +1,5 @@
 workloadAsStatefulSet: true
 strategyType: RollingUpdate
-nameOverride: minecraft
-fullnameOverride: minecraft-minecraft # I hope thats right
 
 minecraftServer:
   eula: true
