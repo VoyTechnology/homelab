@@ -1,11 +1,5 @@
 cluster_name: UNSPECIFIED
 
-# Mimir configuration
-ingress:
-  enabled: true
-  ingressClassName: internal-login
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
 distributor:
   replicas: 1
 ingester:
@@ -60,7 +54,7 @@ extraObjects:
           type: prometheus
           access: proxy
           orgId: 1
-          url: https://metrics.{{ tpl $.Values.domain $ }}/prometheus
+          url: http://metrics-mimir-nginx.metrics.svc./prometheus
           basicAuth: false
           editable: false
           jsonData:
