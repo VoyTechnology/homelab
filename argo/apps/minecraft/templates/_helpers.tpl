@@ -12,7 +12,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 We change "+" with "_" for OCI compatibility
 */}}
 {{- define "chart.fullname" -}}
-{{- printf "%s-%s" .Chart.Name (.Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-") -}}
+{{- printf "minecraft-%s" (.Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-") -}}
 {{- end }}
 
 {{/*
