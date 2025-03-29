@@ -1,0 +1,70 @@
+cluster_name: UNSPECIFIED
+
+# Mimir configuration
+ingress:
+  enabled: true
+  ingressClassName: internal-login
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+distributor:
+  replicas: 1
+ingester:
+  replicas: 1
+  zoneAwareReplication:
+    enabled: false
+querier:
+  replicas: 1
+store_gateway:
+  zoneAwareReplication:
+    enabled: false
+
+memberlist:
+  cluster_label: mimir
+  cluster_label_verification_disabled: true
+
+limits:
+  native_histograms_ingestion_enabled: true
+  out_of_order_ingestion_enabled: 24h # Increase the limit in case something goes down
+  cardinality_analysis_enabled: true
+  compactor_blocks_retention_period: 720h # One month retention
+
+metaMonitoring:
+  dashboards:
+    enabled: true
+    labels:
+      grafana_dashboard: "true"
+  serviceMonitor:
+    enabled: true
+    clusterLabel: EXTERNAL
+  prometheusRule:
+    enable: true
+    mimirAlerts: true
+    mimirRules: true
+
+extraObjects:
+  # Deploy the grafana dashboard
+  grafanaDashboard:
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: grafana-{{ tpl $.Values.cluster_name $ }}-metrics-datasource
+      namespace: metrics
+      labels:
+        grafana_datasource: "true"
+    data:
+      datasources.yaml: |-
+        apiVersion: 1
+        datasources:
+        - name: {{ tpl $.Values.cluster_name $ }}-metrics
+          uid: {{ tpl $.Values.cluster_name $ }}-metrics
+          type: prometheus
+          access: proxy
+          orgId: 1
+          url: https://metrics.{{ tpl $.Values.domain $ }}/prometheus
+          basicAuth: false
+          editable: false
+          jsonData:
+            oauthPassThru: true
+            httpHeaderName1: "X-Scope-OrgID"
+          secureJsonData:
+            httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
