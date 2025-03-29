@@ -38,18 +38,20 @@ local mapPort = {
 };
 
 local source = helm.new(
-  'minecraft', values={
-    minecraft: {
-      minecraftServer: {
-        motd: 'Welcome to Skynet 3!',
-        extraPorts: [
-          bedrockPort,
-          mapPort,
-        ]
-      },
-      nodeSelector: {
-        'kubernetes.io/hostname': 's1-dub1',
-      },
+  'minecraft',
+  repoURL: 'https://itzg.github.io/minecraft-server-charts/',
+  chart='minecraft',
+  targetRevision='4.26.1',
+  values={
+    minecraftServer: {
+      motd: 'Welcome to Skynet 3!',
+      extraPorts: [
+        bedrockPort,
+        mapPort,
+      ]
+    },
+    nodeSelector: {
+      'kubernetes.io/hostname': 's1-dub1',
     },
   }
 );
