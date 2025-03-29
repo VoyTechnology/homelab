@@ -14,12 +14,7 @@ local mimirSource = helm.new('metrics',
   }
 );
 
-local extraObjects = helm.new('metrics-extra-objects',
-  path='charts/extra-objects',
-  values={
-    cluster_name: '{{ .cluster }}',
-  }
-);
+local extraObjects = helm.extraObjects('metrics');
 
 appset.new('metrics', 'metrics')
 + appset.addSource(mimirSource)
