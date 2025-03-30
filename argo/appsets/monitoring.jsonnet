@@ -19,25 +19,6 @@ local source = helm.new('monitoring', values={
       },
     },
   },
-  mimir: {
-    enabled: false, # attempt to disable in metrics namespace.
-    ingress: util.ingress('metrics', class='internal-login'),
-    metaMonitoring: { serviceMonitor: {
-      clusterLabel: '{{ .cluster }}',
-    } },
-  },
-  oncall: {
-    base_url: 'oncall.{{ .domain }}',
-    externalGrafana: { url: 'https://grafana.{{ .domain }}' },
-    ingress: util.ingress('oncall', class='internal-login') {
-      className: 'internal-login',
-      annotations+: {
-        // The chart automatically creates it for some stupid
-        // reason...
-        'kubernetes.io/ingress.class': 'internal-login',
-      },
-    },
-  },
   alloy: {
     ingress: util.ingress('alloy', class='internal-login'),
     alloy: { extraEnv: [

@@ -1,0 +1,16 @@
+# Ollama config
+ollama:
+  # This is disabling the ollama installation from openwebui, not ollama itself...
+  # unfortunate side effect of the way openwebui is designed and how we load the config
+  enabled: false
+
+  # Actual ollama config
+  models:
+    pull:
+    - gemma3:4b # Smaller model due to memory constraints
+    run:
+    - gemma3:4b # Preload
+
+# open-webui config
+ollamaUrls:
+- ollama.ai.svc.
