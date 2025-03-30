@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/itzg/minecraft-server-charts/refs/heads/master/charts/minecraft/values.schema.json
+
 workloadAsStatefulSet: true
 strategyType: RollingUpdate
 
@@ -49,13 +51,11 @@ extraVolumes:
       - name: extra-config
         mountPath: /data/plugins/BlueMap/core.conf
         subPath: bluemap.conf
-      - name: backups
-        mountPath: /backups
     volumes:
       - name: extra-config
         configMap:
           name: extra-config
-      - name: backups
+      - name: backupdir
         # Should be configurable, but YAML and Helm sucks so we can't extend
         nfs:
           server: s1-dub1
