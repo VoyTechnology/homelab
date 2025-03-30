@@ -274,7 +274,7 @@ spec:
         - name: datadir
           mountPath: /data
         - name: backupdir
-          mountPath: /backups
+          mountPath: /nfsbackup
           readOnly: true
         - mountPath: /data/plugins/floodgate/config.yml
           name: extra-config
@@ -282,8 +282,6 @@ spec:
         - mountPath: /data/plugins/BlueMap/core.conf
           name: extra-config
           subPath: bluemap.conf
-        - mountPath: /backups
-          name: backups
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -330,7 +328,7 @@ spec:
         - name: BACKUP_METHOD
           value: "tar"
         - name: DEST_DIR
-          value: "/backups"
+          value: "/nfsbackup"
         - name: LINK_LATEST
           value: "false"
         - name: TAR_COMPRESS_METHOD
@@ -344,15 +342,13 @@ spec:
           mountPath: /data
           readOnly: true
         - name: backupdir
-          mountPath: /backups
+          mountPath: /nfsbackup
         - mountPath: /data/plugins/floodgate/config.yml
           name: extra-config
           subPath: floodgate.yml
         - mountPath: /data/plugins/BlueMap/core.conf
           name: extra-config
           subPath: bluemap.conf
-        - mountPath: /backups
-          name: backups
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -367,7 +363,7 @@ spec:
       - configMap:
           name: extra-config
         name: extra-config
-      - name: backups
+      - name: nfsbackup
         nfs:
           path: /nvme/minecraft/backups
           server: s1-dub1

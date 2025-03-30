@@ -42,6 +42,7 @@ minecraftServer:
   #             - skynet-{{ .Values.domain }}
 mcbackup:
   enabled: true
+  destDir: /nfsbackup
 
 extraVolumes:
   - volumeMounts:
@@ -51,11 +52,13 @@ extraVolumes:
       - name: extra-config
         mountPath: /data/plugins/BlueMap/core.conf
         subPath: bluemap.conf
+      # - name: nfsbackup
+      #   mountPath: /nfsbackup
     volumes:
       - name: extra-config
         configMap:
           name: extra-config
-      - name: backupdir
+      - name: nfsbackup
         # Should be configurable, but YAML and Helm sucks so we can't extend
         nfs:
           server: s1-dub1
