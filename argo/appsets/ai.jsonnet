@@ -4,7 +4,7 @@ local util = import '../lib/util.libsonnet';
 
 local ollamaSource = helm.new('ollama',
   repoURL="https://otwld.github.io/ollama-helm/",
-  chart="ollama-helm",
+  chart="ollama",
   targetRevision="1.12.0",
 );
 
