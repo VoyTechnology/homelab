@@ -13,6 +13,7 @@ local openWebUISource = helm.new('open-webui',
   chart="open-webui",
   targetRevision="5.24.0",
   values={
+    ollama: { enabled: false },
     ingress: util.ingress('ai', class='internal-shared'),
   }
 );
