@@ -6,12 +6,14 @@ local ollamaSource = helm.new('ollama',
   repoURL="https://otwld.github.io/ollama-helm/",
   chart="ollama",
   targetRevision="1.12.0",
+  valuesApp='ai',
 );
 
 local openWebUISource = helm.new('open-webui',
   repoURL="https://helm.openwebui.com/",
   chart="open-webui",
   targetRevision="5.24.0",
+  valuesApp='ai',
   values={
     ollama: { enabled: false },
     ingress: util.ingress('ai', class='internal-shared'),
