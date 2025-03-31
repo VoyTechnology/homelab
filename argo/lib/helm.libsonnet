@@ -6,6 +6,7 @@
     targetRevision='HEAD',
     path=null,
     values={},
+    valuesApp='',
   ): {
     repoURL: repoURL,
     targetRevision: targetRevision,
@@ -16,13 +17,19 @@
       else
         path,
     helm: {
+      valuesPath::
+        if valuesApp == '' then
+          '$values/argo/apps/%s' % name
+        else
+          '$values/argo/apps/%s' % valuesApp,
+
       releaseName: name,
       passCredentials: true,
       ignoreMissingValueFiles: true,
       valueFiles: [
-        '$values/argo/apps/%s/values.yaml' % name,
-        '$values/argo/apps/%s/default.values.yaml' % name,
-        '$values/argo/apps/%s/{{ .cluster }}.values.yaml' % name,
+        '%s/values.yaml' % self.valuesPath,
+        '%s/default.values.yaml' % self.valuesPath,
+        '%s/{{ .cluster }}.values.yaml' % self.valuesPath,
       ],
       valuesObject: values,
     },
