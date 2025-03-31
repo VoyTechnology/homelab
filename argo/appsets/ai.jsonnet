@@ -16,7 +16,15 @@ local openWebUISource = helm.new('open-webui',
   valuesApp='ai',
   values={
     ollama: { enabled: false },
-    ingress: util.ingress('ai', class='internal-shared'),
+    ingress: {
+      enabled: true,
+      className: 'internal-shared',
+      host: 'ai.{{ .domain }}'
+      tls: true,
+      annotations: {
+        'cert-manager.io/cluster-issuer': 'letsencrypt',
+      },
+    }
   }
 );
 
