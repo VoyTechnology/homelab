@@ -1,9 +1,9 @@
 cluster_name: REPLACE_ME
 
 distributor:
-  replicas: 1
+  replicas: 3
 ingester:
-  replicas: 1
+  replicas: 3
   zoneAwareReplication:
     enabled: false
 querier:
