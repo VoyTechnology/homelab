@@ -8,16 +8,6 @@ dependencies:
     condition: grafana.enabled
     repository: https://grafana.github.io/helm-charts
     version: "^8.11.0"
-  - name: loki
-    alias: loki
-    condition: loki.enabled
-    repository: "https://grafana.github.io/helm-charts"
-    version: "^6.29.0"
-  - name: mimir-distributed
-    alias: mimir
-    condition: mimir.enabled
-    repository: "https://grafana.github.io/helm-charts"
-    version: "^5.8.0-weekly.335"
   - name: tempo
     alias: tempo
     condition: tempo.enabled
