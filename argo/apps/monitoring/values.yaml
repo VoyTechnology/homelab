@@ -54,9 +54,11 @@ grafana:
     dashboards:
       enabled: true
       labelValue: "true"
+      searchNamespace: ALL # Search all namespaces for dashboards
     datasources:
       enabled: true
       labelValue: "true"
+      searchNamespace: ALL # Search all namespaces for dashboards
   adminPassword: "UNUSED" # We only allow login via Dex
   plugins: []
   # Check are the DNS issues gone and everything works
