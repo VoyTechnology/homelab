@@ -99,29 +99,32 @@ bloomGateway:
 test:
   enabled: false
 
-extraObjects:
-  # Deploy the grafana dashboard
-  grafanaDashboard:
-    apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: grafana-{{ .Values.cluster_name }}-logs-datasource
-      labels:
-        grafana_datasource: "true"
-    data:
-      datasources.yaml: |-
-        apiVersion: 1
-        datasources:
-        - name: {{ .Values.cluster_name }}-logs
-          uid: {{ .Values.cluster_name }}-logs
-          type: loki
-          access: proxy
-          orgId: 1
-          url: http://logs-loki-gateway.logs.svc.
-          basicAuth: false
-          editable: false
-          jsonData:
-            oauthPassThru: true
-            httpHeaderName1: "X-Scope-OrgID"
-          secureJsonData:
-            httpHeaderValue1: "{{ .Values.cluster_name }}"
+# Ideally this would be templated but for some reason its not working in Argo
+# but perfectly fine with helm template, its using per cluster values
+
+# extraObjects:
+#   # Deploy the grafana dashboard
+#   grafanaDashboard:
+#     apiVersion: v1
+#     kind: ConfigMap
+#     metadata:
+#       name: grafana-{{ .Values.cluster_name }}-logs-datasource
+#       labels:
+#         grafana_datasource: "true"
+#     data:
+#       datasources.yaml: |-
+#         apiVersion: 1
+#         datasources:
+#         - name: {{ .Values.cluster_name }}-logs
+#           uid: {{ .Values.cluster_name }}-logs
+#           type: loki
+#           access: proxy
+#           orgId: 1
+#           url: http://logs-loki-gateway.logs.svc.
+#           basicAuth: false
+#           editable: false
+#           jsonData:
+#             oauthPassThru: true
+#             httpHeaderName1: "X-Scope-OrgID"
+#           secureJsonData:
+#             httpHeaderValue1: "{{ .Values.cluster_name }}"

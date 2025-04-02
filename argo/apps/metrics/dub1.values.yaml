@@ -1,0 +1,26 @@
+extraObjects:
+  # Deploy the grafana dashboard
+  grafanaDashboard:
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: grafana-dub1-metrics-datasource
+      labels:
+        grafana_datasource: "true"
+    data:
+      datasources.yaml: |-
+        apiVersion: 1
+        datasources:
+        - name: dub1-metrics
+          uid: dub1-metrics
+          type: prometheus
+          access: proxy
+          orgId: 1
+          url: http://metrics-mimir-nginx.metrics.svc./prometheus
+          basicAuth: false
+          editable: false
+          jsonData:
+            oauthPassThru: true
+            httpHeaderName1: "X-Scope-OrgID"
+          secureJsonData:
+            httpHeaderValue1: "dub1"
