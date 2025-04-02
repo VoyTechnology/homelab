@@ -25,14 +25,6 @@ local source = helm.new('monitoring', values={
       util.env('CLUSTER_NAME', '{{ .cluster }}'),
     ] },
   },
-  loki: { gateway: {
-    ingress: util.ingress('logs', class='internal-login') {
-      hosts: [{
-        host: 'logs.{{ .domain }}',
-        paths: [{ path: '/', pathType: 'Prefix' }],
-      }],
-    },
-  } },
 });
 
 local ignoreDifferences = [

@@ -1,4 +1,4 @@
-cluster_name: UNSPECIFIED
+cluster_name: REPLACE_ME
 
 distributor:
   replicas: 1
@@ -41,16 +41,15 @@ extraObjects:
     apiVersion: v1
     kind: ConfigMap
     metadata:
-      name: grafana-{{ tpl $.Values.cluster_name $ }}-metrics-datasource
-      namespace: metrics
+      name: grafana-{{ tpl .Values.cluster_name $ }}-metrics-datasource
       labels:
         grafana_datasource: "true"
     data:
       datasources.yaml: |-
         apiVersion: 1
         datasources:
-        - name: {{ tpl $.Values.cluster_name $ }}-metrics
-          uid: {{ tpl $.Values.cluster_name $ }}-metrics
+        - name: {{ tpl .Values.cluster_name $ }}-metrics
+          uid: {{ tpl .Values.cluster_name $ }}-metrics
           type: prometheus
           access: proxy
           orgId: 1
@@ -61,4 +60,4 @@ extraObjects:
             oauthPassThru: true
             httpHeaderName1: "X-Scope-OrgID"
           secureJsonData:
-            httpHeaderValue1: "{{ tpl $.Values.cluster_name $ }}"
+            httpHeaderValue1: "{{ tpl .Values.cluster_name $ }}"

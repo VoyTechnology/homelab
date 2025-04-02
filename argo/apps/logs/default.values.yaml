@@ -1,0 +1,127 @@
+cluster_name: REPLACE_ME
+domain: REPLACE_ME
+
+global:
+  clusterDomain: cluster.local
+  # try override the DNS server settings
+  dnsService: coredns
+
+enabled: true
+loki:
+  commonConfig:
+    replication_factor: 1
+  schemaConfig:
+    configs:
+      - from: 2024-04-01
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+  ingester:
+    chunk_encoding: snappy
+  tracing:
+    enabled: true
+  querier:
+    # Default is 4, if you have enough memory and CPU you can increase, reduce if OOMing
+    max_concurrent: 2
+
+gateway:
+  ingress:
+    enabled: true
+  nginxConfig:
+    resolver: "127.0.0.1:8053 valid=5s ipv6=off"
+  extraContainers:
+    # resolves issues with DNS resolution of services
+    # see https://gist.github.com/joemiller/68ab3f7a7a08e4a9d5ad5d023cb14fc2
+    - name: dnsmasq
+      image: "janeczku/go-dnsmasq:release-1.0.7"
+      imagePullPolicy: IfNotPresent
+      args:
+        - --listen
+        - "127.0.0.1:8053"
+        - --hostsfile=/etc/hosts
+        - --verbose
+
+deploymentMode: SingleBinary
+singleBinary:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 2
+      memory: 2Gi
+  extraEnv:
+    # Keep a little bit lower than memory limits
+    - name: GOMEMLIMIT
+      value: 1850MiB
+
+memberlist:
+  cluster_label: loki
+  cluster_label_verification_disabled: true
+
+chunksCache:
+  # default is 500MB, with limited memory keep this smaller
+  writebackSizeLimit: 10MB
+
+# Enable minio for storage
+minio:
+  enabled: true
+
+# Zero out replica counts of other deployment modes
+backend:
+  replicas: 0
+read:
+  replicas: 0
+write:
+  replicas: 0
+
+ingester:
+  replicas: 0
+querier:
+  replicas: 0
+queryFrontend:
+  replicas: 0
+queryScheduler:
+  replicas: 0
+distributor:
+  replicas: 0
+compactor:
+  replicas: 0
+indexGateway:
+  replicas: 0
+bloomCompactor:
+  replicas: 0
+bloomGateway:
+  replicas: 0
+
+# We don't want the canary to be a thing
+test:
+  enabled: false
+
+extraObjects:
+  # Deploy the grafana dashboard
+  grafanaDashboard:
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: grafana-{{ tpl .Values.cluster_name $ }}-logs-datasource
+      labels:
+        grafana_datasource: "true"
+    data:
+      datasources.yaml: |-
+        apiVersion: 1
+        datasources:
+        - name: {{ tpl .Values.cluster_name $ }}-logs
+          uid: {{ tpl .Values.cluster_name $ }}-logs
+          type: loki
+          access: proxy
+          orgId: 1
+          url: https://logs.{{ tpl .Values.domain $ }}
+          basicAuth: false
+          editable: false
+          jsonData:
+            oauthPassThru: true
+            httpHeaderName1: "X-Scope-OrgID"
+          secureJsonData:
+            httpHeaderValue1: "{{ tpl .Values.cluster_name $ }}"
