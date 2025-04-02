@@ -12,7 +12,7 @@ local ollamaSource = helm.new('ollama',
 local openWebUISource = helm.new('open-webui',
   repoURL="https://helm.openwebui.com/",
   chart="open-webui",
-  targetRevision="5.24.0",
+  targetRevision="6.0.0",
   valuesApp='ai',
   values={
     ollama: { enabled: false },
