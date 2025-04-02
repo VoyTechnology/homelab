@@ -16,7 +16,7 @@ extraObjects:
           type: loki
           access: proxy
           orgId: 1
-          url: http://logs-loki-gateway.logs.svc.
+          url: http://logs-loki-gateway.logs
           basicAuth: false
           editable: false
           jsonData:
