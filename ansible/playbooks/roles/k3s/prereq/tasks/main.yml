@@ -19,6 +19,13 @@
     reload: yes
   when: ansible_all_ipv6_addresses
 
+- name: Increase Max User Instances
+  sysctl:
+    name: fs.inotify.max_user_instances
+    value: 1024
+    state: present
+    reload: yes
+
 - name: Increase Max User Watches
   sysctl:
     name: fs.inotify.max_user_watches
