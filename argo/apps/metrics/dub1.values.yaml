@@ -16,7 +16,7 @@ extraObjects:
           type: prometheus
           access: proxy
           orgId: 1
-          url: http://metrics-mimir-nginx.metrics.svc./prometheus
+          url: http://metrics-mimir-nginx.metrics/prometheus
           basicAuth: false
           editable: false
           jsonData:
