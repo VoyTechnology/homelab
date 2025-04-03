@@ -8,7 +8,7 @@ extraObjects:
       labels:
         grafana_datasource: "true"
     data:
-      datasources.yaml: |-
+      dub1-metrics.yaml: |-
         apiVersion: 1
         datasources:
         - name: dub1-metrics
