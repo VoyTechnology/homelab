@@ -116,7 +116,7 @@ alloy:
 
         prometheus.remote_write "mimir" {
           endpoint {
-            url = "http://metrics-mimir-nginx.metrics:80/api/v1/push"
+            url = "http://metrics-mimir-nginx.metrics/api/v1/push"
             headers = {
               "X-Scope-OrgID" = env("CLUSTER_NAME"),
             }
@@ -194,7 +194,7 @@ alloy:
 
         loki.write "loki" {
           endpoint {
-            url = "http://logs-loki-gateway.logs.svc:80"
+            url = "http://logs-loki-gateway.logs/loki/api/v1/push"
             tenant_id = env("CLUSTER_NAME")
           }
         }
