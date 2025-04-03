@@ -118,6 +118,11 @@ alloy:
         // Shared config
         discovery.kubernetes "node" {
           role = "node"
+
+          authorization {
+            credential {
+              credentials_file = "/var/run/secrets/kubernetes.io/serviceaccount"
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////
