@@ -99,6 +99,17 @@ bloomGateway:
 test:
   enabled: false
 
+# This is deprecated but let's get the basics working first
+monitoring:
+  dashboards:
+    enabled: true
+    labels:
+      grafana_dashboard: "true"
+  rules:
+    enabled: true
+  serviceMonitors:
+    enabled: true
+
 # Ideally this would be templated but for some reason its not working in Argo
 # but perfectly fine with helm template, its using per cluster values
 
