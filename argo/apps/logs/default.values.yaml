@@ -107,7 +107,7 @@ monitoring:
       grafana_dashboard: "true"
   rules:
     enabled: true
-  serviceMonitors:
+  serviceMonitor:
     enabled: true
 
 # Ideally this would be templated but for some reason its not working in Argo
