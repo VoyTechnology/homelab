@@ -124,6 +124,13 @@ alloy:
           forward_to = [prometheus.remote_write.mimir.receiver]
         }
 
+        prometheus.exporter.cadvisor "cadvisor" {}
+
+        prometheus.scrape "cadvisor" {
+          targets = prometheus.exporter.cadvisor.cadvisor.targets
+          forward_to = [prometheus.remote_write.mimir.receiver]
+        }
+
         // prometheus.relabel "services" {
         //   forward_to = [prometheus.remote_write.mimir.receiver]
         //
