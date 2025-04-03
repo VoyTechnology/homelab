@@ -120,7 +120,20 @@ alloy:
             enabled = true
           }
 
+          forward_to = [prometheus.relabel.services.receiver]
+        }
+
+        prometheus.relabel "services" {
           forward_to = [prometheus.remote_write.mimir.receiver]
+
+          // In clustering mode it seems like the instance is not set correctly
+          // https://github.com/grafana/alloy/issues/1009
+          rule {
+            action = "replace"
+            source_labels = ["instance"]
+            target_label = "instance"
+            replacement = "alloy-cluster"
+          }
         }
 
         prometheus.remote_write "mimir" {
