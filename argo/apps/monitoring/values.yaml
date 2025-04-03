@@ -113,9 +113,9 @@ alloy:
         }
 
         prometheus.operator.servicemonitors "services" {
-          clustering {
-            enabled = true
-          }
+          # clustering {
+          #   enabled = true
+          # }
 
           forward_to = [prometheus.remote_write.mimir.receiver]
         }
