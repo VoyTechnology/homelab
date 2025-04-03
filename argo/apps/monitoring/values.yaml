@@ -83,6 +83,9 @@ grafana:
 
 alloy:
   enabled: true
+  controller:
+    type: statefulset # Needed for clustering
+    replicas: 2
   ingress:
     enabled: true
     annotations:
@@ -99,7 +102,7 @@ alloy:
               number: 12347
   alloy:
     clustering:
-      enabled: false
+      enabled: true
     stabilityLevel: experimental
     configMap:
       content: |
@@ -113,9 +116,9 @@ alloy:
         }
 
         prometheus.operator.servicemonitors "services" {
-          // clustering {
-          //   enabled = true
-          // }
+          clustering {
+            enabled = true
+          }
 
           forward_to = [prometheus.remote_write.mimir.receiver]
         }
