@@ -115,6 +115,17 @@ alloy:
           enabled = true
         }
 
+        // Shared config
+        discovery.kubernetes "node" {
+          role = "node"
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        // Metrics
+        ////////////////////////////////////////////////////////////////////////
+
+        // We use the servicemonitor to allow services their own control
+        // over how they are scraped
         prometheus.operator.servicemonitors "services" {
           clustering {
             enabled = false
@@ -128,6 +139,11 @@ alloy:
 
         prometheus.scrape "cadvisor" {
           targets = prometheus.exporter.cadvisor.cadvisor.targets
+          forward_to = [prometheus.remote_write.mimir.receiver]
+        }
+
+        prometheus.scrape "node" {
+          targets = discovery.kubernetes.node.targets
           forward_to = [prometheus.remote_write.mimir.receiver]
         }
 
@@ -150,7 +166,9 @@ alloy:
           }
         }
 
+        ////////////////////////////////////////////////////////////////////////
         // Logs
+        ////////////////////////////////////////////////////////////////////////
 
         discovery.kubernetes "pod" {
           role = "pod"
