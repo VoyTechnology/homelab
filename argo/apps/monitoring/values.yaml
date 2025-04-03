@@ -102,7 +102,7 @@ alloy:
               number: 12347
   alloy:
     clustering:
-      enabled: true
+      enabled: false
     stabilityLevel: experimental
     configMap:
       content: |
@@ -117,24 +117,22 @@ alloy:
 
         prometheus.operator.servicemonitors "services" {
           clustering {
-            enabled = true
+            enabled = false
           }
 
-          forward_to = [prometheus.relabel.services.receiver]
-        }
-
-        prometheus.relabel "services" {
+          // forward_to = [prometheus.relabel.services.receiver]
           forward_to = [prometheus.remote_write.mimir.receiver]
-
-          // In clustering mode it seems like the instance is not set correctly
-          // https://github.com/grafana/alloy/issues/1009
-          rule {
-            action = "replace"
-            source_labels = ["instance"]
-            target_label = "instance"
-            replacement = "alloy-cluster"
-          }
         }
+
+        // prometheus.relabel "services" {
+        //   forward_to = [prometheus.remote_write.mimir.receiver]
+        //
+        //   // In clustering mode it seems like the instance is not set correctly
+        //   // https://github.com/grafana/alloy/issues/1009
+        //   rule {
+        //     action = "labe"
+        //   }
+        // }
 
         prometheus.remote_write "mimir" {
           endpoint {
