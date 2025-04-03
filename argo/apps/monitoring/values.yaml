@@ -98,6 +98,8 @@ alloy:
             port:
               number: 12347
   alloy:
+    clustering:
+      enabled: true
     stabilityLevel: experimental
     configMap:
       content: |
@@ -111,6 +113,10 @@ alloy:
         }
 
         prometheus.operator.servicemonitors "services" {
+          clustering {
+            enabled = true
+          }
+
           forward_to = [prometheus.remote_write.mimir.receiver]
         }
 
