@@ -99,7 +99,7 @@ alloy:
               number: 12347
   alloy:
     clustering:
-      enabled: true
+      enabled: false
     stabilityLevel: experimental
     configMap:
       content: |
