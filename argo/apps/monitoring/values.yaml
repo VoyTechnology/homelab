@@ -142,6 +142,40 @@ alloy:
           forward_to = [prometheus.remote_write.mimir.receiver]
         }
 
+        discovery.relabel "node_cadvisor" {
+          targets = prometheus.scrape.node.targets
+
+          rule {
+            regex  = "__meta_kubernetes_node_label_(.+)"
+            action = "labelmap"
+          }
+
+          rule {
+            target_label = "__address__"
+            replacement  = "kubernetes.default.svc:443"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_node_name"]
+            regex         = "(.+)"
+            target_label  = "__metrics_path__"
+            replacement   = "/api/v1/nodes/$1/proxy/metrics/cadvisor"
+          }
+        }
+
+        prometheus.scrape "node_cadvisor" {
+          targets = discovery.relabel.node_cadvisor.output
+          forward_to = [prometheus.remote_write.mimir.receiver]
+
+          scheme = "https"
+          tls_config {
+            server_name = "localhost"
+            ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+            insecure_skip_verify = false
+          }
+          bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+        }
+
         prometheus.scrape "node" {
           targets = discovery.kubernetes.node.targets
           forward_to = [prometheus.remote_write.mimir.receiver]
