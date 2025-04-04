@@ -1,5 +1,6 @@
 {
   ingress(name, class='internal'): {
+    enabled: true,
     ingressClassName: class,
     annotations: {
       'cert-manager.io/cluster-issuer': 'letsencrypt',
