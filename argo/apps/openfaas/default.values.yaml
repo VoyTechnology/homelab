@@ -1,8 +1,3 @@
-prometheus:
-  # Do not create a prometheus instance as we have an already existing
-  # monitoring stack.
-  create: false
-
 # Use the same namespace as openfaas itself for simplicity
 # Whow knows is this a good idea or not
 functionNamespace: openfaas
