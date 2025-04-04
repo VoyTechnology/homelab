@@ -3,6 +3,10 @@ prometheus:
   # monitoring stack.
   create: false
 
+# Use the same namespace as openfaas itself for simplicity
+# Whow knows is this a good idea or not
+functionNamespace: openfaas
+
 extraObjects:
   podMonitor:
     apiVersion: monitoring.coreos.com/v1
