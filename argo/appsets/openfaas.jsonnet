@@ -38,6 +38,8 @@ local openfaasSource = helm.new('openfaas',
   },
 );
 
+local extraObjects = helm.extraObjects('openfaas')
 
 appset.new('openfaas', 'openfaas')
 + appset.addSource(openfaasSource)
++ appset.addSource(extraObjects)

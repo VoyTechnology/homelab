@@ -1,0 +1,21 @@
+prometheus:
+  # Do not create a prometheus instance as we have an already existing
+  # monitoring stack.
+  create: false
+
+extraObjects:
+  podMonitor:
+    apiVersion: monitoring.coreos.com/v1
+    kind: PodMonitor
+    metadata:
+      name: openfaas
+    spec:
+      namespaceSelector:
+        matchNames:
+          - openfaas
+      selector:
+        matchLabels: {}  # Match all pods
+      podMetricsEndpoints:
+        - port: metrics  # Most OpenFaaS components expose on 'metrics'
+          interval: 15s
+          path: /metrics
