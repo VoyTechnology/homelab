@@ -1,6 +1,6 @@
 extraObjects:
   knativeServing:
-    apiVersion: serving.knative.dev/v1
+    apiVersion: serving.knative.dev/v1beta1
     kind: KnativeServing
     metadata:
       name: knative-serving
