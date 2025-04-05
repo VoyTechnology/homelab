@@ -10,6 +10,11 @@ local knativeOperatorSource = helm.new('knative',
 
 local knativeExtraObjects = helm.extraObjects('knative');
 
+local ignoreDifferences = [
+    { group: '*', kind: 'ClusterRole', name: 'knative-serving-operator-aggregated-stable', jsonPointers: ['/rules'] },
+];
+
 appset.new('knative', 'knative')
 + appset.addSource(knativeOperatorSource)
 + appset.addSource(knativeExtraObjects)
++ appset.addIgnoreDifferences(ignoreDifferences)
