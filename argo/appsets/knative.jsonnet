@@ -8,5 +8,8 @@ local knativeOperatorSource = helm.new('knative',
     targetRevision="v1.17.5",
 );
 
+local knativeExtraObjects = helm.extraObjects('knative');
+
 appset.new('knative', 'knative')
 + appset.addSource(knativeOperatorSource)
++ appset.addSource(knativeExtraObjects)
