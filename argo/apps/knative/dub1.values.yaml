@@ -1,0 +1,6 @@
+extraObjects:
+  knativeServing:
+    spec:
+      config:
+        domain:
+          knative.dub1.bednarzak.com: ""
