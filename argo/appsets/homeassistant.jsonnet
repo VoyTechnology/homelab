@@ -25,15 +25,6 @@ local source = helm.new(
         },
       },
     },
-    musicassistant: {
-      ingress: { main:
-        util.ingress('musicassistant', class='internal-shared') {
-          hosts: [{
-            host: 'musicassistant.{{ .domain }}',
-            paths: [{ path: '/', pathType: 'Prefix' }],
-          }],
-        } },
-    },
   },
 );
 
