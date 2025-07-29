@@ -42,7 +42,16 @@ minecraftServer:
   #             - skynet-{{ .Values.domain }}
 mcbackup:
   enabled: true
-  destDir: /nfsbackup
+  destDir: /backups
+  extraEnv:
+    - name: POST_BACKUP_SCRIPT
+      value: |
+        #!/bin/bash
+        set -euo pipefail
+        # This script is run after each backup, so we can do some extra stuff
+        # like copying the backup to an NFS share.
+        echo "Copying backup to NFS share"
+        rsync -a --delete /backups/*.tgz /nfs/
 
 extraVolumes:
   - volumeMounts:
@@ -52,13 +61,13 @@ extraVolumes:
       - name: extra-config
         mountPath: /data/plugins/BlueMap/core.conf
         subPath: bluemap.conf
-      # - name: nfsbackup
-      #   mountPath: /nfsbackup
+      - name: nfs
+        mountPath: /nfs
     volumes:
       - name: extra-config
         configMap:
           name: extra-config
-      - name: nfsbackup
+      - name: nfs
         # Should be configurable, but YAML and Helm sucks so we can't extend
         nfs:
           server: s1-dub1
