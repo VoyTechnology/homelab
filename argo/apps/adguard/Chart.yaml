@@ -1,4 +1,0 @@
-apiVersion: v2
-name: adguardhome
-description: Adguard Home Helm Chart
-version: 0.0.1

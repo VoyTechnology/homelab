@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: adguardhome-config
-  namespace: {{ .Release.Namespace }}
-data:
-  AdGuardHome.yaml: |-
-    {{ tpl (toYaml .Values.config) . | nindent 4 }}
