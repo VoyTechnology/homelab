@@ -18,3 +18,7 @@ homeassistant:
     enabled: true
     accessMode: ReadWriteOnce
     size: 5Gi
+matter:
+  persistence:
+    size: 10Gi
+    storageClassName: longhorn
