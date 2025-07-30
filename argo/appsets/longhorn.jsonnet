@@ -7,6 +7,7 @@ local source = helm.new(
     longhorn: {
       ingress: util.ingress('longhorn', class='internal-login') {
         secureBackends: true,
+        host: 'longhorn.{{ .domain }}',
         tls: true,
         tlsSecret: 'longhorn-tls',
       },
