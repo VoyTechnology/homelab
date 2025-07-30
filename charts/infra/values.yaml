@@ -4,10 +4,6 @@ destination: https://kubernetes.default.svc
 repoURL: git@github.com:VoyTechnology/homelab.git
 project: infra
 apps:
-  longhorn:
-    namespace: longhorn-system
-    path: charts/longhorn
-  # ---
   external-dns:
     namespace: external-dns-system
     skipNamespaceCreation: true # Managed by Ansible
