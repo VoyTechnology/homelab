@@ -14,10 +14,10 @@ local source = helm.new(
             path: '/',
             pathType: 'Prefix',
           }],
-          tls: [{
-            secretName: 'homeassistant-tls',
-            hosts: ['{{ .domain }}'],
-          }],
+        }],
+        tls: [{
+          secretName: 'homeassistant-tls',
+          hosts: ['{{ .domain }}'],
         }],
         annotations+: {
           // Do not create the DNS entry as its being managed by the tunnel.
