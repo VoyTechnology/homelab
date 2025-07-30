@@ -1,8 +1,8 @@
 # Shared cluster values
 ---
 # Cluster domain is the top level configuration from which all other URLs are created
-cluster_domain: "dub1.bednarzak.com"
-cluster_name: "dub1"
+cluster_domain: "bet1.bednarzak.com"
+cluster_name: "bet1"
 
 # Namespaces which are used across the cluster
 monitoring_namespace: "monitoring"
