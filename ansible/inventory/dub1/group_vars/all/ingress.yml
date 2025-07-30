@@ -1,7 +1,0 @@
----
-internal_ingress_namespace: "ingress-internal"
-internal_ingress_tailscale_chart_version: "1.80.3"
-internal_ingress_nginx_chart_version: "4.12.1"
-
-# Deployment managed by Argo
-external_ingress_namespace: "ingress-external"
