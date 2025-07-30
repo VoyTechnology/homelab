@@ -50,7 +50,7 @@ local source = helm.new('minecraft',
       ]
     },
     nodeSelector: {
-      'kubernetes.io/hostname': 's1-dub1',
+      'kubernetes.io/hostname': 's1-bet1',
     },
   }
 );
