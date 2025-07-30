@@ -5,24 +5,26 @@ local util = import '../lib/util.libsonnet';
 local source = helm.new(
   'homeassistant', values={
     homeassistant: {
-      ingress: util.ingress('homeassistant', class='external') {
-        // The chart is stupid and does it wrong
+      # The chart does not follow the standards. 
+      ingress: {
+        enabled: true,
         className: 'external',  // should be ingressClassName
+        annotations+: {
+          // Do not create the DNS entry as its being managed by the tunnel.
+          'dns.kubernetes.io/exclude': 'true',
+        },
         hosts: [{
           host: '{{ .domain }}',
           paths: [{
             path: '/',
-            pathType: 'Prefix',
+            pathType: 'ImplementationSpecific',
           }],
         }],
         tls: [{
           secretName: 'homeassistant-tls',
           hosts: ['{{ .domain }}'],
         }],
-        annotations+: {
-          // Do not create the DNS entry as its being managed by the tunnel.
-          'dns.kubernetes.io/exclude': 'true',
-        },
+        
       },
     },
   },
