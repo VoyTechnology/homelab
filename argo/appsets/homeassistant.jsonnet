@@ -24,7 +24,18 @@ local source = helm.new(
           secretName: 'homeassistant-tls',
           hosts: ['{{ .domain }}'],
         }],
-        
+        additionalVolumes: [{
+          name: "zigbee-dongle",
+          hostPath: {
+            # TODO: Make this dynamic per cluster
+            path: "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_48595f40c274ef1196c7cd8c8fcc3fa0-if00-port0"
+            type: "CharDevice"
+          }
+        }],
+        nodeSelector: {
+          # TODO: Make this dynamic per cluster
+          'kubernetes.io/hostname': 's1-bet1',
+        },
       },
     },
   },
