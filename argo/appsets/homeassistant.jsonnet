@@ -13,6 +13,10 @@ local source = helm.new(
           type: "CharDevice"
         }
       }],
+      additionalMounts: [{
+        name: "zigbee-dongle",
+        mountPath: "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_48595f40c274ef1196c7cd8c8fcc3fa0-if00-port0",
+      }],
       nodeSelector: {
         # TODO: Make this dynamic per cluster
         'kubernetes.io/hostname': 's1-bet1',

@@ -1,17 +1,8 @@
 homeassistant:
   hostNetwork: true
-  # Mount the zigbee dongle
-  podSecurityContext:
+  # Extra permissions needed for Zigbee Dongle
+  securityContext:
     privileged: true
-  # additionalVolumes: controlled by the appset as its more dynamic
-    # - name: zigbee-dongle
-    #   hostPath:
-    #     # TODO: Will this ever change?
-    #     path: /dev/serial/by-id/<dongle-id>
-    #     type: CharDevice
-  additionalMounts:
-    - name: zigbee-dongle
-      mountPath: /dev/ttyACM0
 
   ingress:
     enabled: true
