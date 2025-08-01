@@ -33,6 +33,7 @@ matter:
 musicassistant:
   persistence:
     data:
+      accessMode: ReadWriteOnce
       enabled: true
       size: 5Gi
       storageClassName: longhorn
