@@ -42,6 +42,9 @@ local source = helm.new(
         }],
       },
     },
+    musicassistant: {
+      ingress: { main: util.ingress('music', class='internal') },
+    }
   },
 );
 
