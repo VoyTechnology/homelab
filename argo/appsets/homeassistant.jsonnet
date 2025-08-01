@@ -43,7 +43,20 @@ local source = helm.new(
       },
     },
     musicassistant: {
-      ingress: { main: util.ingress('music', class='internal') },
+      ingress: { main: util.ingress('music', class='internal') {
+        # Override hosts to use the proper path
+        hosts: [{
+          host: 'music.{{ .domain }}',
+          paths: [{
+            path: '/',
+            pathType: 'ImplementationSpecific',
+            service: {
+              name: 'homeassistant-musicassistant',
+              port: { name: 'http' },
+            }
+          }],
+        }],
+      } },
     }
   },
 );
