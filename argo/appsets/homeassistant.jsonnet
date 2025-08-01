@@ -43,7 +43,7 @@ local source = helm.new(
       },
     },
     musicassistant: {
-      ingress: { main: util.ingress('music', class='internal') {
+      ingress: { main: util.ingress('music', class='internal-shared') {
         # Override hosts to use the proper path
         hosts: [{
           host: 'music.{{ .domain }}',
