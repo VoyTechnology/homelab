@@ -52,7 +52,7 @@ local source = helm.new(
             pathType: 'ImplementationSpecific',
             service: {
               name: 'homeassistant-musicassistant',
-              port: 8085,
+              port: 8095,
             }
           }],
         }],
