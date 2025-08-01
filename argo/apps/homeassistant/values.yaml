@@ -4,6 +4,9 @@ homeassistant:
   securityContext:
     privileged: true
 
+  service:
+    port: 8123
+
   ingress:
     enabled: true
     hosts:
