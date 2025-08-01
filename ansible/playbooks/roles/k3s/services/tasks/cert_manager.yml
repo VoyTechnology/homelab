@@ -43,6 +43,6 @@
               cnameStrategy: Follow
               cloudflare:
                 email: "{{ cloudflare_email }}"
-                apiKeySecretRef:
+                apiTokenSecretRef:
                   name: cloudflare-secret
                   key: token
