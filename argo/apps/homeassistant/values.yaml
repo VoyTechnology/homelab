@@ -32,4 +32,7 @@ matter:
 
 musicassistant:
   persistence:
-    storageClass: longhorn
+    data:
+      enabled: true
+      size: 5Gi
+      storageClassName: longhorn
