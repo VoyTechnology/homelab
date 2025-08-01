@@ -22,9 +22,14 @@ homeassistant:
     enabled: true
     accessMode: ReadWriteOnce
     size: 5Gi
+
 matter:
   # Can this be hardcoded? Will we need to do some funky lookups?
   networkInterface: enp6s0
   persistence:
     size: 10Gi
     storageClassName: longhorn
+
+musicassistant:
+  persistence:
+    storageClass: longhorn
