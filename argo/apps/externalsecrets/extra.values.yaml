@@ -4,7 +4,7 @@ extraObjects:
     kind: ClusterSecretStore
     metadata:
       name: cluster-secrets
-  spec:
-    provider:
-      kubernetes:
-        server: 'https://kubernetes.default.svc'
+    spec:
+      provider:
+        kubernetes:
+          server: 'https://kubernetes.default.svc'
