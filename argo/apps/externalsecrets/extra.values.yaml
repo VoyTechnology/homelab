@@ -8,4 +8,8 @@ extraObjects:
       provider:
         kubernetes:
           server:
-            url: "https://kubernetes.default.svc"
+            url: "https://kubernetes.default"
+          caProvider:
+            type: ConfigMap
+            name: kube-root-ca.crt
+            key: ca.crt
