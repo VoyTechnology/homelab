@@ -2,7 +2,7 @@ local appset = import '../lib/appset.libsonnet';
 local helm = import '../lib/helm.libsonnet';
 local util = import '../lib/util.libsonnet';
 
-local operator = helm.new('externalsecrets'
+local operator = helm.new('externalsecrets',
     repoURL="https://charts.external-secrets.io",
     chart="external-secrets",
     targetRevision="0.18.2",
