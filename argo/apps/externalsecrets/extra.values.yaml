@@ -7,4 +7,5 @@ extraObjects:
     spec:
       provider:
         kubernetes:
-          server: "https://kubernetes.default.svc"
+          server:
+            url: "https://kubernetes.default.svc"
