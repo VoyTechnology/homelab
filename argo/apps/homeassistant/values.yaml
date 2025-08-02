@@ -34,6 +34,8 @@ matter:
     storageClassName: longhorn
 
 musicassistant:
+  image:
+    tag: 2.5.5
   hostNetwork: true
   persistence:
     data:
