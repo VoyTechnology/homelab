@@ -34,6 +34,7 @@ matter:
     storageClassName: longhorn
 
 musicassistant:
+  hostNetwork: true
   persistence:
     data:
       accessMode: ReadWriteOnce
