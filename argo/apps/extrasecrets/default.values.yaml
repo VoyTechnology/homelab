@@ -1,0 +1,10 @@
+extraObjects:
+  clusterSecretStore:
+    apiVersion: external-secrets.io/v1
+    kind: ClusterSecretStore
+    metadata:
+      name: cluster-secrets
+  spec:
+    provider:
+      kubernetes:
+        server: 'https://kubernetes.default.svc'
