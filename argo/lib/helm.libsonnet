@@ -52,6 +52,7 @@
       valueFiles: [
         '$values/argo/apps/%s/values.yaml' % name,
         '$values/argo/apps/%s/default.values.yaml' % name,
+        '$values/argo/apps/%s/extra.values.yaml' % name,
         '$values/argo/apps/%s/{{ .cluster }}.values.yaml' % name,
       ],
       valuesObject: values,
