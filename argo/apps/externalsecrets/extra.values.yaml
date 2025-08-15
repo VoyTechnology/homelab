@@ -15,7 +15,7 @@ extraObjects:
       - apiGroups: [""]
         resources: ["secrets"]
         # Replace or expand with the exact secret names you need
-        resourceNames: ["shared-secrets"]
+        resourceNames: [""]
         verbs: ["get"]
 
   roleBinding:
