@@ -16,24 +16,30 @@ extraObjects:
         - secretKey: token
           remoteRef:
             key: shared-secrets
+            namespace: kube-system
             property: grafana_cloud_token
         - secretKey: remote-config-url
           remoteRef:
             key: shared-secrets
+            namespace: kube-system
             property: grafana_cloud_remote_config_url
         - secretKey: metrics-url
           remoteRef:
             key: shared-secrets
+            namespace: kube-system
             property: grafana_cloud_metrics_url
         - secretKey: logs-url
           remoteRef:
             key: shared-secrets
+            namespace: kube-system
             property: grafana_cloud_logs_url
         - secretKey: traces-url
           remoteRef:
             key: shared-secrets
+            namespace: kube-system
             property: grafana_cloud_traces_url
         - secretKey: oltp-url
           remoteRef:
             key: shared-secrets
+            namespace: kube-system
             property: grafana_cloud_oltp_url
