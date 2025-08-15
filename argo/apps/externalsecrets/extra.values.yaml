@@ -17,3 +17,4 @@ extraObjects:
           auth:
             serviceAccount:
               name: externalsecrets-external-secrets
+              namespace: kube-system
