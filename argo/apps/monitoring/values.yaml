@@ -44,8 +44,9 @@ alloy:
           role = "node"
         }
 
-        removecfg {
+        remotecfg {
           url = env("REMOTE_CONFIG_URL")
+          bearer_token = env("TOKEN")
         }
 
         ////////////////////////////////////////////////////////////////////////
