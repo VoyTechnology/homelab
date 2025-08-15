@@ -1,4 +1,62 @@
 extraObjects:
+
+  serviceAccount:
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: external-secrets
+
+  role:
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: read-shared-secrets
+    rules:
+      - apiGroups: [""]
+        resources: ["secrets"]
+        # Replace or expand with the exact secret names you need
+        resourceNames: ["shared-secrets"]
+        verbs: ["get"]
+
+  roleBinding:
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: allow-read-shared-secrets
+    subjects:
+      - kind: ServiceAccount
+        name: external-secrets
+        namespace: kube-system
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: read-shared-secrets
+
+  clusterRole:
+    # Optional but recommended: allow SelfSubjectRulesReview for capability checks
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: selfsubjectrulesreview
+    rules:
+      - apiGroups: ["authorization.k8s.io"]
+        resources: ["selfsubjectrulesreviews"]
+        verbs: ["create"]
+
+  clusterRoleBinding:
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: allow-selfsubjectrulesreview
+    subjects:
+      - kind: ServiceAccount
+        name: external-secrets
+        namespace: kube-system
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: selfsubjectrulesreview
+
   clusterSecretStore:
     apiVersion: external-secrets.io/v1
     kind: ClusterSecretStore
@@ -16,5 +74,5 @@ extraObjects:
               namespace: kube-system
           auth:
             serviceAccount:
-              name: externalsecrets-external-secrets
+              name: external-secrets
               namespace: kube-system
