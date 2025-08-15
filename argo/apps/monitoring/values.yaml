@@ -2,82 +2,6 @@ domain: REPLACE_ME
 cluster_name: REPLACE_ME
 
 ####################################################################################################
-# Grafana
-####################################################################################################
-
-
-grafana:
-  enabled: true
-  ingress:
-    enabled: true
-    hosts:
-      - grafana.REPLACE_ME
-    ingressClassName: internal-shared # Auth using Dex, but we want to share the instance
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt
-    tls:
-      - secretName: grafana-tls
-        hosts:
-          - grafana.REPLACE_ME
-  grafana.ini:
-    security:
-      disable_initial_admin_creation: true # Prevent helm re-create the admin user
-    server:
-      domain: https://REPLACE_ME
-      root_url: REPLACE_ME
-    users:
-      allow_sign_up: false
-      auto_assign_org: true
-      # TODO: Reduce it once we have more users
-      auto_assign_org_role: Admin
-      allow_assign_grafana_admin: true
-    auth:
-      oauth_auto_login: true
-    auth.generic_oauth:
-      name: Dex
-      enabled: true
-      client_id: $__file{/etc/secrets/dex_oauth/client_id}
-      client_secret: $__file{/etc/secrets/dex_oauth/client_secret}
-      scopes: openid email profile groups offline_access
-      auth_url: https://login.REPLACE_ME/auth
-      token_url: https://login.REPLACE_ME/token
-      api_url: https://login.REPLACE_ME/userinfo
-    auth.basic:
-      enabled: false
-  extraSecretMounts:
-    - name: dex-oauth
-      secretName: grafana-dex-oauth-secret
-      defaultMode: 0440
-      mountPath: /etc/secrets/dex_oauth
-      readOnly: true
-  sidecar:
-    dashboards:
-      enabled: true
-      labelValue: "true"
-      searchNamespace: ALL # Search all namespaces for dashboards
-    datasources:
-      enabled: true
-      labelValue: "true"
-      searchNamespace: ALL # Search all namespaces for dashboards
-  adminPassword: "UNUSED" # We only allow login via Dex
-  plugins: []
-  # Check are the DNS issues gone and everything works
-  # dnsConfig:
-  #   nameservers:
-  #     - 127.0.0.1:8053
-  # extraContainers:
-  #   # resolves issues with DNS resolution of services
-  #   # see https://gist.github.com/joemiller/68ab3f7a7a08e4a9d5ad5d023cb14fc2
-  #   - name: dnsmasq
-  #     image: "janeczku/go-dnsmasq:release-1.0.7"
-  #     imagePullPolicy: IfNotPresent
-  #     args:
-  #       - --listen
-  #       - "127.0.0.1:8053"
-  #       - --hostsfile=/etc/hosts
-  #       - --verbose
-
-####################################################################################################
 # Alloy
 ####################################################################################################
 
@@ -118,6 +42,10 @@ alloy:
         // Shared config
         discovery.kubernetes "node" {
           role = "node"
+        }
+
+        removecfg {
+          url = env("REMOTE_CONFIG_URL")
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -205,7 +133,7 @@ alloy:
 
         prometheus.remote_write "mimir" {
           endpoint {
-            url = "http://metrics-mimir-nginx.metrics/api/v1/push"
+            url = env("PROMETHEUS_URL")
             headers = {
               "X-Scope-OrgID" = env("CLUSTER_NAME"),
             }
@@ -285,16 +213,10 @@ alloy:
 
         loki.write "loki" {
           endpoint {
-            url = "http://logs-loki-gateway.logs/loki/api/v1/push"
+            url = env("LOKI_URL")
             tenant_id = env("CLUSTER_NAME")
           }
         }
-####################################################################################################
-# Tempo
-####################################################################################################
-
-tempo:
-  enabled: false
 
 ####################################################################################################
 # Node Exporter

@@ -17,6 +17,10 @@ extraObjects:
           remoteRef:
             key: shared-secrets
             property: grafana_cloud_token
+        - secretKey: remote-config-url
+          remoteRef:
+            key: shared-secrets
+            property: grafana_cloud_remote_config_url
         - secretKey: metrics-url
           remoteRef:
             key: shared-secrets

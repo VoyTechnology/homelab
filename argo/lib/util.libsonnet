@@ -17,4 +17,14 @@
     name: name,
     value: value,
   },
+
+  secretEnv(name, file, key): {
+    name: name,
+    valueFrom: {
+      secretKeyRef: {
+        name: file,
+        key: key,
+      },
+    },
+  }
 }
