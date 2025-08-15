@@ -1,45 +1,33 @@
 extraObjects:
   grafanaCloudExternalSecret:
-    apiVersion: external-secrets.io/v1
+    apiVersion: external-secrets.io/v1beta1
     kind: ExternalSecret
     metadata:
       name: grafana-cloud
+      namespace: monitoring
     spec:
       refreshInterval: 1h
       secretStoreRef:
         kind: ClusterSecretStore
         name: cluster-secrets
-        namespace: kube-system
       target:
         name: grafana-cloud
+        creationPolicy: Owner
+        # Optional: type if consumers expect a specific Secret type
+        # type: Opaque
+        template:
+          type: Opaque
+          # Optional: transform keys/format before writing the target Secret
+          data:
+            token: "{{ .token }}"
+            remote-config-url: "{{ .config_url }}"
       data:
-        - secretKey: token
+        # Map each key from the source Secret to a variable name used in the template
+        - secretKey: token           # key name in the resulting Secret (if not templating)
+          remoteRef:
+            key: shared-secrets              # source Secret name in kube-system (via ClusterSecretStore)
+            property: grafana_cloud_token       # key within the source Secret's data
+        - secretKey: config_url
           remoteRef:
             key: shared-secrets
-            namespace: kube-system
-            property: grafana_cloud_token
-        - secretKey: remote-config-url
-          remoteRef:
-            key: shared-secrets
-            namespace: kube-system
             property: grafana_cloud_remote_config_url
-        - secretKey: metrics-url
-          remoteRef:
-            key: shared-secrets
-            namespace: kube-system
-            property: grafana_cloud_metrics_url
-        - secretKey: logs-url
-          remoteRef:
-            key: shared-secrets
-            namespace: kube-system
-            property: grafana_cloud_logs_url
-        - secretKey: traces-url
-          remoteRef:
-            key: shared-secrets
-            namespace: kube-system
-            property: grafana_cloud_traces_url
-        - secretKey: oltp-url
-          remoteRef:
-            key: shared-secrets
-            namespace: kube-system
-            property: grafana_cloud_oltp_url
