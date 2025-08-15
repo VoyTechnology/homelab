@@ -26,6 +26,7 @@ local source = helm.new('monitoring', values={
     ] },
   },
 });
+local extraObjects = helm.extraObjects('monitoring');
 
 local ignoreDifferences = [
   { group: '*', kind: 'Secret', name: 'monitoring-grafana', jsonPointers: ['/data/admin-password'] },
@@ -33,4 +34,5 @@ local ignoreDifferences = [
 
 appset.new('monitoring', 'monitoring')
 + appset.addSource(source)
++ appset.addSource(extraObjects)
 + appset.addIgnoreDifferences(ignoreDifferences)

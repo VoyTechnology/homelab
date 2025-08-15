@@ -1,0 +1,35 @@
+extraObjects:
+  grafanaCloudExternalSecret:
+    apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+      name: grafana-cloud
+    spec:
+      refreshInterval: 1h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: cluster-secrets
+        namespace: kube-system
+      target:
+        name: grafana-cloud
+      data:
+        - secretKey: token
+          remoteRef:
+            key: shared-secrets
+            property: grafana_cloud_token
+        - secretKey: metrics-url
+          remoteRef:
+            key: shared-secrets
+            property: grafana_cloud_metrics_url
+        - secretKey: logs-url
+          remoteRef:
+            key: shared-secrets
+            property: grafana_cloud_logs_url
+        - secretKey: traces-url
+          remoteRef:
+            key: shared-secrets
+            property: grafana_cloud_traces_url
+        - secretKey: oltp-url
+          remoteRef:
+            key: shared-secrets
+            property: grafana_cloud_oltp_url
