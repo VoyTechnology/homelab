@@ -1,20 +1,29 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
-    "docker:enableMajor",
-    "helm:enableMajor"
+    "config:recommended",
+    ":enableVulnerabilityAlertsWithLabel(security)",
+    ":semanticCommits"
   ],
   "platform": "github",
   "timezone": "UTC",
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
-  "semanticCommits": "enabled",
   "dependencyDashboard": true,
   "labels": ["dependencies"],
   "reviewersFromCodeOwners": true,
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
   "packageRules": [
+    {
+      "description": "Enable major updates for Docker images",
+      "matchDatasources": ["docker"],
+      "separateMajorMinor": true
+    },
+    {
+      "description": "Enable major updates for Helm charts",
+      "matchDatasources": ["helm"],
+      "separateMajorMinor": true
+    },
     {
       "description": "Group Helm chart updates",
       "matchManagers": ["helm-values", "helmfile"],
