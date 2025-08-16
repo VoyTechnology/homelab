@@ -1,4 +1,4 @@
-helm       3.13.1
+helm       3.18.5
 kubectl    1.29
 yq         4.40.5
 kubectx    0.8.0
