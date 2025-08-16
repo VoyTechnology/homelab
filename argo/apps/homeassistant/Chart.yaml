@@ -10,7 +10,7 @@ dependencies:
   - name: home-assistant-matter-server
     alias: matter
     repository: https://charts.derwitt.dev
-    version: 3.0.0
+    version: 3.0.1
   - name: music-assistant-server
     alias: musicassistant
     repository: https://lmatfy.github.io/charts
