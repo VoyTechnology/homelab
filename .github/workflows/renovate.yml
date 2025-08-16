@@ -49,7 +49,7 @@ jobs:
         uses: renovatebot/github-action@v43.0.7
         with:
           configurationFile: renovate.json
-          token: ${{ github.token }}
+          token: ${{ secrets.RENOVATE_TOKEN }}
         env:
           LOG_LEVEL: ${{ env.LOG_LEVEL }}
           RENOVATE_REPOSITORIES: ${{ github.repository }}
