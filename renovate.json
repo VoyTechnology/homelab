@@ -3,5 +3,6 @@
   "extends": ["config:recommended", ":semanticCommits", ":dependencyDashboard"],
   "schedule": ["at any time"],
   "dependencyDashboard": true,
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "baseBranches": ["main"]
 }

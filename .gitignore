@@ -1,1 +1,4 @@
 out.txt
+
+# Ignore AI generated stuff
+.crush/
