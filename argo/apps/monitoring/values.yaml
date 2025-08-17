@@ -44,10 +44,11 @@ alloy:
           role = "node"
         }
 
-        remotecfg {
-          url = env("REMOTE_CONFIG_URL")
-          bearer_token = env("TOKEN")
-        }
+        // Temporarily commenting out remote config to troubleshoot
+        // remotecfg {
+        //   url = env("REMOTE_CONFIG_URL")
+        //   bearer_token = env("TOKEN")
+        // }
 
         ////////////////////////////////////////////////////////////////////////
         // Metrics
