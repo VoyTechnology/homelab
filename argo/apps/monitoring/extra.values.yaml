@@ -13,28 +13,21 @@ extraObjects:
       target:
         name: grafana-cloud
         creationPolicy: Owner
-        template:
-          type: Opaque
-          data:
-            token: "{{ .token }}"
-            remote-config-url: "{{ .remote_config_url }}"
-            metrics-url: "{{ .metrics_url }}"
-            logs-url: "{{ .logs_url }}"
       data:
-        # Map each key from the source Secret to match expected environment variables
+        # Map each key from the source Secret directly to the target secret
         - secretKey: token
           remoteRef:
             key: shared-secrets
             property: grafana_cloud_token
-        - secretKey: remote_config_url
+        - secretKey: remote-config-url
           remoteRef:
             key: shared-secrets
             property: grafana_cloud_remote_config_url
-        - secretKey: metrics_url
+        - secretKey: metrics-url
           remoteRef:
             key: shared-secrets
             property: grafana_cloud_metrics_url
-        - secretKey: logs_url
+        - secretKey: logs-url
           remoteRef:
             key: shared-secrets
             property: grafana_cloud_logs_url
