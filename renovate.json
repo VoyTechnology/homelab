@@ -4,5 +4,6 @@
   "schedule": ["at any time"],
   "dependencyDashboard": true,
   "labels": ["dependencies"],
-  "baseBranches": ["main"]
+  "baseBranches": ["main"],
+  "configMigration": true
 }
