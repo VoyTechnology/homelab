@@ -136,8 +136,9 @@ alloy:
         prometheus.remote_write "mimir" {
           endpoint {
             url = env("PROMETHEUS_URL") + "/api/v1/write"
-            headers = {
-              "X-Scope-OrgID" = env("CLUSTER_NAME"),
+            basic_auth {
+              username = env("CLUSTER_NAME")
+              password = env("TOKEN")
             }
           }
         }
@@ -216,7 +217,10 @@ alloy:
         loki.write "loki" {
           endpoint {
             url = env("LOKI_URL") + "/loki/api/v1/push"
-            tenant_id = env("CLUSTER_NAME")
+            basic_auth {
+              username = env("CLUSTER_NAME")
+              password = env("TOKEN")
+            }
           }
         }
 
