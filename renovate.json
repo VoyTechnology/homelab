@@ -24,14 +24,13 @@
     },
     {
       "customType": "regex",
-      "description": "Update GitHub release attachments in YAML files",
+      "description": "Update GitHub attachments in releases in YAML files",
       "managerFilePatterns": [".*\\.(ya?ml)$"],
       "matchStrings": [
-        "#\\s*renovate:\\s*datasource=github-release-attachments\\s+depName=(?<depName>\\S+)\\s+assetName=(?<assetName>[^\\s]+)\\s*\\n\\s*-\\s*https://github\\.com/[^/]+/[^/]+/releases/download/v?(?<currentValue>[^/]+)/[^\\s\"']*"
+        "#\\s*renovate:\\s*datasource=github-files\\s+depName=(?<depName>\\S+)\\s*\\n\\s*-\\s*https://github\\.com/[^/]+/[^/]+/releases/download/v?(?<currentValue>[^/]+)/[^\\s\"']*"
       ],
-      "datasourceTemplate": "github-release-attachments",
-      "depNameTemplate": "{{depName}}",
-      "assetNameTemplate": "{{assetName}}"
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "{{depName}}"
     }
   ]
 }

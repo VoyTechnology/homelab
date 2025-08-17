@@ -13,9 +13,9 @@ minecraftServer:
   pluginUrls:
     - https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
     - https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
-    # renovate: datasource=github-release-attachments depName=ViaVersion/ViaVersion assetName=ViaVersion-.*\.jar
+    # renovate: datasource=github-files depName=ViaVersion/ViaVersion
     - https://github.com/ViaVersion/ViaVersion/releases/download/5.2.1/ViaVersion-5.2.1.jar
-    # renovate: datasource=github-release-attachments depName=BlueMap-Minecraft/BlueMap assetName=bluemap-.*-paper\.jar
+    # renovate: datasource=github-files depName=BlueMap-Minecraft/BlueMap
     - https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v5.7/bluemap-5.7-paper.jar
   # Extra ports are configured using the jsonnet.
   # extraPorts:
