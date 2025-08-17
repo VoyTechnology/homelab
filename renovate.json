@@ -12,7 +12,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": [".*"],
+      "managerFilePatterns": ["^.*$"],
       "matchStrings": [
         "renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: registryUrl=(?<registryUrl>[^\\s]+))?\\s*\\n.*?:\\s*\"?(?<currentValue>[0-9a-zA-Z\\.\\-]+)\"?"
       ],
