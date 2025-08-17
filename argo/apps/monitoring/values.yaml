@@ -9,7 +9,7 @@ alloy:
   enabled: true
   controller:
     type: statefulset # Needed for clustering
-    replicas: 2
+    replicas: 1
   ingress:
     enabled: true
     annotations:
