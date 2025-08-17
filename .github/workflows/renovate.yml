@@ -1,6 +1,10 @@
 name: Renovate
 
 on:
+  # Trigger on Dependency Dashboard issue updates
+  issues:
+    types: [opened, edited, reopened]
+
   # Run on schedule
   schedule:
     - cron: "0 6 * * 1" # Monday at 6 AM UTC
@@ -41,6 +45,10 @@ permissions:
 jobs:
   renovate:
     runs-on: ubuntu-latest
+    # Run on all types, but if its issues, just on Dependency Dashboard
+    if: |
+      github.event_name != 'issues' ||
+      contains(github.event.issue.title, 'Dependency Dashboard')
     permissions:
       contents: write
       issues: write
