@@ -9,6 +9,7 @@
   "automerge": true,
   "automergeType": "pr",
   "automergeStrategy": "squash",
+  "platformAutomerge": true,
   "customManagers": [
     {
       "customType": "regex",
@@ -23,34 +24,14 @@
     },
     {
       "customType": "regex",
-      "description": "Update dependencies in yaml files",
+      "description": "Update GitHub release attachments in YAML files",
       "managerFilePatterns": [".*\\.(ya?ml)$"],
       "matchStrings": [
-        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+registryUrl=(?<registryUrl>\\S+))?[\\s\\S]*?(?:version|chart_version)\\s*:\\s*['\"]?(?<currentValue>[^'\"\\s]+)['\"]?"
+        "#\\s*renovate:\\s*datasource=github-release-attachments\\s+depName=(?<depName>\\S+)\\s+assetName=(?<assetName>[^\\s]+)\\s*\\n\\s*-\\s*https://github\\.com/[^/]+/[^/]+/releases/download/v?(?<currentValue>[^/]+)/[^\\s\"']*"
       ],
-      "datasourceTemplate": "{{datasource}}",
+      "datasourceTemplate": "github-release-attachments",
       "depNameTemplate": "{{depName}}",
-      "registryUrlTemplate": "{{registryUrl}}"
-    },
-    {
-      "customType": "regex",
-      "description": "Update GitHub release download URLs",
-      "managerFilePatterns": [".*\\.(ya?ml|jsonnet|libsonnet)$"],
-      "matchStrings": [
-        "(?:#|//)\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+extractVersion=(?<extractVersion>[^\\s]+))?\\s*\\n\\s*-\\s*https://github\\.com/[^/]+/[^/]+/releases/download/v?(?<currentValue>[^/]+)/"
-      ],
-      "datasourceTemplate": "{{datasource}}",
-      "depNameTemplate": "{{depName}}",
-      "extractVersionTemplate": "{{extractVersion}}"
-    },
-    {
-      "customType": "regex",
-      "description": "Update any GitHub release URLs with version in URL",
-      "managerFilePatterns": [".*\\.(ya?ml|jsonnet|libsonnet)$"],
-      "matchStrings": [
-        "(?:#|//)\\s*renovate:\\s*datasource=github-releases\\s+depName=(?<depName>[^\\s]+)\\s+currentValue=(?<currentValue>[^\\s]+)\\s*\\n\\s*-\\s*https://github\\.com/[^/]+/[^/]+/releases/download/[^/]+/[^\\s\"']*"
-      ],
-      "datasourceTemplate": "github-releases"
+      "assetNameTemplate": "{{assetName}}"
     }
   ]
 }
