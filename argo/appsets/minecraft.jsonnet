@@ -41,7 +41,7 @@ local source = helm.new(
   'minecraft',
   repoURL='https://itzg.github.io/minecraft-server-charts/',
   chart='minecraft',
-  // renovate: datasource=helm depName=minecraft-server-charts/minecraft registryUrl=https://itzg.github.io/minecraft-server-charts/
+  // renovate: datasource=helm depName=minecraft registryUrl=https://itzg.github.io/minecraft-server-charts/
   targetRevision='4.23.2',
   values={
     minecraftServer: {
