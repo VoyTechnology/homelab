@@ -1,9 +1,19 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":semanticCommits", ":dependencyDashboard"],
-  "schedule": ["at any time"],
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":dependencyDashboard"
+  ],
+  "schedule": [
+    "at any time"
+  ],
   "dependencyDashboard": true,
-  "labels": ["dependencies"],
-  "baseBranches": ["main"],
+  "labels": [
+    "dependencies"
+  ],
+  "baseBranchPatterns": [
+    "main"
+  ],
   "configMigration": true
 }
