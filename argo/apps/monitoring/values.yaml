@@ -218,7 +218,7 @@ alloy:
           endpoint {
             url = env("LOKI_URL") + "/loki/api/v1/push"
             basic_auth {
-              username = env("GRAFANA_USER")
+              username = env("LOKI_USER")
               password = env("TOKEN")
             }
           }

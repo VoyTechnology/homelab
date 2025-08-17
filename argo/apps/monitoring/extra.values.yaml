@@ -23,6 +23,10 @@ extraObjects:
           remoteRef:
             key: shared-secrets
             property: grafana_cloud_user
+        - secretKey: loki-user
+          remoteRef:
+            key: shared-secrets
+            property: grafana_cloud_loki_user
         - secretKey: remote-config-url
           remoteRef:
             key: shared-secrets
