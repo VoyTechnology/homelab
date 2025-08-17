@@ -6,7 +6,7 @@ dependencies:
   - name: alloy
     condition: alloy.enabled
     repository: https://grafana.github.io/helm-charts
-    version: "0.12.6"
+    version: "1.2.1"
   - name: prometheus-node-exporter
     condition: prometheus-node-exporter.enabled
     repository: https://prometheus-community.github.io/helm-charts
