@@ -18,3 +18,4 @@ extraObjects:
             serviceAccount:
               name: externalsecrets-external-secrets
               namespace: kube-system
+          remoteNamespace: kube-system
