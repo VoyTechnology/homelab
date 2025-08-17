@@ -33,7 +33,7 @@ jobs:
         echo "EOF" >> $GITHUB_ENV 
       
     - name: Run Playbook
-      uses: dawidd6/action-ansible-playbook@v2
+      uses: dawidd6/action-ansible-playbook@v4
       with:
         # Required, playbook filepath
         playbook: "./playbooks/${{github.event.inputs.playbook}}.yml"
