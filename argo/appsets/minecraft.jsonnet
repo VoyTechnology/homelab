@@ -42,7 +42,7 @@ local source = helm.new(
   repoURL='https://itzg.github.io/minecraft-server-charts/',
   chart='minecraft',
   // renovate: datasource=helm depName=minecraft registryUrl=https://itzg.github.io/minecraft-server-charts/
-  targetRevision='4.23.2',
+  targetRevision='4.26.4',
   values={
     minecraftServer: {
       motd: 'Welcome to Skynet 3!',
