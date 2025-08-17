@@ -12,6 +12,17 @@
   "customManagers": [
     {
       "customType": "regex",
+      "description": "Update dependencies in jsonnet files",
+      "fileMatch": [".*\\.(jsonnet|libsonnet)$"],
+      "matchStrings": [
+        "//\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+registryUrl=(?<registryUrl>\\S+))?[\\s\\S]*?targetRevision\\s*=\\s*['\"](?<currentValue>[^'\"]+)['\"]"
+      ],
+      "datasourceTemplate": "{{datasource}}",
+      "depNameTemplate": "{{depName}}",
+      "registryUrlTemplate": "{{registryUrl}}"
+    },
+    {
+      "customType": "regex",
       "managerFilePatterns": [".*\\.(ya?ml|jsonnet|libsonnet)$"],
       "matchStrings": [
         "renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: registryUrl=(?<registryUrl>[^\\s]+))?\\s*\\n.*?:\\s*\"?(?<currentValue>[0-9a-zA-Z\\.\\-]+)\"?"
