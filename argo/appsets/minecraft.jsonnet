@@ -27,19 +27,21 @@ local mapPort = {
     enabled: true,
     ingressClassName: 'external',
     hosts: [{
-      name: 'skynet-map.'+domain,
+      name: 'skynet-map.' + domain,
       path: '/',
     }],
     tls: [{
-      secretName: 'skynet-map-'+domain,
-      hosts: ['skynet-map.'+domain],
+      secretName: 'skynet-map-' + domain,
+      hosts: ['skynet-map.' + domain],
     }],
-  }
+  },
 };
 
-local source = helm.new('minecraft',
+local source = helm.new(
+  'minecraft',
   repoURL='https://itzg.github.io/minecraft-server-charts/',
   chart='minecraft',
+  // renovate: datasource=helm depName=minecraft-server-charts/minecraft registryUrl=https://itzg.github.io/minecraft-server-charts/
   targetRevision='4.23.2',
   values={
     minecraftServer: {
@@ -47,7 +49,7 @@ local source = helm.new('minecraft',
       extraPorts: [
         bedrockPort,
         mapPort,
-      ]
+      ],
     },
     nodeSelector: {
       'kubernetes.io/hostname': 's1-bet1',
