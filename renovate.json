@@ -24,13 +24,14 @@
     },
     {
       "customType": "regex",
-      "description": "Update GitHub attachments in releases in YAML files",
+      "description": "Update GitHub release file URLs with version in filename",
       "managerFilePatterns": ["/.*\\.(ya?ml)$/"],
       "matchStrings": [
-        "# renovate: datasource=github-releases-files depName=(?<depName>.*)\\n\\s+- https://github.com/.*/.*releases/download/(?<currentValue>.*)/.*-(?<currentVersion>.*)\\..*"
+        "# renovate: datasource=github-releases(?:-files)? depName=(?<depName>[^\\s]+)\\s*\\n\\s*- https://github\\.com/(?<owner>[^/]+)/(?<repo>[^/]+)/releases/download/v?(?<currentValue>[0-9]+(?:\\.[0-9]+)*)/(?<prefix>[^-]*-)(?<fileVersion>[0-9]+(?:\\.[0-9]+)*)(?<suffix>.*)"
       ],
       "datasourceTemplate": "github-releases",
-      "depNameTemplate": "{{depName}}"
+      "depNameTemplate": "{{depName}}",
+      "autoReplaceStringTemplate": "https://github.com/{{owner}}/{{repo}}/releases/download/v{{newValue}}/{{prefix}}{{newValue}}{{suffix}}"
     }
   ]
 }
