@@ -27,7 +27,7 @@
       "description": "Update GitHub attachments in releases in YAML files",
       "managerFilePatterns": [".*\\.(ya?ml)$"],
       "matchStrings": [
-        "#\\s*renovate:\\s*datasource=github-files\\s+depName=(?<depName>\\S+)\\s*\\n\\s*-\\s*https://github\\.com/[^/]+/[^/]+/releases/download/v?(?<currentValue>[^/]+)/[^\\s\"']*"
+        "# renovate: datasource=github-releases-files depName=(?<depName>.*)\\n\\s+- https://github.com/.*/.*releases/download/(?<currentValue>.*)/.*-(?<currentVersion>.*)\\..*"
       ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "{{depName}}"
