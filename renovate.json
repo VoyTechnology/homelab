@@ -8,5 +8,18 @@
   "configMigration": true,
   "automerge": true,
   "automergeType": "pr",
-  "automergeStrategy": "squash"
+  "automergeStrategy": "squash",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [".*"],
+      "matchStrings": [
+        "renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: registryUrl=(?<registryUrl>[^\\s]+))?\\s*\\n.*?:\\s*\"?(?<currentValue>[0-9a-zA-Z\\.\\-]+)\"?"
+      ],
+      "datasourceTemplate": "{{datasource}}",
+      "depNameTemplate": "{{depName}}",
+      "registryUrlTemplate": "{{registryUrl}}",
+      "versioningTemplate": "semver"
+    }
+  ]
 }
