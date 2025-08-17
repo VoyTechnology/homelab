@@ -16,7 +16,7 @@ minecraftServer:
     # renovate: datasource=github-releases-files depName=ViaVersion/ViaVersion
     - https://github.com/ViaVersion/ViaVersion/releases/download/5.2.1/ViaVersion-5.2.1.jar
     # renovate: datasource=github-releases-files depName=BlueMap-Minecraft/BlueMap
-    - https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v5.7/bluemap-5.7-paper.jar
+    - https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v5.11/bluemap-5.7-paper.jar
   # Extra ports are configured using the jsonnet.
   # extraPorts:
   #   - name: bedrock
