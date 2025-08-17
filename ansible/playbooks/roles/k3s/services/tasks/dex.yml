@@ -75,7 +75,6 @@
               - "https://login.{{ cluster_domain }}/oauth2/callback"
               - "https://auth.{{ cluster_domain }}/oauth2/callback"
               - "https://grafana.{{ cluster_domain }}/login/generic_oauth"
-              - "https://minio.{{ cluster_domain }}/oauth_callback"
       ingress:
         enabled: true
         annotations:

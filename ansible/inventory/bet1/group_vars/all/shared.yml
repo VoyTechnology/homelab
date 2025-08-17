@@ -7,15 +7,11 @@ cluster_name: "bet1"
 # Namespaces which are used across the cluster
 monitoring_namespace: "monitoring"
 
-# Minio storage namespace
-minio_namespace: "minio"
-
 # List of infra namespaces to create which are pre-created or used in Ansible
 infra_namespaces:
-- "{{ internal_ingress_namespace }}"
-- "{{ argocd_k8s_namespace }}"
-- "{{ cert_manager_namespace }}"
-- "{{ cloudflare_external_dns_namespace }}"
-- "{{ external_ingress_namespace }}"
-- "{{ monitoring_namespace }}"
-- "{{ minio_namespace }}"
+  - "{{ internal_ingress_namespace }}"
+  - "{{ argocd_k8s_namespace }}"
+  - "{{ cert_manager_namespace }}"
+  - "{{ cloudflare_external_dns_namespace }}"
+  - "{{ external_ingress_namespace }}"
+  - "{{ monitoring_namespace }}"
