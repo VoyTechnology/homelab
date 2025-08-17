@@ -1,10 +1,20 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":semanticCommits", ":dependencyDashboard"],
-  "schedule": ["at any time"],
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":dependencyDashboard"
+  ],
+  "schedule": [
+    "at any time"
+  ],
   "dependencyDashboard": true,
-  "labels": ["dependencies"],
-  "baseBranchPatterns": ["main"],
+  "labels": [
+    "dependencies"
+  ],
+  "baseBranchPatterns": [
+    "main"
+  ],
   "configMigration": true,
   "automerge": true,
   "automergeType": "pr",
@@ -13,7 +23,9 @@
     {
       "customType": "regex",
       "description": "Update dependencies in jsonnet files",
-      "fileMatch": [".*\\.(jsonnet|libsonnet)$"],
+      "managerFilePatterns": [
+        "/.*\\.(jsonnet|libsonnet)$/"
+      ],
       "matchStrings": [
         "//\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+registryUrl=(?<registryUrl>\\S+))?[\\s\\S]*?targetRevision\\s*=\\s*['\"](?<currentValue>[^'\"]+)['\"]"
       ],
@@ -23,7 +35,9 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": [".*\\.(ya?ml|jsonnet|libsonnet)$"],
+      "managerFilePatterns": [
+        ".*\\.(ya?ml|jsonnet|libsonnet)$"
+      ],
       "matchStrings": [
         "renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+)(?: registryUrl=(?<registryUrl>[^\\s]+))?\\s*\\n.*?:\\s*\"?(?<currentValue>[0-9a-zA-Z\\.\\-]+)\"?"
       ],
