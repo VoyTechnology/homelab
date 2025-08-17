@@ -13,21 +13,28 @@ extraObjects:
       target:
         name: grafana-cloud
         creationPolicy: Owner
-        # Optional: type if consumers expect a specific Secret type
-        # type: Opaque
         template:
           type: Opaque
-          # Optional: transform keys/format before writing the target Secret
           data:
             token: "{{ .token }}"
-            remote-config-url: "{{ .config_url }}"
+            remote-config-url: "{{ .remote_config_url }}"
+            metrics-url: "{{ .metrics_url }}"
+            logs-url: "{{ .logs_url }}"
       data:
-        # Map each key from the source Secret to a variable name used in the template
-        - secretKey: token           # key name in the resulting Secret (if not templating)
+        # Map each key from the source Secret to match expected environment variables
+        - secretKey: token
           remoteRef:
-            key: shared-secrets              # source Secret name in kube-system (via ClusterSecretStore)
-            property: grafana_cloud_token       # key within the source Secret's data
-        - secretKey: config_url
+            key: shared-secrets
+            property: grafana_cloud_token
+        - secretKey: remote_config_url
           remoteRef:
             key: shared-secrets
             property: grafana_cloud_remote_config_url
+        - secretKey: metrics_url
+          remoteRef:
+            key: shared-secrets
+            property: grafana_cloud_metrics_url
+        - secretKey: logs_url
+          remoteRef:
+            key: shared-secrets
+            property: grafana_cloud_logs_url

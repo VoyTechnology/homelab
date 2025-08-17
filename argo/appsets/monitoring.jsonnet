@@ -11,8 +11,8 @@ local source = helm.new('monitoring', values={
       util.env('CLUSTER_NAME', '{{ .cluster }}'),
       util.secretEnv('TOKEN', 'grafana-cloud', 'token'),
       util.secretEnv('REMOTE_CONFIG_URL', 'grafana-cloud', 'remote-config-url'),
-      util.secretEnv('METRICS_URL', 'grafana-cloud', 'metrics-url'),
-      util.secretEnv('LOGS_URL', 'grafana-cloud', 'logs-url'),
+      util.secretEnv('PROMETHEUS_URL', 'grafana-cloud', 'metrics-url'),
+      util.secretEnv('LOKI_URL', 'grafana-cloud', 'logs-url'),
     ] },
   },
 });
