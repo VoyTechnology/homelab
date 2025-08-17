@@ -137,7 +137,7 @@ alloy:
           endpoint {
             url = env("PROMETHEUS_URL") + "/api/v1/write"
             basic_auth {
-              username = env("CLUSTER_NAME")
+              username = env("GRAFANA_USER")
               password = env("TOKEN")
             }
           }
@@ -218,7 +218,7 @@ alloy:
           endpoint {
             url = env("LOKI_URL") + "/loki/api/v1/push"
             basic_auth {
-              username = env("CLUSTER_NAME")
+              username = env("GRAFANA_USER")
               password = env("TOKEN")
             }
           }
