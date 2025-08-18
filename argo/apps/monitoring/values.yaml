@@ -135,7 +135,7 @@ alloy:
 
         prometheus.remote_write "mimir" {
           endpoint {
-            url = env("PROMETHEUS_URL") + "/api/v1/write"
+            url = env("PROMETHEUS_URL") + "/api/prom/push"
             basic_auth {
               username = env("GRAFANA_USER")
               password = env("TOKEN")
