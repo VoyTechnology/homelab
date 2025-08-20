@@ -54,26 +54,35 @@ alloy:
         // Metrics
         ////////////////////////////////////////////////////////////////////////
 
+        // Relabel block to drop specific metrics before shipping to mimir
+        prometheus.relabel "filter_metrics" {
+          forward_to = [prometheus.remote_write.mimir.receiver]
+
+          rule {
+            source_labels = ["__name__"]
+            regex = "etcd_request_duration_seconds_bucket|apiserver_request_sli_duration_seconds_bucket"
+            action = "drop"
+          }
+        }
+
         // We use the servicemonitor to allow services their own control
         // over how they are scraped
         prometheus.operator.servicemonitors "services" {
           clustering {
             enabled = false
           }
-
-          // forward_to = [prometheus.relabel.services.receiver]
-          forward_to = [prometheus.remote_write.mimir.receiver]
+          forward_to = [prometheus.relabel.filter_metrics.receiver]
         }
 
         prometheus.operator.podmonitors "pods" {
-          forward_to = [prometheus.remote_write.mimir.receiver]
+          forward_to = [prometheus.relabel.filter_metrics.receiver]
         }
 
         prometheus.exporter.cadvisor "cadvisor" {}
 
         prometheus.scrape "cadvisor" {
           targets = prometheus.exporter.cadvisor.cadvisor.targets
-          forward_to = [prometheus.remote_write.mimir.receiver]
+          forward_to = [prometheus.relabel.filter_metrics.receiver]
         }
 
         discovery.relabel "node_cadvisor" {
@@ -99,7 +108,7 @@ alloy:
 
         prometheus.scrape "node_cadvisor" {
           targets = discovery.relabel.node_cadvisor.output
-          forward_to = [prometheus.remote_write.mimir.receiver]
+          forward_to = [prometheus.relabel.filter_metrics.receiver]
 
           scheme = "https"
           tls_config {
@@ -112,7 +121,7 @@ alloy:
 
         prometheus.scrape "node" {
           targets = discovery.kubernetes.node.targets
-          forward_to = [prometheus.remote_write.mimir.receiver]
+          forward_to = [prometheus.relabel.filter_metrics.receiver]
 
           scheme = "https"
           tls_config {
@@ -122,16 +131,6 @@ alloy:
           }
           bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
         }
-
-        // prometheus.relabel "services" {
-        //   forward_to = [prometheus.remote_write.mimir.receiver]
-        //
-        //   // In clustering mode it seems like the instance is not set correctly
-        //   // https://github.com/grafana/alloy/issues/1009
-        //   rule {
-        //     action = "labe"
-        //   }
-        // }
 
         prometheus.remote_write "mimir" {
           endpoint {
