@@ -12,6 +12,7 @@ local ollamaSource = helm.new('ollama',
 local openWebUISource = helm.new('open-webui',
   repoURL="https://helm.openwebui.com/",
   chart="open-webui",
+	// renovate: datasource=helm depName=open-webui registryUrl=https://helm.openwebui.com/
   targetRevision="6.0.0",
   valuesApp='ai',
   values={
