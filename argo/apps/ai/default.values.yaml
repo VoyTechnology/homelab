@@ -2,10 +2,10 @@
 ollama:
   models:
     pull:
-    - "gemma3:4b" # Smaller model due to memory constraints
-	  - "gemma3:270m" # Even smaller basic model
+      - "gemma3:4b" # Smaller model due to memory constraints
+      - "gemma3:270m" # Even smaller basic model
     run:
-    - "gemma3:270m"
+      - "gemma3:270m"
 
 # open-webui config
 ollamaUrls:
