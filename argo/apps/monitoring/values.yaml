@@ -24,6 +24,38 @@ alloy:
             name: monitoring-alloy
             port:
               number: 12347
+  # Add environment variables for remote config
+  extraEnvs:
+    - name: REMOTE_CONFIG_URL
+      valueFrom:
+        secretKeyRef:
+          name: shared-secrets
+          key: grafana_cloud_remote_config_url
+    - name: TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: shared-secrets
+          key: grafana_cloud_token
+    - name: PROMETHEUS_URL
+      valueFrom:
+        secretKeyRef:
+          name: shared-secrets
+          key: grafana_cloud_metrics_url
+    - name: LOKI_URL
+      valueFrom:
+        secretKeyRef:
+          name: shared-secrets
+          key: grafana_cloud_logs_url
+    - name: GRAFANA_USER
+      valueFrom:
+        secretKeyRef:
+          name: shared-secrets
+          key: grafana_cloud_user
+    - name: LOKI_USER
+      valueFrom:
+        secretKeyRef:
+          name: shared-secrets
+          key: grafana_cloud_loki_user
   alloy:
     clustering:
       enabled: false
@@ -39,225 +71,16 @@ alloy:
           enabled = true
         }
 
-        // Shared config
+        // Enable remote configuration management
+        remotecfg {
+          url = env("REMOTE_CONFIG_URL")
+          bearer_token = env("TOKEN")
+        }
+
+        // Minimal local config - everything else managed remotely
+        // This ensures the agent can start and receive remote config
         discovery.kubernetes "node" {
           role = "node"
-        }
-
-        // Temporarily commenting out remote config to troubleshoot
-        // remotecfg {
-        //   url = env("REMOTE_CONFIG_URL")
-        //   bearer_token = env("TOKEN")
-        // }
-
-        ////////////////////////////////////////////////////////////////////////
-        // Metrics
-        ////////////////////////////////////////////////////////////////////////
-
-        // Relabel block to allowlist only essential metrics before shipping to mimir
-        prometheus.relabel "filter_metrics" {
-          forward_to = [prometheus.remote_write.mimir.receiver]
-
-          // Keep only the 'up' metric with service name
-          rule {
-            source_labels = ["__name__"]
-            regex = "up"
-            action = "keep"
-          }
-
-          // Keep disk space metrics only for minecraft namespace
-          rule {
-            source_labels = ["__name__", "namespace"]
-            regex = "kubelet_volume_stats_used_bytes|kubelet_volume_stats_capacity_bytes;minecraft"
-            action = "keep"
-          }
-
-          // For 'up' metric, keep only essential labels (job which contains service name)
-          rule {
-            source_labels = ["__name__"]
-            regex = "up"
-            target_label = "__tmp_keep_job"
-            replacement = "1"
-          }
-
-          // For disk metrics in minecraft namespace, keep only PVC name
-          rule {
-            source_labels = ["__name__", "namespace"]
-            regex = "kubelet_volume_stats_used_bytes|kubelet_volume_stats_capacity_bytes;minecraft"
-            target_label = "__tmp_keep_pvc"
-            replacement = "1"
-          }
-
-          // Drop all other metrics not matching our allowlist
-          rule {
-            source_labels = ["__tmp_keep_job", "__tmp_keep_pvc"]
-            regex = "^$"
-            action = "drop"
-          }
-
-          // Clean up temporary labels
-          rule {
-            regex = "__tmp_.*"
-            action = "labeldrop"
-          }
-        }
-
-        // We use the servicemonitor to allow services their own control
-        // over how they are scraped
-        prometheus.operator.servicemonitors "services" {
-          clustering {
-            enabled = false
-          }
-          forward_to = [prometheus.relabel.filter_metrics.receiver]
-        }
-
-        prometheus.operator.podmonitors "pods" {
-          forward_to = [prometheus.relabel.filter_metrics.receiver]
-        }
-
-        prometheus.exporter.cadvisor "cadvisor" {}
-
-        prometheus.scrape "cadvisor" {
-          targets = prometheus.exporter.cadvisor.cadvisor.targets
-          forward_to = [prometheus.relabel.filter_metrics.receiver]
-        }
-
-        discovery.relabel "node_cadvisor" {
-          targets = discovery.kubernetes.node.targets
-
-          rule {
-            regex  = "__meta_kubernetes_node_label_(.+)"
-            action = "labelmap"
-          }
-
-          rule {
-            target_label = "__address__"
-            replacement  = "kubernetes.default.svc:443"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_node_name"]
-            regex         = "(.+)"
-            target_label  = "__metrics_path__"
-            replacement   = "/api/v1/nodes/$1/proxy/metrics/cadvisor"
-          }
-        }
-
-        prometheus.scrape "node_cadvisor" {
-          targets = discovery.relabel.node_cadvisor.output
-          forward_to = [prometheus.relabel.filter_metrics.receiver]
-
-          scheme = "https"
-          tls_config {
-            server_name = "localhost"
-            ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-            insecure_skip_verify = false
-          }
-          bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-        }
-
-        prometheus.scrape "node" {
-          targets = discovery.kubernetes.node.targets
-          forward_to = [prometheus.relabel.filter_metrics.receiver]
-
-          scheme = "https"
-          tls_config {
-            server_name = "localhost"
-            ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-            insecure_skip_verify = false
-          }
-          bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-        }
-
-        prometheus.remote_write "mimir" {
-          endpoint {
-            url = env("PROMETHEUS_URL") + "/api/prom/push"
-            basic_auth {
-              username = env("GRAFANA_USER")
-              password = env("TOKEN")
-            }
-          }
-        }
-
-        ////////////////////////////////////////////////////////////////////////
-        // Logs
-        ////////////////////////////////////////////////////////////////////////
-
-        discovery.kubernetes "pod" {
-          role = "pod"
-        }
-
-        discovery.relabel "pod_logs" {
-          targets = discovery.kubernetes.pod.targets
-
-          rule {
-            source_labels = ["__meta_kubernetes_namespace"]
-            action        = "replace"
-            target_label  = "namespace"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_name"]
-            action        = "replace"
-            target_label  = "pod"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_container_name"]
-            action        = "replace"
-            target_label  = "container"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
-            action        = "replace"
-            target_label  = "app"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
-            action        = "replace"
-            target_label  = "job"
-            separator     = "/"
-            replacement   = "$1"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
-            action        = "replace"
-            target_label  = "__path__"
-            separator     = "/"
-            replacement   = "/var/log/pods/*$1/*.log"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_pod_container_id"]
-            action        = "replace"
-            target_label  = "container_runtime"
-            regex         = "^(\\S+):\\/\\/.+$"
-            replacement   = "$1"
-          }
-        }
-
-        loki.source.kubernetes "in_cluster" {
-          targets = discovery.relabel.pod_logs.output
-          forward_to = [loki.process.pod_logs.receiver]
-        }
-
-        loki.process "pod_logs" {
-          stage.cri {}
-
-          forward_to = [loki.write.loki.receiver]
-        }
-
-        loki.write "loki" {
-          endpoint {
-            url = env("LOKI_URL") + "/loki/api/v1/push"
-            basic_auth {
-              username = env("LOKI_USER")
-              password = env("TOKEN")
-            }
-          }
         }
 
 ####################################################################################################
