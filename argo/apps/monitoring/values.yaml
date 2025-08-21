@@ -54,14 +54,51 @@ alloy:
         // Metrics
         ////////////////////////////////////////////////////////////////////////
 
-        // Relabel block to drop specific metrics before shipping to mimir
+        // Relabel block to allowlist only essential metrics before shipping to mimir
         prometheus.relabel "filter_metrics" {
           forward_to = [prometheus.remote_write.mimir.receiver]
 
+          // Keep only the 'up' metric with service name
           rule {
             source_labels = ["__name__"]
-            regex = "etcd_request_duration_seconds_bucket|apiserver_request_sli_duration_seconds_bucket"
+            regex = "up"
+            action = "keep"
+          }
+
+          // Keep disk space metrics only for minecraft namespace
+          rule {
+            source_labels = ["__name__", "namespace"]
+            regex = "kubelet_volume_stats_used_bytes|kubelet_volume_stats_capacity_bytes;minecraft"
+            action = "keep"
+          }
+
+          // For 'up' metric, keep only essential labels (job which contains service name)
+          rule {
+            source_labels = ["__name__"]
+            regex = "up"
+            target_label = "__tmp_keep_job"
+            replacement = "1"
+          }
+
+          // For disk metrics in minecraft namespace, keep only PVC name
+          rule {
+            source_labels = ["__name__", "namespace"]
+            regex = "kubelet_volume_stats_used_bytes|kubelet_volume_stats_capacity_bytes;minecraft"
+            target_label = "__tmp_keep_pvc"
+            replacement = "1"
+          }
+
+          // Drop all other metrics not matching our allowlist
+          rule {
+            source_labels = ["__tmp_keep_job", "__tmp_keep_pvc"]
+            regex = "^$"
             action = "drop"
+          }
+
+          // Clean up temporary labels
+          rule {
+            regex = "__tmp_.*"
+            action = "labeldrop"
           }
         }
 
