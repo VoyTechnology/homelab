@@ -1,0 +1,24 @@
+extraObjects:
+  homeassistantMatterHubSecret:
+    apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+      name: homeassistant-matterhub
+      namespace: homeassistant
+    spec:
+      refreshInterval: 1h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: cluster-secrets
+      target:
+        name: homeassistant-matterhub
+        creationPolicy: Owner
+      data:
+        - secretKey: token
+          remoteRef:
+            key: shared-secrets
+            property: homeassistant_token
+        - secretKey: url
+          remoteRef:
+            key: shared-secrets
+            property: homeassistant_url

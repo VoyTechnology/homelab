@@ -43,3 +43,73 @@ musicassistant:
       enabled: true
       size: 5Gi
       storageClassName: longhorn
+
+# Home Assistant Matter Hub - exposes HA entities as Matter devices
+# Prerequisites:
+# The Home Assistant URL and access token are automatically pulled from the
+# shared-secrets in kube-system namespace via External Secrets Operator.
+# Keys used: homeassistant_url and homeassistant_token
+matterhub:
+  enabled: true
+  image:
+    # renovate: datasource=ghcr depName=ghcr.io/t0bst4r/home-assistant-matter-hub
+    name: ghcr.io/t0bst4r/home-assistant-matter-hub:3.0.0-alpha.87
+    pullPolicy: Always
+  
+  # Home Assistant connection configuration
+  homeAssistant:
+    # URL and token are pulled from shared-secrets via External Secrets
+    accessTokenSecret:
+      name: homeassitant-matterhub
+  
+  # Application configuration
+  logLevel: info
+  httpPort: 8482
+  
+  # Optional: Network interface for mDNS (adjust based on your setup)
+  # mdnsNetworkInterface: enp6s0
+  
+  # Optional: IP whitelist (CIDR notation)
+  # httpIpWhitelist:
+  #   - "10.0.0.0/8"
+  #   - "192.168.0.0/16"
+  
+  # Node selector to ensure it runs on the same node as Home Assistant
+  nodeSelector:
+    kubernetes.io/hostname: s1-bet1
+  
+  # Resource limits
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  
+  # Persistent storage for Matter Hub data
+  persistence:
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    storageClassName: longhorn
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 8482
+  
+  # Ingress configuration for web UI access
+  ingress:
+    enabled: true
+    className: internal-shared
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    hosts:
+      - host: matter.REPLACE_ME
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: matter-hub-tls
+        hosts:
+          - matter.REPLACE_ME

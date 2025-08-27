@@ -61,5 +61,8 @@ local source = helm.new(
   },
 );
 
+local extraObjects = helm.extraObjects('homeassistant');
+
 appset.new('homeassistant', 'homeassistant')
 + appset.addSource(source)
++ appset.addSource(extraObjects)
