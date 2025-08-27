@@ -45,13 +45,13 @@ spec:
         - name: HAMH_HOME_ASSISTANT_URL
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.matterhub.homeAssistant.accessTokenSecret.name }}
-              key: url
+              name: {{ .Values.matterhub.homeAssistant.secret.name }}
+              key: {{ .Values.matterhub.homeAssistant.secret.urlKey | default "url" }}
         - name: HAMH_HOME_ASSISTANT_ACCESS_TOKEN
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.matterhub.homeAssistant.accessTokenSecret.name }}
-              key: token
+              name: {{ .Values.matterhub.homeAssistant.secret.name }}
+              key: {{ .Values.matterhub.homeAssistant.secret.tokenKey | default "token" }}
         - name: HAMH_LOG_LEVEL
           value: {{ .Values.matterhub.logLevel | quote }}
         - name: HAMH_HTTP_PORT

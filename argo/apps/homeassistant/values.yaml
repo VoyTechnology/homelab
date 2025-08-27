@@ -59,8 +59,10 @@ matterhub:
   # Home Assistant connection configuration
   homeAssistant:
     # URL and token are pulled from shared-secrets via External Secrets
-    accessTokenSecret:
-      name: homeassitant-matterhub
+    secret:
+      name: homeassistant-matterhub
+      urlKey: url
+      tokenKey: token
   
   # Application configuration
   logLevel: info
