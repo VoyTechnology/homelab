@@ -52,14 +52,12 @@ musicassistant:
 matterhub:
   enabled: true
   image:
-    repository: ghcr.io/t0bst4r/home-assistant-matter-hub
-    tag: latest
-    pullPolicy: Always
+    name: ghcr.io/t0bst4r/home-assistant-matter-hub:3.0.0-alpha.87
   
   # Home Assistant connection configuration
   homeAssistant:
     # URL and token are pulled from shared-secrets via External Secrets
-    accessTokenSecret:
+    secret:
       name: homeassistant-matterhub
   
   # Application configuration
@@ -74,10 +72,6 @@ matterhub:
   #   - "10.0.0.0/8"
   #   - "192.168.0.0/16"
   
-  # Node selector to ensure it runs on the same node as Home Assistant
-  nodeSelector:
-    kubernetes.io/hostname: s1-bet1
-  
   # Resource limits
   resources:
     requests:
@@ -85,7 +79,6 @@ matterhub:
       cpu: 100m
     limits:
       memory: 512Mi
-      cpu: 500m
   
   # Persistent storage for Matter Hub data
   persistence:
@@ -100,16 +93,8 @@ matterhub:
   
   # Ingress configuration for web UI access
   ingress:
-    enabled: true
-    className: internal-shared
+    enabled: false
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
     hosts:
-      - host: matter.REPLACE_ME
-        paths:
-          - path: /
-            pathType: Prefix
-    tls:
-      - secretName: matter-hub-tls
-        hosts:
-          - matter.REPLACE_ME
+      - matter.REPLACE_ME
