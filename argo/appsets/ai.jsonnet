@@ -7,6 +7,20 @@ local ollamaSource = helm.new('ollama',
   chart="ollama",
   targetRevision="1.12.0",
   valuesApp='ai',
+  values={
+    gpu: {
+      enabled: true,
+      type: 'nvidia',
+      number: 1
+    },
+    ingress: {
+      enabled: true,
+      hosts: [{
+        host: 'ollama.{{ .domain }}',
+        paths: [{ path: '/', pathType: 'Prefix'}]
+      }]
+    }
+  }
 );
 
 local openWebUISource = helm.new('open-webui',
