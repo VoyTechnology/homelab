@@ -52,16 +52,15 @@ musicassistant:
 matterhub:
   enabled: true
   image:
-    # renovate: datasource=ghcr depName=ghcr.io/t0bst4r/home-assistant-matter-hub
-    name: ghcr.io/t0bst4r/home-assistant-matter-hub:3.0.0-alpha.87
+    repository: ghcr.io/t0bst4r/home-assistant-matter-hub
+    tag: latest
+    pullPolicy: Always
   
   # Home Assistant connection configuration
   homeAssistant:
     # URL and token are pulled from shared-secrets via External Secrets
-    secret:
+    accessTokenSecret:
       name: homeassistant-matterhub
-      urlKey: url
-      tokenKey: token
   
   # Application configuration
   logLevel: info

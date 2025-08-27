@@ -1,21 +1,21 @@
 {{- if .Values.matterhub.enabled }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: home-assistant-matter-hub
+  name: homeassistant-matterhub
   labels:
-    app.kubernetes.io/name: home-assistant-matter-hub
+    app.kubernetes.io/name: homeassistant-matterhub
     app.kubernetes.io/component: matter-hub
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: home-assistant-matter-hub
+      app.kubernetes.io/name: homeassistant-matterhub
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: home-assistant-matter-hub
+        app.kubernetes.io/name: homeassistant-matterhub
         app.kubernetes.io/component: matter-hub
     spec:
       # Matter protocol requires host networking for mDNS and IPv6
@@ -85,34 +85,28 @@ spec:
             port: http
           initialDelaySeconds: 10
           periodSeconds: 10
-      volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: home-assistant-matter-hub-data
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: home-assistant-matter-hub-data
-  labels:
-    app.kubernetes.io/name: home-assistant-matter-hub
-    app.kubernetes.io/component: matter-hub
-spec:
-  accessModes:
-    - {{ .Values.matterhub.persistence.accessMode }}
-  resources:
-    requests:
-      storage: {{ .Values.matterhub.persistence.size }}
-  {{- if .Values.matterhub.persistence.storageClassName }}
-  storageClassName: {{ .Values.matterhub.persistence.storageClassName }}
-  {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app.kubernetes.io/name: homeassistant-matterhub
+        app.kubernetes.io/component: matter-hub
+    spec:
+      accessModes:
+        - {{ .Values.matterhub.persistence.accessMode }}
+      resources:
+        requests:
+          storage: {{ .Values.matterhub.persistence.size }}
+      {{- if .Values.matterhub.persistence.storageClassName }}
+      storageClassName: {{ .Values.matterhub.persistence.storageClassName }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: home-assistant-matter-hub
+  name: homeassistant-matterhub
   labels:
-    app.kubernetes.io/name: home-assistant-matter-hub
+    app.kubernetes.io/name: homeassistant-matterhub
     app.kubernetes.io/component: matter-hub
 spec:
   type: {{ .Values.matterhub.service.type }}
@@ -122,15 +116,15 @@ spec:
     protocol: TCP
     name: http
   selector:
-    app.kubernetes.io/name: home-assistant-matter-hub
+    app.kubernetes.io/name: homeassistant-matterhub
 {{- if .Values.matterhub.ingress.enabled }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: home-assistant-matter-hub
+  name: homeassistant-matterhub
   labels:
-    app.kubernetes.io/name: home-assistant-matter-hub
+    app.kubernetes.io/name: homeassistant-matterhub
     app.kubernetes.io/component: matter-hub
   {{- with .Values.matterhub.ingress.annotations }}
   annotations:
@@ -159,7 +153,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: home-assistant-matter-hub
+                name: homeassistant-matterhub
                 port:
                   number: {{ $.Values.matterhub.service.port }}
     {{- end }}
