@@ -57,6 +57,11 @@ local source = helm.new(
           }],
         }],
       } },
+    },
+    matterhub: {
+      ingress: util.ingress('matter', class='internal'),
+      # TODO: Make this dynamic per cluster
+      nodeSelector: {'kubernetes.io/hostname': 's1-bet1'},
     }
   },
 );
