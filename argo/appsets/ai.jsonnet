@@ -27,7 +27,7 @@ local openWebUISource = helm.new('open-webui',
   repoURL="https://helm.openwebui.com/",
   chart="open-webui",
 	// renovate: datasource=helm depName=open-webui registryUrl=https://helm.openwebui.com/
-  targetRevision="6.29.0",
+  targetRevision="7.7.0",
   valuesApp='ai',
   values={
     ollama: { enabled: false },
