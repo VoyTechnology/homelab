@@ -25,7 +25,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: donetick-secrets
-                  key: apiKey
+                  key: DT_JWT_SECRET
           volumeMounts:
             - name: config-volume
               mountPath: /config/selfhosted.yaml
