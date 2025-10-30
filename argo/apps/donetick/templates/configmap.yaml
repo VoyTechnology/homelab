@@ -6,4 +6,4 @@ metadata:
     app.kubernetes.io/name: donetick
 data:
   selfhosted.yaml: |-
-    {{ toYaml .Values.config | indent 4 }}
+{{ toYaml .Values.config | indent 4 }}
