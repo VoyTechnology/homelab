@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: donetick-config
+  labels:
+    app.kubernetes.io/name: donetick
+data:
+  selfhosted.yaml: |-
+    {{ toYaml .Values.config | indent 4 }}
