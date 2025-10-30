@@ -13,6 +13,8 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: donetick
+      annotations:
+        checksum/config: {{ .Values.config | toYaml | sha256sum }}
     spec:
       containers:
         - name: donetick

@@ -15,3 +15,9 @@ local extraObjects = helm.extraObjects('donetick');
 appset.new('donetick', 'donetick')
 + appset.addSource(source)
 + appset.addSource(extraObjects)
++ appset.addIgnoreDifferences([{
+    group: '',
+    kind: 'Secret',
+    name: 'donetick-secrets',
+    jsonPointers: ['/data/DT_JWT_SECRET']
+  }])
