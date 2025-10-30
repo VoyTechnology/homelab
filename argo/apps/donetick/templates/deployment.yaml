@@ -28,6 +28,8 @@ spec:
                 secretKeyRef:
                   name: donetick-secrets
                   key: DT_JWT_SECRET
+            - name: DT_SQLITE_PATH
+              value: /data/donetick.db
           volumeMounts:
             - name: config-volume
               mountPath: /config/selfhosted.yaml
