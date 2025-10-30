@@ -21,7 +21,7 @@ spec:
             - name: http
               containerPort: 2021
           env:
-            - name: DT_JWT_TOKEN
+            - name: DT_JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: donetick-secrets
