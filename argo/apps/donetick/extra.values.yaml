@@ -1,0 +1,20 @@
+extraObjects:
+  donetickJwtSecret:
+    apiVersion: external-secrets.io/v1
+    kind: ExternalSecret
+    metadata:
+      name: donetick-secrets
+      namespace: donetick
+    spec:
+      refreshInterval: 1h
+      secretStoreRef:
+        kind: ClusterSecretStore
+        name: cluster-secrets
+      target:
+        name: donetick-secrets
+        creationPolicy: Owner
+      data:
+        - secretKey: DT_JWT_SECRET
+          remoteRef:
+            key: shared-secrets
+            property: donetick_jwt_secret
