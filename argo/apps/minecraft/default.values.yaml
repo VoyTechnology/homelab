@@ -17,6 +17,7 @@ minecraftServer:
     - https://github.com/ViaVersion/ViaVersion/releases/download/5.4.2/ViaVersion-5.4.2.jar
     # renovate: datasource=github-releases-files depName=BlueMap-Minecraft/BlueMap
     - https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v5.11/bluemap-5.11-paper.jar
+    - https://cdn.modrinth.com/data/Fb4jn8m6/versions/IGtob92Q/FallingTree-1.21.8-1.21.8.3.jar
   # Extra ports are configured using the jsonnet.
   # extraPorts:
   #   - name: bedrock
