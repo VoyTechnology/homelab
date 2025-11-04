@@ -17,7 +17,7 @@ minecraftServer:
     - https://github.com/ViaVersion/ViaVersion/releases/download/5.4.2/ViaVersion-5.4.2.jar
     # renovate: datasource=github-releases-files depName=BlueMap-Minecraft/BlueMap
     - https://github.com/BlueMap-Minecraft/BlueMap/releases/download/v5.11/bluemap-5.11-paper.jar
-    - https://github.com/ZetaPlugins/TimberZ/releases/download/1.2.0/TimberZ-1.2.0-1.21.9.jar
+    - https://dev.bukkit.org/projects/cristichis-tree-capitator/files/4810402/download
   # Extra ports are configured using the jsonnet.
   # extraPorts:
   #   - name: bedrock
