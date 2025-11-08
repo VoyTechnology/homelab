@@ -7,8 +7,8 @@ local source = helm.new(
   chart="gpu-operator",
   targetRevision="v25.10.0",
   values={
-    driver: { version: '{{ .metadata["gpu.nvidia/driverversion"] | default "" }}' },
-    nodeSelector: '{{ .metadata["gpu.nvidia/nodeselector"] | toYaml }}'
+    driver: { version: '{{ index .metadata "gpu.nvidia/driverversion" | default "" }}' },
+    nodeSelector: '{{ index .metadata "gpu.nvidia/nodeselector" | toYaml }}'
   }
 );
 
