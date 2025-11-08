@@ -1,0 +1,52 @@
+
+# Basic operator configuration
+operator:
+  defaultRuntime: containerd
+  runtimeClass: nvidia
+
+# Driver configuration (generic)
+driver:
+  enabled: true
+  repository: nvcr.io/nvidia
+  image: driver
+  # version and other overrides should be set via cluster metadata
+
+# Container toolkit
+toolkit:
+  enabled: true
+
+# Device plugin to expose GPU resources
+devicePlugin:
+  enabled: true
+
+# GPU Feature Discovery to label nodes
+gfd:
+  enabled: true
+
+# DCGM exporter for monitoring
+dcgmExporter:
+  enabled: true
+
+# Node Feature Discovery
+nfd:
+  enabled: true
+
+# MIG, vGPU, sandbox, vfio, etc. disabled by default
+migManager:
+  enabled: false
+sandboxWorkloads:
+  enabled: false
+vgpuManager:
+  enabled: false
+vgpuDeviceManager:
+  enabled: false
+vfioManager:
+  enabled: false
+
+# Tolerations for system pods
+tolerations:
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+# Node selector should be set via cluster metadata

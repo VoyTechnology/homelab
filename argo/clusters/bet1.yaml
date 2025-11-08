@@ -1,3 +1,8 @@
 cluster: bet1
 domain: bet1.bednarzak.com
 server: https://kubernetes.default.svc # in-cluster
+
+metadata:
+  gpu.nvidia/driverversion: "470.256.02" # Legacy driver for GTX 660Ti
+  gpu.nvidia/nodeselector: |
+    feature.node.kubernetes.io/pci-10de.present: "true"
