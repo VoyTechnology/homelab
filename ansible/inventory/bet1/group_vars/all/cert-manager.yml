@@ -1,4 +1,4 @@
 ---
 # renovate: datasource=helm depName=cert-manager/cert-manager registryUrl=https://charts.jetstack.io
-cert_manager_version: v1.18.2
+cert_manager_version: v1.19.1
 cert_manager_namespace: cert-manager
