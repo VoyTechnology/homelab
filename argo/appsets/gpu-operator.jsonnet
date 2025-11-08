@@ -8,7 +8,7 @@ local source = helm.new(
   targetRevision="v25.10.0",
   values={
     driver: { version: '{{ .metadata["gpu.nvidia/driverversion"] | default "" }}' },
-    nodeSelector: '{{ .metadata["gpu.nvidia/nodeselector"] | default {} }}'
+    nodeSelector: '{{ .metadata["gpu.nvidia/nodeselector"] | toYaml }}'
   }
 );
 
