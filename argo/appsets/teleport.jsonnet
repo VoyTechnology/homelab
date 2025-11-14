@@ -8,7 +8,7 @@ local cluster = helm.new('teleport-cluster',
     targetRevision='18.4.0',
     values={
         clusterName: 'teleport.join.im',
-        proxyListenerMode: 'mutliplex',
+        proxyListenerMode: 'multiplex',
         acme: true,
         acmeEmail: 'solid_lyric0x@icloud.com',
         annotations: { service: {
