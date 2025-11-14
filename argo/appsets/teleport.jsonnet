@@ -8,6 +8,9 @@ local cluster = helm.new('teleport-cluster',
     targetRevision='18.4.0',
     values={
         clusterName: 'teleport.join.im',
+        proxyListenerMode: 'mutliplex',
+        acme: true,
+        acmeEmail: 'solid_lyric0x@icloud.com',
         annotations: { service: {
             'metallb.universe.tf/address-pool': 'homelab-ip-pool',
         }}
