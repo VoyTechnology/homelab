@@ -8,7 +8,13 @@ local cluster = helm.new('teleport-cluster',
     targetRevision='18.4.0',
     values={
         clusterName: 'teleport.{{ .domain }}',
-        service: { type: 'ClusterIP'}
+        service: { type: 'ClusterIP'},
+        ingress: {
+            enabled: true,
+            spec: {
+                ingressClassName: 'internal',
+            }
+        }
     },
 );
 
