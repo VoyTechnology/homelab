@@ -8,13 +8,9 @@ local cluster = helm.new('teleport-cluster',
     targetRevision='18.4.0',
     values={
         clusterName: 'teleport.{{ .domain }}',
-        service: { type: 'ClusterIP'},
-        ingress: {
-            enabled: true,
-            spec: {
-                ingressClassName: 'internal',
-            }
-        }
+        annotations: { service: {
+            'metallb.universe.tf/address-pool': 'homelabIpAddressPool',
+        }}
     },
 );
 
