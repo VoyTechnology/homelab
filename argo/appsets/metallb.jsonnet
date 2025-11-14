@@ -8,5 +8,12 @@ local source = helm.new('metallb',
     targetRevision='0.15.2',
 );
 
+local extraObjects = helm.extraObjects('metallb', values={
+    homelabIpAddressPool: { spec: {
+        addresses: ['{{ index .metadata "homelabIpAddressPool" }}']
+    }}
+});
+
 appset.new('metallb', 'metallb-system')
 + appset.addSource(source)
++ appset.addSource(extraObjects)

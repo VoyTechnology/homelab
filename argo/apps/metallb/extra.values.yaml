@@ -1,0 +1,19 @@
+extraObjects:
+  homelabIpAddressPool:
+    apiVersion: metallb.io/v1beta1
+    kind: IPAddressPool
+    metadata:
+      name: homelab-ip-pool
+      namespace: metallb-system
+    spec:
+      addresses: [] # Populated in appset
+
+  homelabL2Advertisement:
+    apiVersion: metallb.io/v1beta1
+    kind: L2Advertisement
+    metadata:
+      name: homelab-l2-advertisement
+      namespace: metallb-system
+    spec:
+      ipAddressPools:
+        - homelab-ip-pool
