@@ -9,7 +9,7 @@ local cluster = helm.new('teleport-cluster',
     values={
         clusterName: 'teleport.{{ .domain }}',
         annotations: { service: {
-            'metallb.universe.tf/address-pool': 'homelabIpAddressPool',
+            'metallb.universe.tf/address-pool': 'homelab-ip-pool',
         }}
     },
 );
