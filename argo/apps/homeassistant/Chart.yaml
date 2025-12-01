@@ -11,7 +11,3 @@ dependencies:
     alias: matter
     repository: https://charts.derwitt.dev
     version: 3.0.1
-  - name: music-assistant-server
-    alias: musicassistant
-    repository: https://lmatfy.github.io/charts
-    version: 0.1.6

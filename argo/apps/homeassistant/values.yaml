@@ -33,17 +33,6 @@ matter:
     size: 10Gi
     storageClassName: longhorn
 
-musicassistant:
-  image:
-    tag: 2.5.5
-  hostNetwork: true
-  persistence:
-    data:
-      accessMode: ReadWriteOnce
-      enabled: true
-      size: 5Gi
-      storageClassName: longhorn
-
 # Home Assistant Matter Hub - exposes HA entities as Matter devices
 # Prerequisites:
 # The Home Assistant URL and access token are automatically pulled from the
