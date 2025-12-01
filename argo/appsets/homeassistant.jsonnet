@@ -42,22 +42,6 @@ local source = helm.new(
         }],
       },
     },
-    musicassistant: {
-      ingress: { main: util.ingress('music', class='internal-shared') {
-        # Override hosts to use the proper path
-        hosts: [{
-          host: 'music.{{ .domain }}',
-          paths: [{
-            path: '/',
-            pathType: 'ImplementationSpecific',
-            service: {
-              name: 'homeassistant-musicassistant',
-              port: 8095,
-            }
-          }],
-        }],
-      } },
-    },
     matterhub: {
       ingress: util.ingress('matter', class='internal'),
       # TODO: Make this dynamic per cluster
