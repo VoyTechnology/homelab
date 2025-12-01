@@ -1,15 +1,15 @@
 {
   ingress(name, domain=null, class='internal'): {
-    domain:: if domain == null then (name + '{{ .domain }}') else domain,
+    local _domain = if domain == null then (name + '.{{ .domain }}') else domain,
     enabled: true,
     ingressClassName: class,
     annotations: {
       'cert-manager.io/cluster-issuer': 'letsencrypt',
     },
-    hosts: [domain],
+    hosts: [_domain],
     tls: [{
       secretName: name + '-tls',
-      hosts: [domain],
+      hosts: [_domain],
     }],
   },
 
