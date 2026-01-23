@@ -62,12 +62,13 @@
       // automatically concat with dot
       valuesPrefix::
         if valuesPrefix != '' then
-          '%s.' % valuesPrefix,
+          '%s.' % valuesPrefix
+        else
+          '',
 
       valueFiles: [
-        '$values/argo/apps/$s/%svalues.yaml' % [name, valuesPrefix],
-        '$values/argo/apps/$s/%sdefault.values.yaml' % [name, valuesPrefix],
-        '$values/argo/apps/$s/%s{{ .cluster }}.values.yaml' % [name, valuesPrefix],
+        '$values/argo/apps/%s/%sextra.values.yaml' % [name, valuesPrefix],
+        '$values/argo/apps/%s/%s{{ .cluster }}.extra.values.yaml' % [name, valuesPrefix],
       ],
       valuesObject: { extraObjects: values },
     },
