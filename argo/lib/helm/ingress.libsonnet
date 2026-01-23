@@ -15,8 +15,8 @@
   },
 
   // withHostList changes the host list into objects
-  withHostObjects(): {
-    hosts: [{ host: host } for host in super.hosts],
+  withHostObjects(paths=[{ path: '/', pathType: 'ImplementationSpecific' }]): {
+    hosts: [{ host: host, paths: paths } for host in super.hosts],
   },
 
   withClassName: {
