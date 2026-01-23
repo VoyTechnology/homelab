@@ -1,0 +1,13 @@
+# n8n config
+main:
+  config:
+    db:
+      type: sqlite
+    node:
+      function_allow_builtin: "*"
+  persistence:
+    enabled: true
+    type: dynamic
+    storageClass: "longhorn"
+    size: 10Gi
+# Ingress specified in appset

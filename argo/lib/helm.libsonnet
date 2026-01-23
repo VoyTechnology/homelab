@@ -7,6 +7,7 @@
     path=null,
     values={},
     valuesApp='',
+    valuesPrefix='',
   ): {
     repoURL: repoURL,
     targetRevision: targetRevision,
@@ -26,10 +27,17 @@
       releaseName: name,
       passCredentials: true,
       ignoreMissingValueFiles: true,
+
+      // automatically concat with dot
+      valuesPrefix::
+        if valuesPrefix != '' then
+          '%s.' % valuesPrefix
+        else '',
+
       valueFiles: [
-        '%s/values.yaml' % self.valuesPath,
-        '%s/default.values.yaml' % self.valuesPath,
-        '%s/{{ .cluster }}.values.yaml' % self.valuesPath,
+        '%s/%svalues.yaml' % [self.valuesPath, self.valuesPrefix],
+        '%s/%sdefault.values.yaml' % [self.valuesPath, self.valuesPrefix],
+        '%s/%s{{ .cluster }}.values.yaml' % [self.valuesPath, self.valuesPrefix],
       ],
       valuesObject: values,
     },
@@ -41,6 +49,7 @@
     path='charts/extra-objects',
     targetRevision='HEAD',
     values={},
+    valuesPrefix=''
   ): {
     repoURL: repoURL,
     targetRevision: targetRevision,
@@ -49,13 +58,18 @@
       releaseName: '%s-extra-objects' % name,
       passCredentials: true,
       ignoreMissingValueFiles: true,
+
+      // automatically concat with dot
+      valuesPrefix::
+        if valuesPrefix != '' then
+          '%s.' % valuesPrefix,
+
       valueFiles: [
-        '$values/argo/apps/%s/values.yaml' % name,
-        '$values/argo/apps/%s/default.values.yaml' % name,
-        '$values/argo/apps/%s/extra.values.yaml' % name,
-        '$values/argo/apps/%s/{{ .cluster }}.values.yaml' % name,
+        '$values/argo/apps/$s/%svalues.yaml' % [name, valuesPrefix],
+        '$values/argo/apps/$s/%sdefault.values.yaml' % [name, valuesPrefix],
+        '$values/argo/apps/$s/%s{{ .cluster }}.values.yaml' % [name, valuesPrefix],
       ],
       valuesObject: { extraObjects: values },
-    }
-  }
+    },
+  },
 }

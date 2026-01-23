@@ -9,7 +9,7 @@ ollama:
 
 # open-webui config
 ollamaUrls:
-- ollama.ai.svc.
+  - ollama.ai.svc.
 
 persistence:
   size: 10Gi
