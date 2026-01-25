@@ -54,6 +54,9 @@ local n8n = helm.new(
   valuesApp='ai',
   valuesPrefix='n8n',
   values={
+    n8n: {
+      host: 'n8n.{{ .domain }}',
+    },
     // TODO: Keep internal until fully setup.
     ingress: ingress.new('n8n')
              + ingress.withHostObjects()
