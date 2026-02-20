@@ -8,8 +8,13 @@ local source = helm.new(
     targetRevision='v1.7.0',
 );
 
+local extraObjects = helm.extraObjects('envoy', values={
+    domain: '{{ .domain }}',
+});
+
 appset.new('envoy', 'envoy-gateway-system')
 + appset.addSource(source)
++ appset.addSource(extraObjects)
 + {
     spec+: {template+: {spec+: { syncPolicy+: {
         syncOptions+: [
