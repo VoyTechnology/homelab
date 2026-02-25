@@ -1,35 +1,35 @@
 extraObjects:
-  envoyGatewayClass:
+  exposedGatewayClass:
     apiVersion: gateway.networking.k8s.io/v1
     kind: GatewayClass
     metadata:
-      name: envoy-internal
+      name: envoy-exposed
     spec:
       controllerName: gateway.envoyproxy.io/gatewayclass-controller
-  internalGatewayCert:
+  exposedGatewayCert:
     apiVersion: cert-manager.io/v1
     kind: Certificate
     metadata:
-      name: internal-wildcard-tls
+      name: exposed-wildcard-tls
       annotations:
         cert-manager.io/issuer: letsencrypt
     spec:
       commonName: "*.{{ .Values.domain }}"
       dnsNames:
         - "*.{{ .Values.domain }}"
-      secretName: internal-wildcard-tls
+      secretName: exposed-wildcard-tls
       issuerRef:
         name: letsencrypt
         kind: ClusterIssuer
-  internalGateway:
+  exposedGateway:
     apiVersion: gateway.networking.k8s.io/v1
     kind: Gateway
     metadata:
-      name: internal
+      name: exposed
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
     spec:
-      gatewayClassName: envoy-internal
+      gatewayClassName: envoy-exposed
       listeners:
         - name: http
           protocol: HTTP
