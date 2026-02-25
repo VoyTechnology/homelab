@@ -8,7 +8,7 @@ local source = helm.new('metallb',
     targetRevision='0.15.2',
 );
 
-local extraObjects = helm.extraObjects('metallb', values={
+local extraObjects = helm.extraObjects('metallb', overrides={
     homelabIpAddressPool: { spec: {
         addresses: ['{{ index .metadata "homelabIpAddressPool" }}']
     }}

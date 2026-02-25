@@ -48,6 +48,7 @@
     repoURL='git@github.com:Voytechnology/homelab.git',
     path='charts/extra-objects',
     targetRevision='HEAD',
+    overrides=null,
     values={},
     valuesPrefix=''
   ): {
@@ -70,7 +71,7 @@
         '$values/argo/apps/%s/%sextra.values.yaml' % [name, valuesPrefix],
         '$values/argo/apps/%s/%s{{ .cluster }}.extra.values.yaml' % [name, valuesPrefix],
       ],
-      valuesObject: { extraObjects: values },
+      valuesObject: values + { extraObjects: overrides },
     },
   },
 }
