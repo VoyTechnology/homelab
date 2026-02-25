@@ -18,6 +18,9 @@ extraObjects:
       dnsNames:
         - "*.{{ .Values.domain }}"
       secretName: internal-wildcard-tls
+      issuerRef:
+        name: letsencrypt
+        kind: ClusterIssuer
   internalGateway:
     apiVersion: gateway.networking.k8s.io/v1
     kind: Gateway
