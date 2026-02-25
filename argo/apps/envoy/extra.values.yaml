@@ -30,6 +30,9 @@ extraObjects:
         cert-manager.io/cluster-issuer: letsencrypt
     spec:
       gatewayClassName: envoy-exposed
+      allowedListeners:
+        namespaces:
+          from: All
       listeners:
         - name: http
           protocol: HTTP
