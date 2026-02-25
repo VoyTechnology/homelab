@@ -6,6 +6,18 @@ extraObjects:
       name: envoy-internal
     spec:
       controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  internalGatewayCert:
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: internal-wildcard-tls
+      annotations:
+        cert-manager.io/issuer: letsencrypt
+    spec:
+      commonName: "*.{{ .Values.domain }}"
+      dnsNames:
+        - "*.{{ .Values.domain }}"
+      secretName: internal-wildcard-tls
   internalGateway:
     apiVersion: gateway.networking.k8s.io/v1
     kind: Gateway
