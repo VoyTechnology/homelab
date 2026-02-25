@@ -1,21 +1,20 @@
 extraObjects:
-  publicGatewayClass:
+  envoyGatewayClass:
     apiVersion: gateway.networking.k8s.io/v1
     kind: GatewayClass
     metadata:
-      name: public
+      name: envoy-internal
     spec:
-      controllerName: "{{ .Values.domain }}/public"
-  publicGateway:
+      controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  internalGateway:
     apiVersion: gateway.networking.k8s.io/v1
     kind: Gateway
     metadata:
-      name: public
-      namespace: envoy-gateway-system
+      name: internal
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
     spec:
-      gatewayClassName: public
+      gatewayClassName: envoy-internal
       listeners:
         - name: http
           protocol: HTTP
