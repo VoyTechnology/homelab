@@ -44,7 +44,8 @@ extraObjects:
           tls:
             mode: Terminate
             certificateRefs:
-              - name: internal-wildcard-tls
+              - group: ''	
+                name: internal-wildcard-tls
                 kind: Secret
           allowedRoutes:
             namespaces:
