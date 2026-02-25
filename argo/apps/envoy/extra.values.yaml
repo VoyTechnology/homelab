@@ -26,11 +26,11 @@ extraObjects:
           protocol: HTTPS
           hostname: "*.{{ .Values.domain }}"
           port: 443
-          tls:
-            mode: Terminate
-            certificateRefs:
-              - name: public-tls
-                kind: Secret
+          # tls:
+          #   mode: Terminate
+          #   certificateRefs:
+          #     - name: public-tls
+          #       kind: Secret
           allowedRoutes:
             namespaces:
               from: All
