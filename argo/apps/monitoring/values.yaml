@@ -29,33 +29,33 @@ alloy:
     - name: REMOTE_CONFIG_URL
       valueFrom:
         secretKeyRef:
-          name: shared-secrets
-          key: grafana_cloud_remote_config_url
+          name: grafana-cloud
+          key: remote-config-url
     - name: TOKEN
       valueFrom:
         secretKeyRef:
-          name: shared-secrets
-          key: grafana_cloud_token
+          name: grafana-cloud
+          key: token
     - name: PROMETHEUS_URL
       valueFrom:
         secretKeyRef:
-          name: shared-secrets
-          key: grafana_cloud_metrics_url
+          name: grafana-cloud
+          key: metrics-url
     - name: LOKI_URL
       valueFrom:
         secretKeyRef:
-          name: shared-secrets
-          key: grafana_cloud_logs_url
+          name: grafana-cloud
+          key: loki-url
     - name: GRAFANA_USER
       valueFrom:
         secretKeyRef:
-          name: shared-secrets
-          key: grafana_cloud_user
+          name: grafana-cloud
+          key: user
     - name: LOKI_USER
       valueFrom:
         secretKeyRef:
-          name: shared-secrets
-          key: grafana_cloud_loki_user
+          name: grafana-cloud
+          key: loki-user
   alloy:
     clustering:
       enabled: false
