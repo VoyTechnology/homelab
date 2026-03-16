@@ -1,5 +1,5 @@
 helm       3.19.4
 kubectl    1.34.1
-yq         4.50.1
+yq         4.52.4
 kubectx    0.8.0
 go-jsonnet 0.20.0
