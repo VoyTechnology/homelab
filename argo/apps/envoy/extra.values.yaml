@@ -1,4 +1,9 @@
 extraObjects:
+  ##############################################################################
+  # Exposed Gateway
+  # 
+  # Exposed gateway is assigned an IP address which is then port-forwarded
+  ##############################################################################
   exposedGatewayClass:
     apiVersion: gateway.networking.k8s.io/v1
     kind: GatewayClass
@@ -30,6 +35,67 @@ extraObjects:
         cert-manager.io/cluster-issuer: letsencrypt
     spec:
       gatewayClassName: envoy-exposed
+      allowedListeners:
+        namespaces:
+          from: All
+      listeners:
+        - name: http
+          protocol: HTTP
+          port: 80
+          allowedRoutes:
+            namespaces:
+              from: All
+        - name: https
+          protocol: HTTPS
+          hostname: "*.{{ .Values.domain }}"
+          port: 443
+          tls:
+            mode: Terminate
+            certificateRefs:
+              - group: ''	
+                name: internal-wildcard-tls
+                kind: Secret
+          allowedRoutes:
+            namespaces:
+              from: All
+
+  ##############################################################################
+  # Internal Gateway
+  #
+  # Internal Gateway is available on the local network, but not accessible
+  # outside.
+  ##############################################################################
+  internalGatewayClass:
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: GatewayClass
+    metadata:
+      name: envoy-internal
+    spec:
+      controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  internalGatewayCert:
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: internal-wildcard-tls
+      annotations:
+        cert-manager.io/issuer: letsencrypt
+    spec:
+      commonName: "*.{{ .Values.domain }}"
+      dnsNames:
+        - "*.{{ .Values.domain }}"
+      secretName: internal-wildcard-tls
+      issuerRef:
+        name: letsencrypt
+        kind: ClusterIssuer
+  internalGateway:
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: Gateway
+    metadata:
+      name: internal
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+    spec:
+      gatewayClassName: envoy-internal
       allowedListeners:
         namespaces:
           from: All
