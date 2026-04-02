@@ -6,3 +6,6 @@ zoneAwareReplication:
   # We only have one replica of the ingester, so we don't need zone aware
   # replication
   enabled: false
+
+ruler_query_scheduler:
+  replicas: 1
