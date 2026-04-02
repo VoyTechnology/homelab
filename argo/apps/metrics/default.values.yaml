@@ -1,0 +1,4 @@
+mimir:
+  # Small cluster, we only need one replica of the ingester
+  ingester:
+    replicas: 1
