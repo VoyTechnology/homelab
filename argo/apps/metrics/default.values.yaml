@@ -1,3 +1,8 @@
 ingester:
   # Small cluster, we only need one replica of the ingester
   replicas: 1
+
+zoneAwareReplication:
+  # We only have one replica of the ingester, so we don't need zone aware
+  # replication
+  enabled: false
