@@ -71,11 +71,11 @@ alloy:
           enabled = true
         }
 
-        // Enable remote configuration management
-        remotecfg {
-          url = env("REMOTE_CONFIG_URL")
-          bearer_token = env("TOKEN")
+        // Minimal local config - everything else managed remotely
+        discovery.kubernetes "node" {
+          role = "node"
         }
+
 
         // Minimal local config - everything else managed remotely
         // This ensures the agent can start and receive remote config
