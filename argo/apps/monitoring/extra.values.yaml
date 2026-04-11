@@ -39,3 +39,12 @@ extraObjects:
           remoteRef:
             key: shared-secrets
             property: grafana_cloud_logs_url
+        - secretKey: oauth-client-id
+          remoteRef:
+            key: shared-secrets
+            property: grafana_auth_client_id
+        - secretKey: oauth-client-secret
+          remoteRef:
+            key: shared-secrets
+            property: grafana_auth_client_secret
+        
