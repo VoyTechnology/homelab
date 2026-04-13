@@ -11,8 +11,6 @@ grafana:
       enabled: true
       name: "Dex"
       scopes: openid email profile groups offline_access
-      client_id: "{{ dex_grafana_client_id }}"
-      client_secret: "{{ dex_grafana_client_secret }}"
       auth_url: "https://login.{{ .Values.domain }}/oauth2/auth"
       token_url: "https://login.{{ .Values.domain }}/oauth2/token"
       api_url: "https://login.{{ .Values.domain }}/oauth2/userinfo"
