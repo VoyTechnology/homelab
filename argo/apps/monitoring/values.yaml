@@ -37,7 +37,7 @@ grafana:
       enabled: true
       label: grafana_dashboard
   datasources:
-    datasources.yaml: |
+    datasources.yaml:
       apiVersion: 1
       datasources:
         - name: Metrics
