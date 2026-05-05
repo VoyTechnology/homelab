@@ -121,13 +121,6 @@ alloy:
           role = "node"
         }
 
-
-        // Minimal local config - everything else managed remotely
-        // This ensures the agent can start and receive remote config
-        discovery.kubernetes "node" {
-          role = "node"
-        }
-
 ####################################################################################################
 # Node Exporter
 ####################################################################################################
