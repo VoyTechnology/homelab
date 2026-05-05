@@ -17,6 +17,7 @@ local source = helm.new('monitoring', values={
       util.secretEnv('LOKI_URL', 'grafana-cloud', 'logs-url'),
     ] },
   },
+  grafana: { route: { main: { hostnames: ["grafana.{{ .domain }}"]}}}
 });
 local extraObjects = helm.extraObjects('monitoring');
 
