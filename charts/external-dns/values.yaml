@@ -10,3 +10,4 @@ external-dns:
           key: token
   extraArgs:
     - "--annotation-filter=dns.kubernetes.io/exclude notin (true)"
+    - "--source=gateway-httproute"
