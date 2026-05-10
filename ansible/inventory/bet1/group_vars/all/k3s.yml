@@ -4,5 +4,5 @@ helm_version: v3.19.0
 ansible_user: root
 systemd_dir: /etc/systemd/system
 master_ip: 100.122.232.149 # Hardcoded from tailscale, assuming to never change
-extra_server_args: ""
+extra_server_args: "--disable=servicelb"
 extra_agent_args: ""
