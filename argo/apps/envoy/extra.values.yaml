@@ -4,6 +4,20 @@ extraObjects:
   # 
   # Exposed gateway is assigned an IP address which is then port-forwarded
   ##############################################################################
+  exposedEnvoyProxy:
+    apiVersion: gateway.envoyproxy.io/v1alpha1
+    kind: EnvoyProxy
+    metadata:
+      name: envoy-exposed
+      namespace: envoy-gateway-system
+    spec:
+      provider:
+        type: Kubernetes
+        kubernetes:
+          envoyService:
+            type: LoadBalancer
+            annotations:
+              metallb.io/address-pool: homelab-ip-pool
   exposedGatewayClass:
     apiVersion: gateway.networking.k8s.io/v1
     kind: GatewayClass
@@ -11,6 +25,11 @@ extraObjects:
       name: envoy-exposed
     spec:
       controllerName: gateway.envoyproxy.io/gatewayclass-controller
+      parametersRef:
+        group: gateway.envoyproxy.io
+        kind: EnvoyProxy
+        name: envoy-exposed
+        namespace: envoy-gateway-system
   exposedGatewayCert:
     apiVersion: cert-manager.io/v1
     kind: Certificate
@@ -65,6 +84,20 @@ extraObjects:
   # Internal Gateway is available on the local network, but not accessible
   # outside.
   ##############################################################################
+  internalEnvoyProxy:
+    apiVersion: gateway.envoyproxy.io/v1alpha1
+    kind: EnvoyProxy
+    metadata:
+      name: envoy-internal
+      namespace: envoy-gateway-system
+    spec:
+      provider:
+        type: Kubernetes
+        kubernetes:
+          envoyService:
+            type: LoadBalancer
+            annotations:
+              metallb.io/address-pool: homelab-ip-pool
   internalGatewayClass:
     apiVersion: gateway.networking.k8s.io/v1
     kind: GatewayClass
@@ -72,6 +105,11 @@ extraObjects:
       name: envoy-internal
     spec:
       controllerName: gateway.envoyproxy.io/gatewayclass-controller
+      parametersRef:
+        group: gateway.envoyproxy.io
+        kind: EnvoyProxy
+        name: envoy-internal
+        namespace: envoy-gateway-system
   internalGatewayCert:
     apiVersion: cert-manager.io/v1
     kind: Certificate
