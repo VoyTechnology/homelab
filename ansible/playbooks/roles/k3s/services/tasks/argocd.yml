@@ -35,6 +35,8 @@
           - name: tanka-plugin
             configMap:
               name: argocd-cmp-cm
+          - name: tmp-dir
+            emptyDir: {}
         extraContainers:
           - name: tanka
             command: [/var/run/argocd/argocd-cmp-server]
