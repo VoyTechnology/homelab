@@ -31,6 +31,37 @@
             value: "5m"
           - name: "ARGOCD_HELM_ALLOW_CONCURRENCY"
             value: "true"
+        volumes:
+          - name: tanka-plugin
+            configMap:
+              name: argocd-cmp-cm
+          - name: tmp-dir
+            emptyDir: {}
+        extraContainers:
+          - name: tanka
+            command: [/var/run/argocd/argocd-cmp-server]
+            image: grafana/tanka:0.19.0
+            imagePullPolicy: IfNotPresent
+            resources:
+              limits:
+                cpu: 500m
+                memory: 512Mi
+              requests:
+                cpu: 500m
+                memory: 512Mi
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 999
+            volumeMounts:
+              - mountPath: /var/run/argocd
+                name: var-files
+              - mountPath: /home/argocd/cmp-server/plugins
+                name: plugins
+              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: tanka-plugin
+                name: tanka-plugin
+              - mountPath: /tmp
+                name: tmp-dir
       configs:
         cm:
           url: "https://argocd.{{ cluster_domain }}"
@@ -41,6 +72,24 @@
             clientSecret:  $oidc.dex.clientSecret
           admin:
             enabled: false
+        cmp:
+          create: true
+          plugins:
+            tanka-plugin: |
+              apiVersion: argoproj.io/v1alpha1
+              kind: ConfigManagementPlugin
+              metadata:
+                name: tanka-plugin
+              spec:
+                version: v1.0
+                init:
+                  command: [sh, -c, 'jb install']
+                generate:
+                  command: [sh, -c, 'tk show ${TK_ENV} --dangerous-allow-redirect ${EXTRA_ARGS}']
+                discover:
+                  fileName: jsonnetfile.json
+                allowConcurrency: true
+                lockRepo: true
         params:
           server.insecure: "true"
         secret:
