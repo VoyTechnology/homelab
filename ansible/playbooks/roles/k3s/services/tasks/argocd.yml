@@ -58,7 +58,7 @@
               - mountPath: /home/argocd/cmp-server/plugins
                 name: plugins
               - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-                subPath: tanka-plugin
+                subPath: tanka-plugin.yaml
                 name: tanka-plugin
               - mountPath: /tmp
                 name: tmp-dir
@@ -75,21 +75,16 @@
         cmp:
           create: true
           plugins:
-            tanka-plugin: |
-              apiVersion: argoproj.io/v1alpha1
-              kind: ConfigManagementPlugin
-              metadata:
-                name: tanka-plugin
-              spec:
-                version: v1.0
-                init:
-                  command: [sh, -c, 'jb install']
-                generate:
-                  command: [sh, -c, 'tk show ${TK_ENV} --dangerous-allow-redirect ${EXTRA_ARGS}']
-                discover:
-                  fileName: jsonnetfile.json
-                allowConcurrency: true
-                lockRepo: true
+            tanka-plugin:
+              version: v1.0
+              init:
+                command: [sh, -c, 'jb install']
+              generate:
+                command: [sh, -c, 'tk show ${TK_ENV} --dangerous-allow-redirect ${EXTRA_ARGS}']
+              discover:
+                fileName: jsonnetfile.json
+              allowConcurrency: true
+              lockRepo: true
         params:
           server.insecure: "true"
         secret:
