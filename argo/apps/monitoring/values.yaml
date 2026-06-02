@@ -37,6 +37,7 @@ grafana:
         - grafana.{{ .Values.domain }}
   persistence:
     enabled: true
+    storageClassName: longhorn
   sidecar:
     dashboards:
       enabled: true
