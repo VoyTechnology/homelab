@@ -2,6 +2,8 @@ external-dns:
   provider:
     name: cloudflare
   policy: sync
+  sources:
+    - gateway-httproute
   env:
     - name: CF_API_TOKEN
       valueFrom:
@@ -10,4 +12,3 @@ external-dns:
           key: token
   extraArgs:
     - "--annotation-filter=dns.kubernetes.io/exclude notin (true)"
-    - "--source=gateway-httproute"
