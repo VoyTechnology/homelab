@@ -7,6 +7,8 @@ cluster_name: REPLACE_ME
 grafana:
   enabled: true
   grafana.ini:
+    server:
+      root_url: "https://grafana.{{ .Values.domain }}/"
     auth.generic_oauth:
       enabled: true
       name: "Dex"
