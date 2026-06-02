@@ -35,6 +35,8 @@ grafana:
           name: exposed
       hostnames:
         - grafana.{{ .Values.domain }}
+  persistence:
+    enabled: true
   sidecar:
     dashboards:
       enabled: true
