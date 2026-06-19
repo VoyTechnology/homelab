@@ -28,6 +28,11 @@ spec:
                 secretKeyRef:
                   name: donetick-secrets
                   key: DT_JWT_SECRET
+            - name: DT_TELEGRAM_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: donetick-secrets
+                  key: DT_TELEGRAM_TOKEN
             - name: DT_SQLITE_PATH
               value: /data/donetick.db
           volumeMounts:

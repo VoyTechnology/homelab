@@ -18,3 +18,7 @@ extraObjects:
           remoteRef:
             key: shared-secrets
             property: donetick_jwt_secret
+        - secretKey: DT_TELEGRAM_TOKEN
+          remoteRef:
+            key: shared-secrets
+            property: donetick_telegram_token
