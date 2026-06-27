@@ -41,7 +41,7 @@ matter:
 matterhub:
   enabled: true
   image:
-    name: ghcr.io/t0bst4r/home-assistant-matter-hub:3.0.0-alpha.87
+    name: ghcr.io/riddix/home-assistant-matter-hub:2.0.48
   
   # Home Assistant connection configuration
   homeAssistant:
