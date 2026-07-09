@@ -187,7 +187,7 @@ alloy:
 
         // Scrape kubelet /metrics
         prometheus.scrape "kubelet" {
-          targets           = discovery.relabel.kubelet.targets
+          targets           = discovery.relabel.kubelet.output
           job_name          = "integrations/kubernetes/kubelet"
           scheme            = "https"
           metrics_path      = "/metrics"
@@ -201,7 +201,7 @@ alloy:
 
         // Scrape cadvisor container metrics
         prometheus.scrape "cadvisor" {
-          targets           = discovery.relabel.cadvisor.targets
+          targets           = discovery.relabel.cadvisor.output
           job_name          = "integrations/kubernetes/cadvisor"
           scheme            = "https"
           metrics_path      = "/metrics/cadvisor"
@@ -224,7 +224,7 @@ alloy:
 
         // Scrape pods with prometheus.io annotations
         prometheus.scrape "pods" {
-          targets    = discovery.relabel.pod_annotations.targets
+          targets    = discovery.relabel.pod_annotations.output
           job_name   = "pod-metrics"
           forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
         }
