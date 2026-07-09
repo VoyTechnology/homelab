@@ -15,6 +15,7 @@ grafana:
       scopes: openid email profile groups offline_access
       oauth_skip_org_role_sync: true
       allow_sign_up: false
+      oauth_allow_insecure_email_lookup: true
       auth_url: "https://login.{{ .Values.domain }}/auth"
       token_url: "https://login.{{ .Values.domain }}/token"
       api_url: "https://login.{{ .Values.domain }}/userinfo"
