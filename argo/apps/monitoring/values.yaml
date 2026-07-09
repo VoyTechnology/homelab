@@ -50,7 +50,7 @@ grafana:
       datasources:
         - name: Metrics
           type: prometheus
-          url: http://metrics-mimir-gateway.metrics-system.svc.cluster.local./prometheus
+          url: http://metrics-mimir-gateway.metrics-system.svc.cluster.local/prometheus
           access: proxy
           isDefault: true
 
@@ -136,7 +136,7 @@ alloy:
 
         // Relabel node internal IP to kubelet address
         discovery.relabel "kubelet" {
-          targets = discovery.kubernetes.nodes.output
+          targets = discovery.kubernetes.nodes.targets
           rule {
             source_labels = ["__meta_kubernetes_node_internal_ip"]
             target_label  = "__address__"
@@ -146,7 +146,7 @@ alloy:
 
         // Relabel node internal IP for cadvisor
         discovery.relabel "cadvisor" {
-          targets = discovery.kubernetes.nodes.output
+          targets = discovery.kubernetes.nodes.targets
           rule {
             source_labels = ["__meta_kubernetes_node_internal_ip"]
             target_label  = "__address__"
@@ -156,7 +156,7 @@ alloy:
 
         // Filter and relabel pods with prometheus.io/scrape=true
         discovery.relabel "pod_annotations" {
-          targets = discovery.kubernetes.pods.output
+          targets = discovery.kubernetes.pods.targets
           rule {
             source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
             action = "keep"
