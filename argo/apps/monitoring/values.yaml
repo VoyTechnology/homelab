@@ -229,6 +229,11 @@ alloy:
           forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
         }
 
+        // Scrape ServiceMonitor targets
+        prometheus.operator.servicemonitors "services" {
+          forward_to = [prometheus.remote_write.mimir.receiver]
+        }
+
         // Filter metrics before sending to Grafana Cloud
         prometheus.relabel "cloud_filter" {
           forward_to = [prometheus.remote_write.cloud.receiver]
