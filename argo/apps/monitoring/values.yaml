@@ -76,8 +76,28 @@ alloy:
             name: monitoring-alloy
             port:
               number: 12347
-  # Add environment variables for remote config
+  # Environment variables available to the Alloy config
   extraEnvs:
+    - name: GRAFANA_USER
+      valueFrom:
+        secretKeyRef:
+          name: grafana-cloud
+          key: user
+    - name: LOKI_URL
+      valueFrom:
+        secretKeyRef:
+          name: grafana-cloud
+          key: logs-url
+    - name: LOKI_USER
+      valueFrom:
+        secretKeyRef:
+          name: grafana-cloud
+          key: loki-user
+    - name: PROMETHEUS_URL
+      valueFrom:
+        secretKeyRef:
+          name: grafana-cloud
+          key: metrics-url
     - name: REMOTE_CONFIG_URL
       valueFrom:
         secretKeyRef:
@@ -88,26 +108,6 @@ alloy:
         secretKeyRef:
           name: grafana-cloud
           key: token
-    - name: PROMETHEUS_URL
-      valueFrom:
-        secretKeyRef:
-          name: grafana-cloud
-          key: metrics-url
-    - name: LOKI_URL
-      valueFrom:
-        secretKeyRef:
-          name: grafana-cloud
-          key: loki-url
-    - name: GRAFANA_USER
-      valueFrom:
-        secretKeyRef:
-          name: grafana-cloud
-          key: user
-    - name: LOKI_USER
-      valueFrom:
-        secretKeyRef:
-          name: grafana-cloud
-          key: loki-user
   alloy:
     clustering:
       enabled: false
@@ -123,9 +123,139 @@ alloy:
           enabled = true
         }
 
-        // Minimal local config - everything else managed remotely
-        discovery.kubernetes "node" {
+        // Discover nodes for kubelet and cadvisor scraping
+        discovery.kubernetes "nodes" {
           role = "node"
+        }
+
+        // Discover pods with prometheus.io annotations
+        discovery.kubernetes "pods" {
+          role = "pod"
+        }
+
+        // Relabel node internal IP to kubelet address
+        discovery.relabel "kubelet" {
+          targets = discovery.kubernetes.nodes.output
+          rule {
+            source_labels = ["__meta_kubernetes_node_internal_ip"]
+            target_label  = "__address__"
+            replacement   = "$1:10250"
+          }
+        }
+
+        // Relabel node internal IP for cadvisor
+        discovery.relabel "cadvisor" {
+          targets = discovery.kubernetes.nodes.output
+          rule {
+            source_labels = ["__meta_kubernetes_node_internal_ip"]
+            target_label  = "__address__"
+            replacement   = "$1:10250"
+          }
+        }
+
+        // Filter and relabel pods with prometheus.io/scrape=true
+        discovery.relabel "pod_annotations" {
+          targets = discovery.kubernetes.pods.output
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+            action = "keep"
+            regex = "true"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+            action = "replace"
+            target_label = "__metrics_path__"
+            regex = "(.+)"
+            replacement = "$1"
+          }
+          rule {
+            source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+            action = "replace"
+            regex = "([^:]+)(?::\\d+)?;(\\d+)"
+            replacement = "$1:$2"
+            target_label = "__address__"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scheme"]
+            action = "replace"
+            target_label = "__scheme__"
+            regex = "(https?)"
+            replacement = "$1"
+          }
+        }
+
+        // Scrape kubelet /metrics
+        prometheus.scrape "kubelet" {
+          targets           = discovery.relabel.kubelet.output
+          job_name          = "integrations/kubernetes/kubelet"
+          scheme            = "https"
+          metrics_path      = "/metrics"
+          bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+          tls_config {
+            ca_file        = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+            insecure_skip_verify = true
+          }
+          forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
+        }
+
+        // Scrape cadvisor container metrics
+        prometheus.scrape "cadvisor" {
+          targets           = discovery.relabel.cadvisor.output
+          job_name          = "integrations/kubernetes/cadvisor"
+          scheme            = "https"
+          metrics_path      = "/metrics/cadvisor"
+          bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+          tls_config {
+            ca_file        = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+            insecure_skip_verify = true
+          }
+          forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
+        }
+
+        // Scrape node exporter
+        prometheus.scrape "node_exporter" {
+          targets = [{
+            __address__ = "monitoring-prometheus-node-exporter.monitoring.svc.cluster.local:9100",
+          }]
+          job_name   = "node-exporter"
+          forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
+        }
+
+        // Scrape pods with prometheus.io annotations
+        prometheus.scrape "pods" {
+          targets    = discovery.relabel.pod_annotations.output
+          job_name   = "pod-metrics"
+          forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
+        }
+
+        // Filter metrics before sending to Grafana Cloud
+        prometheus.relabel "cloud_filter" {
+          forward_to = [prometheus.remote_write.cloud.receiver]
+
+          // Keep only PVC fullness metrics for Cloud
+          rule {
+            source_labels = ["__name__"]
+            action = "keep"
+            regex = "kubelet_volume_stats_available_bytes|kubelet_volume_stats_capacity_bytes|kubelet_volume_stats_used_bytes"
+          }
+        }
+
+        // Remote write to Grafana Cloud
+        prometheus.remote_write "cloud" {
+          endpoint {
+            url = env("PROMETHEUS_URL")
+            basic_auth {
+              username = env("GRAFANA_USER")
+              password = env("TOKEN")
+            }
+          }
+        }
+
+        // Remote write to local Mimir
+        prometheus.remote_write "mimir" {
+          endpoint {
+            url = "http://metrics-mimir-gateway.metrics-system.svc.cluster.local/prometheus"
+          }
         }
 
 ####################################################################################################
