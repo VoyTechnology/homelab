@@ -50,7 +50,7 @@ grafana:
       datasources:
         - name: Metrics
           type: prometheus
-          url: http://metrics-mimir-gateway.metrics-system.svc.cluster.local./prometheus
+          url: http://metrics-mimir-gateway.metrics-system.svc.cluster.local/prometheus
           access: proxy
           isDefault: true
 
@@ -136,7 +136,7 @@ alloy:
 
         // Relabel node internal IP to kubelet address
         discovery.relabel "kubelet" {
-          targets = discovery.kubernetes.nodes.output
+          targets = discovery.kubernetes.nodes.targets
           rule {
             source_labels = ["__meta_kubernetes_node_internal_ip"]
             target_label  = "__address__"
@@ -146,7 +146,7 @@ alloy:
 
         // Relabel node internal IP for cadvisor
         discovery.relabel "cadvisor" {
-          targets = discovery.kubernetes.nodes.output
+          targets = discovery.kubernetes.nodes.targets
           rule {
             source_labels = ["__meta_kubernetes_node_internal_ip"]
             target_label  = "__address__"
@@ -156,7 +156,7 @@ alloy:
 
         // Filter and relabel pods with prometheus.io/scrape=true
         discovery.relabel "pod_annotations" {
-          targets = discovery.kubernetes.pods.output
+          targets = discovery.kubernetes.pods.targets
           rule {
             source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
             action = "keep"
@@ -187,7 +187,7 @@ alloy:
 
         // Scrape kubelet /metrics
         prometheus.scrape "kubelet" {
-          targets           = discovery.relabel.kubelet.output
+          targets           = discovery.relabel.kubelet.targets
           job_name          = "integrations/kubernetes/kubelet"
           scheme            = "https"
           metrics_path      = "/metrics"
@@ -201,7 +201,7 @@ alloy:
 
         // Scrape cadvisor container metrics
         prometheus.scrape "cadvisor" {
-          targets           = discovery.relabel.cadvisor.output
+          targets           = discovery.relabel.cadvisor.targets
           job_name          = "integrations/kubernetes/cadvisor"
           scheme            = "https"
           metrics_path      = "/metrics/cadvisor"
@@ -224,7 +224,7 @@ alloy:
 
         // Scrape pods with prometheus.io annotations
         prometheus.scrape "pods" {
-          targets    = discovery.relabel.pod_annotations.output
+          targets    = discovery.relabel.pod_annotations.targets
           job_name   = "pod-metrics"
           forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
         }
