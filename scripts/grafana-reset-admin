@@ -1,0 +1,15 @@
+#!/bin/zsh
+set -e
+
+NAMESPACE=monitoring
+DEPLOY=monitoring-grafana
+SECRET=monitoring-grafana
+NEW_PASS="$(openssl rand -base64 48 | tr -d '/+=' | head -c 60)Aa1!"
+
+kubectl patch secret "$SECRET" -n "$NAMESPACE" -p \
+  "{\"data\":{\"admin-password\":\"$(echo -n "$NEW_PASS" | base64)\"}}"
+
+echo -n "$NEW_PASS" | kubectl exec -n "$NAMESPACE" deploy/"$DEPLOY" -i -- \
+  sh -c 'cat > /tmp/newpass && /usr/share/grafana/bin/grafana cli admin reset-admin-password "$(cat /tmp/newpass)"'
+
+echo "New admin password: $NEW_PASS"
