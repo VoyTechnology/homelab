@@ -1,5 +1,7 @@
-helm       4.2.2
-kubectl    1.36.1
-yq         4.53.3
-kubectx    0.8.0
-go-jsonnet 0.20.0
+helm            4.2.2
+kubectl         1.36.1
+yq              4.53.3
+kubectx         0.8.0
+go-jsonnet      0.20.0
+tanka           0.37.5
+jsonnet-bundler 0.6.0
