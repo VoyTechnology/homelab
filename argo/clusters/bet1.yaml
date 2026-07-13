@@ -7,3 +7,5 @@ metadata:
   gpu.nvidia/nodeselector: |
     feature.node.kubernetes.io/pci-10de.present: "true"
   homelabIpAddressPool: "192.168.3.6-192.168.3.254"
+  # TODO: Revisit once we figure out how to pass these details nicely
+  externalDnsTarget: ""

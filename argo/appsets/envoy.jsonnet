@@ -10,6 +10,7 @@ local source = helm.new(
 
 local extraObjects = helm.extraObjects('envoy', values={
     domain: '{{ .domain }}',
+    externalDnsTarget: '{{ .metadata.externalDnsTarget }}',
 });
 
 appset.new('envoy', 'envoy-gateway-system')

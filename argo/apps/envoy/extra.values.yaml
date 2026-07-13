@@ -52,6 +52,8 @@ extraObjects:
       name: exposed
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
+        # TODO: Revisit once we figure out how to pass these details nicely
+        # external-dns.alpha.kubernetes.io/target: "{{ .Values.externalDnsTarget }}"
     spec:
       gatewayClassName: envoy-exposed
       allowedListeners:
@@ -71,8 +73,8 @@ extraObjects:
           tls:
             mode: Terminate
             certificateRefs:
-              - group: ''	
-                name: internal-wildcard-tls
+              - group: ''
+                name: exposed-wildcard-tls
                 kind: Secret
           allowedRoutes:
             namespaces:
