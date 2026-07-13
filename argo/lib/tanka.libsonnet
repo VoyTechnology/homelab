@@ -10,7 +10,7 @@
     targetRevision: targetRevision,
     path:
       if path == null then
-        'tanka/%s' % name
+        'argo/apps/%s' % name
       else
         path,
     plugin: {
