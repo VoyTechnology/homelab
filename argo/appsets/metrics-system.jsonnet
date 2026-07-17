@@ -1,11 +1,17 @@
 local appset = import '../lib/appset.libsonnet';
-local helm = import '../lib/helm.libsonnet';
+local tanka = import '../lib/tanka.libsonnet';
 
-local source = helm.new('metrics',
-    repoURL='https://grafana.github.io/helm-charts',
-    chart='mimir-distributed',
-    // renovate: datasource=helm depName=mimir-distributed registryUrl=https://grafana.github.io/helm-charts
-    targetRevision='6.0.6',
+local source = tanka.new(
+  'metrics',
+  // renovate: datasource=docker depName=grafana/mimir
+  targetRevision='main',
+  namespace='metrics-system',
+  overrides={
+    _config: {
+      ingester_allow_multiple_replicas_on_same_node: true,
+      store_gateway_allow_multiple_replicas_on_same_node: true,
+    },
+  },
 );
 
 appset.new('metrics', 'metrics-system')
