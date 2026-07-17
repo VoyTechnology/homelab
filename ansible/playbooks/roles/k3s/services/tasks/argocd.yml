@@ -81,19 +81,18 @@
                 command: [sh, -c, 'jb install']
               generate:
                 command: [sh, -c, '
-    cat > /tmp/tanka-inline-env.json <<EOF
+    cat > spec.json <<EOF
     {
       "apiVersion": "tanka.dev/v1alpha1",
       "kind": "Environment",
-      "metadata": { "name": "inline" },
+      "metadata": { "name": "${TANKA_CLUSTER}/${TANKA_NAMESPACE}/${TANKA_APP}" },
       "spec": {
         "apiServer": "${TANKA_APISERVER}",
-        "namespace": "${TANKA_NAMESPACE}",
-        "resourceDefaults": {}
+        "namespace": "${TANKA_NAMESPACE}"
       }
     }
     EOF
-    tk show /tmp/tanka-inline-env.json --dangerous-allow-redirect
+    tk show . --dangerous-allow-redirect
   ']
               discover:
                 fileName: jsonnetfile.json

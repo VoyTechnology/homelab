@@ -14,12 +14,13 @@
       else
         path,
     plugin: {
-      name: 'tanka-plugin',
+      # name: ommitted, as it uses the jsonnetfile.json as the plugin matcher
       env: [
-        { name: 'TK_ENV', value: '' },
+        { name: 'TK_ENV', value: '{{ .cluster }}/{{ .namespace }}/%s' % name },
         { name: 'TANKA_APISERVER', value: '{{ .server }}' },
         { name: 'TANKA_NAMESPACE', value: namespace },
         { name: 'TANKA_CLUSTER', value: '{{ .cluster }}' },
+        { name: 'TANKA_APP', value: name },
       ],
     },
   },
