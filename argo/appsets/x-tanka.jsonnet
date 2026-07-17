@@ -6,6 +6,11 @@ local source = tanka.new(
   // renovate: datasource=git depName=voytechnology/homelab
   targetRevision='main',
   namespace='x-tanka',
+  overrides={
+    _config: {
+      port: 3001,
+    },
+  },
 );
 
 appset.new('x-tanka', 'x-tanka')

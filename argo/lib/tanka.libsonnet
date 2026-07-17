@@ -5,6 +5,7 @@
     path=null,
     targetRevision='HEAD',
     namespace='default',
+    overrides={},
   ): {
     repoURL: repoURL,
     targetRevision: targetRevision,
@@ -23,6 +24,7 @@
         { name: 'TANKA_NAMESPACE', value: namespace },
         { name: 'TANKA_CLUSTER', value: '{{ .cluster }}' },
         { name: 'TANKA_APP', value: name },
+        { name: 'TANKA_OVERRIDES', value: std.toString(overrides) },
       ],
     },
   },
