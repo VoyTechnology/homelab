@@ -80,20 +80,20 @@
               init:
                 command: [sh, -c, 'jb install']
               generate:
-                command: [sh, -c, '
-    cat > spec.json <<EOF
-    {
-      "apiVersion": "tanka.dev/v1alpha1",
-      "kind": "Environment",
-      "metadata": { "name": "${TANKA_CLUSTER}/${TANKA_NAMESPACE}/${TANKA_APP}" },
-      "spec": {
-        "apiServer": "${TANKA_APISERVER}",
-        "namespace": "${TANKA_NAMESPACE}"
-      }
-    }
-    EOF
-    tk show . --dangerous-allow-redirect
-  ']
+                command:
+                  - sh
+                  - -c
+                  - |
+                    printf '{
+                      "apiVersion": "tanka.dev/v1alpha1",
+                      "kind": "Environment",
+                      "metadata": { "name": "%s/%s/%s" },
+                      "spec": {
+                        "apiServer": "%s",
+                        "namespace": "%s"
+                      }
+                    }\n' "$TANKA_CLUSTER" "$TANKA_NAMESPACE" "$TANKA_APP" "$TANKA_APISERVER" "$TANKA_NAMESPACE" > spec.json
+                    tk show . --dangerous-allow-redirect
               discover:
                 fileName: jsonnetfile.json
               allowConcurrency: true
