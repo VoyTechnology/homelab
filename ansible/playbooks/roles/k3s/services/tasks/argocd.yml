@@ -4,6 +4,34 @@
     name: argo
     repo_url: https://argoproj.github.io/argo-helm
 
+- name: ArgoCD | Tanka Generate Script
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: argocd-tanka-scripts
+        namespace: "{{ argocd_k8s_namespace }}"
+      data:
+        tanka-generate.sh: |
+          #!/bin/sh
+          set -e
+          printf '{
+            "apiVersion": "tanka.dev/v1alpha1",
+            "kind": "Environment",
+            "metadata": { "name": "%s/%s/%s" },
+            "spec": {
+              "apiServer": "%s",
+              "namespace": "%s"
+            }
+          }\n' "$TANKA_CLUSTER" "$TANKA_NAMESPACE" "$TANKA_APP" "$TANKA_APISERVER" "$TANKA_NAMESPACE" > spec.json
+          mv main.jsonnet _main.jsonnet
+          cat <<TMPEOF > main.jsonnet
+          (import "_main.jsonnet") + ${TANKA_OVERRIDES}
+          TMPEOF
+          tk show . --dangerous-allow-redirect
+
 - name: ArgoCD | Deploy Helm Chart
   kubernetes.core.helm:
     name: argocd
@@ -35,6 +63,10 @@
           - name: tanka-plugin
             configMap:
               name: argocd-cmp-cm
+          - name: tanka-scripts
+            configMap:
+              name: argocd-tanka-scripts
+              defaultMode: 493
           - name: tmp-dir
             emptyDir: {}
         extraContainers:
@@ -62,6 +94,8 @@
                 name: tanka-plugin
               - mountPath: /tmp
                 name: tmp-dir
+              - mountPath: /home/argocd/cmp-server/scripts
+                name: tanka-scripts
       configs:
         cm:
           url: "https://argocd.{{ cluster_domain }}"
@@ -80,22 +114,7 @@
               init:
                 command: [sh, -c, 'jb install']
               generate:
-                command:
-                  - sh
-                  - -c
-                  - |
-                    printf '{
-                      "apiVersion": "tanka.dev/v1alpha1",
-                      "kind": "Environment",
-                      "metadata": { "name": "%s/%s/%s" },
-                      "spec": {
-                        "apiServer": "%s",
-                        "namespace": "%s"
-                      }
-                    }\n' "$TANKA_CLUSTER" "$TANKA_NAMESPACE" "$TANKA_APP" "$TANKA_APISERVER" "$TANKA_NAMESPACE" > spec.json
-                    mv main.jsonnet _main.jsonnet
-                    printf '(import "_main.jsonnet") + %s' "$TANKA_OVERRIDES" > main.jsonnet
-                    tk show . --dangerous-allow-redirect
+                command: [sh, /home/argocd/cmp-server/scripts/tanka-generate.sh]
               discover:
                 fileName: jsonnetfile.json
               allowConcurrency: true
