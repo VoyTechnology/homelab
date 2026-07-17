@@ -16,7 +16,9 @@
     plugin: {
       # name: ommitted, as it uses the jsonnetfile.json as the plugin matcher
       env: [
-        { name: 'TK_ENV', value: '{{ .cluster }}/{{ .namespace }}/%s' % name },
+        { name: 'TK_ENV', value: '{{ .cluster }}/%(namespace)s/%(app)s' % {
+          app: name, namespace: namespace,
+        } },
         { name: 'TANKA_APISERVER', value: '{{ .server }}' },
         { name: 'TANKA_NAMESPACE', value: namespace },
         { name: 'TANKA_CLUSTER', value: '{{ .cluster }}' },
