@@ -25,10 +25,10 @@
               "apiServer": "%s",
               "namespace": "%s"
             }
-          }\n' "$TANKA_CLUSTER" "$TANKA_NAMESPACE" "$TANKA_APP" "$TANKA_APISERVER" "$TANKA_NAMESPACE" > spec.json
+          }\n' "${ARGOCD_ENV_TANKA_CLUSTER:-$TANKA_CLUSTER}" "${ARGOCD_ENV_TANKA_NAMESPACE:-$TANKA_NAMESPACE}" "${ARGOCD_ENV_TANKA_APP:-$TANKA_APP}" "${ARGOCD_ENV_TANKA_APISERVER:-$TANKA_APISERVER}" "${ARGOCD_ENV_TANKA_NAMESPACE:-$TANKA_NAMESPACE}" > spec.json
           mv main.jsonnet _main.jsonnet
           cat <<TMPEOF > main.jsonnet
-          (import "_main.jsonnet") + ${TANKA_OVERRIDES}
+          (import "_main.jsonnet") + ${ARGOCD_ENV_TANKA_OVERRIDES:-$TANKA_OVERRIDES}
           TMPEOF
           tk show . --dangerous-allow-redirect
 
