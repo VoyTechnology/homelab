@@ -93,6 +93,8 @@
                         "namespace": "%s"
                       }
                     }\n' "$TANKA_CLUSTER" "$TANKA_NAMESPACE" "$TANKA_APP" "$TANKA_APISERVER" "$TANKA_NAMESPACE" > spec.json
+                    mv main.jsonnet _main.jsonnet
+                    printf '(import "_main.jsonnet") + %s' "$TANKA_OVERRIDES" > main.jsonnet
                     tk show . --dangerous-allow-redirect
               discover:
                 fileName: jsonnetfile.json
