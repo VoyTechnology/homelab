@@ -1,2 +1,1 @@
-(import "grafana.libsonnet") +
-(import "config.libsonnet")
+(import "grafana.libsonnet") + (import "config.libsonnet")

@@ -1,5 +1,5 @@
 {
-    _config:: {
-        port: 3000,
-    }
+  _config:: {
+    port: 3000,
+  },
 }

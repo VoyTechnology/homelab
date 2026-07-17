@@ -4,7 +4,7 @@
     repoURL='git@github.com:Voytechnology/homelab.git',
     path=null,
     targetRevision='HEAD',
-    data={},
+    namespace='default',
   ): {
     repoURL: repoURL,
     targetRevision: targetRevision,
@@ -17,18 +17,9 @@
       name: 'tanka-plugin',
       env: [
         { name: 'TK_ENV', value: '' },
-        {
-          name: 'EXTRA_ARGS',
-          value:
-            std.join(' ', [
-              '--tla-str',
-              'clusterName={{ .cluster }}',
-              '--tla-str',
-              'apiServer={{ .server }}',
-              '--tla-code',
-              'data=%s' % std.toString(data),
-            ]),
-        },
+        { name: 'TANKA_APISERVER', value: '{{ .server }}' },
+        { name: 'TANKA_NAMESPACE', value: namespace },
+        { name: 'TANKA_CLUSTER', value: '{{ .cluster }}' },
       ],
     },
   },
