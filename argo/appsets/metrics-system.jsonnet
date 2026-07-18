@@ -8,16 +8,16 @@ local source = tanka.new(
   'metrics',
   namespace=namespace,
   overrides={
-    _namespace: namespace,
-    _cluster: '{{ .cluster }}',
+    _namespace:: namespace,
+    _cluster:: '{{ .cluster }}',
   },
 );
 
 local objectStore = helm.new(
   'seaweedfs',
-  repoURL='https://seaweedfs.github.io/seaweedfs',
+  repoURL='https://seaweedfs.github.io/seaweedfs/helm',
   chart='seaweedfs',
-  // renovate: datasource=helm depName=seaweedfs registryUrl=https://seaweedfs.github.io/seaweedfs
+  // renovate: datasource=helm depName=seaweedfs registryUrl=https://seaweedfs.github.io/seaweedfs/helm
   targetRevision='4.29.0',
   valuesApp='metrics',
   valuesPrefix='seaweedfs.',
