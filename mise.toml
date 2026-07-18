@@ -1,0 +1,3 @@
+[tasks.tk-show]
+description = "Render the environment-less metrics Tanka app"
+run = "{{ config_root }}/scripts/tk-show"

@@ -1,0 +1,63 @@
+#!/bin/zsh
+set -euo pipefail
+
+# Run Tanka against an environment-less app, like the Argo CD CMP wrapper.
+APP_PATH="${1:-${MISE_ORIGINAL_CWD:-.}}"
+if [[ $# -gt 0 ]]; then
+  shift
+fi
+
+namespace="${TANKA_NAMESPACE:-default}"
+api_server="${TANKA_APISERVER:-https://kubernetes.default.svc}"
+cluster="${TANKA_CLUSTER:-}"
+app="${TANKA_APP:-$(basename "$PWD")}"
+spec="$APP_PATH/spec.json"
+main="$APP_PATH/main.jsonnet"
+main_backup=""
+if [[ -n "${TANKA_OVERRIDES:-}" ]]; then
+  overrides="$TANKA_OVERRIDES"
+else
+  overrides='{}'
+fi
+backup=""
+
+if [[ -e "$spec" ]]; then
+  backup="$(mktemp)"
+  cp "$spec" "$backup"
+fi
+
+if [[ -e "$main" ]]; then
+  main_backup="$(mktemp)"
+  cp "$main" "$main_backup"
+  mv "$main" "$APP_PATH/_main.jsonnet"
+  cat > "$main" <<EOF
+(import "_main.jsonnet") + ${overrides}
+EOF
+fi
+
+cleanup() {
+  rm -f "$spec"
+  if [[ -n "$backup" ]]; then
+    mv "$backup" "$spec"
+  fi
+  rm -f "$main"
+  if [[ -n "$main_backup" ]]; then
+    mv "$main_backup" "$main"
+  fi
+  rm -f "$APP_PATH/_main.jsonnet"
+}
+trap cleanup EXIT INT TERM
+
+cat > "$spec" <<EOF
+{
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": { "name": "${cluster}/${namespace}/${app}" },
+  "spec": {
+    "apiServer": "${api_server}",
+    "namespace": "${namespace}"
+  }
+}
+EOF
+
+tk show "$APP_PATH" "$@"

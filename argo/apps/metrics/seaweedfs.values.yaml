@@ -1,0 +1,19 @@
+fullnameOverride: seaweedfs
+
+master:
+  replicas: 1
+
+volume:
+  replicas: 1
+
+filer:
+  replicas: 1
+
+s3:
+  enabled: true
+  replicas: 1
+  enableAuth: false
+
+seaweedfs:
+  createBuckets:
+    - name: mimir
