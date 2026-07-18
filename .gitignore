@@ -3,5 +3,6 @@ out.txt
 # Ignore AI generated stuff
 .crush/
 
-# Ignore jsonnet vendors
+# Ignore jsonnet files
 vendor/
+spec.json
