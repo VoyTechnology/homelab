@@ -9,13 +9,26 @@ mimir {
     namespace: $._namespace,
     cluster: $._cluster,
     external_url: 'http://metrics-mimir-gateway.%s.svc.cluster.local' % $._namespace,
-    aws_region: 'us-east-1',
+
+    aws_region: 'us-east-1', # unused
     storage_backend: 's3',
     storage_s3_endpoint: 'http://seaweedfs-s3.%s.svc.cluster.local:8333' % $._namespace,
     blocks_storage_bucket_name: 'mimir',
-    ingester_allow_multiple_replicas_on_same_node: true,
-    store_gateway_allow_multiple_replicas_on_same_node: true,
     memberlist_zone_aware_routing_enabled: false,
+
+    alertmanager_data_disk_class: null,
+    alertmanager_data_disk_size: '1Gi',
+
+    ingester_data_disk_class: null,
+    ingester_data_disk_size: '1Gi',
+    ingester_allow_multiple_replicas_on_same_node: true,
+
+    store_gateway_data_disk_class: null,
+    store_gateway_data_disk_size: '1Gi',
+    store_gateway_allow_multiple_replicas_on_same_node: true,
+
+    compactor_data_disk_class: null,
+    compactor_data_disk_size: '2Gi',
   },
 
   compactor_statefulset+: statefulSet.mixin.spec.withReplicas(1),
