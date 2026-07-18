@@ -5,14 +5,11 @@ local helm = import '../lib/helm.libsonnet';
 local namespace = 'metrics-system';
 
 local source = tanka.new(
-  'mimir',
-  // renovate: datasource=docker depName=grafana/mimir
-  targetRevision='main',
+  'metrics',
   namespace=namespace,
   overrides={
-    namespace: namespace,
-    cluster: '{{ .cluster }}',
-    memberlist_zone_aware_routing_enabled: false,
+    _namespace: namespace,
+    _cluster: '{{ .cluster }}',
   },
 );
 

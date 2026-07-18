@@ -28,18 +28,4 @@
       ],
     },
   },
-
-  inline(name, namespace, clusterName, apiServer, data):
-    {
-      apiVersion: 'tanka.dev/v1alpha1',
-      kind: 'Environment',
-      metadata: {
-        name: '%s/%s' % [clusterName, name],
-      },
-      spec: {
-        apiServer: apiServer,
-        namespace: namespace,
-      },
-      data: data,
-    },
 }
