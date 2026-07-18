@@ -8,6 +8,8 @@ volume:
 
 filer:
   replicas: 1
+  s3:
+    enabled: true
 
 s3:
   enabled: true
