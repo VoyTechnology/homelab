@@ -37,6 +37,7 @@ mimir {
   querier_deployment+: deployment.mixin.spec.withReplicas(1),
   query_frontend_deployment+: deployment.mixin.spec.withReplicas(1),
   store_gateway_statefulset+: statefulSet.mixin.spec.withReplicas(1),
+  query_scheduler_deployment+: deployment.mixin.spec.withReplicas(1),
 
   compactor_container+: k.util.resourcesRequests('100m', '128Mi'),
   distributor_container+: k.util.resourcesRequests('100m', '128Mi'),
