@@ -12,7 +12,7 @@ mimir {
 
     aws_region: 'us-east-1', # unused
     storage_backend: 's3',
-    storage_s3_endpoint: 'http://seaweedfs-s3.%s.svc.cluster.local:8333' % $._namespace,
+    storage_s3_endpoint: 'seaweedfs-s3.%s.svc.cluster.local:8333' % $._namespace,
     blocks_storage_bucket_name: 'mimir',
     memberlist_zone_aware_routing_enabled: false,
 
