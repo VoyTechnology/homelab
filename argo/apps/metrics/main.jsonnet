@@ -5,6 +5,19 @@ local deployment = k.apps.v1.deployment;
 local statefulSet = k.apps.v1.statefulSet;
 
 mimir {
+  _config+:: {
+    namespace: $._namespace,
+    cluster: $._cluster,
+    external_url: 'http://metrics-mimir-gateway.%s.svc.cluster.local' % $._namespace,
+    aws_region: 'us-east-1',
+    storage_backend: 's3',
+    storage_s3_endpoint: 'http://seaweedfs-s3.%s.svc.cluster.local:8333' % $._namespace,
+    blocks_storage_bucket_name: 'mimir',
+    ingester_allow_multiple_replicas_on_same_node: true,
+    store_gateway_allow_multiple_replicas_on_same_node: true,
+    memberlist_zone_aware_routing_enabled: false,
+  },
+
   compactor_statefulset+: statefulSet.mixin.spec.withReplicas(1),
   distributor_deployment+: deployment.mixin.spec.withReplicas(1),
   ingester_statefulset+: statefulSet.mixin.spec.withReplicas(1),
@@ -18,4 +31,11 @@ mimir {
   querier_container+: k.util.resourcesRequests('100m', '128Mi'),
   query_frontend_container+: k.util.resourcesRequests('100m', '128Mi'),
   store_gateway_container+: k.util.resourcesRequests('100m', '128Mi'),
+}
+
+# Default values for the Tanka overrides. These can be overridden by the ArgoCD application.
++ {
+  # Safe assumption, but should be passed in from the ArgoCD application.
+  _namespace:: 'metrics-system',
+  _cluster:: 'unknown',
 }
