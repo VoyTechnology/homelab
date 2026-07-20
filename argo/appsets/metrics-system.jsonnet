@@ -18,7 +18,7 @@ local objectStore = helm.new(
   repoURL='https://seaweedfs.github.io/seaweedfs/helm',
   chart='seaweedfs',
   // renovate: datasource=helm depName=seaweedfs registryUrl=https://seaweedfs.github.io/seaweedfs/helm
-  targetRevision='4.29.0',
+  targetRevision='4.40.0',
   valuesApp='metrics',
   valuesPrefix='seaweedfs.',
 );
