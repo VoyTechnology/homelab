@@ -51,31 +51,41 @@ mimir {
   query_frontend_container+: k.util.resourcesRequests('100m', '128Mi'),
   store_gateway_container+: k.util.resourcesRequests('100m', '128Mi'),
 }
+# With the tiny setup in the homelab, podDisruptionBudget is causing issues with syncing.
+# Remove them for now and revisit in the future IF there are more nodes.
++ {
+  distributor_pdb:: null,
+  ingester_pdb:: null,
+  querier_pdb:: null,
+  query_frontend_pdb:: null,
+  query_scheduler_pdb:: null,
+  compactor_pdb:: null,
+  store_gateway_pdb:: null,
+}
 
 # Adjust the sync waves for each component to ensure that they are applied in the correct order
 + {
   distributor_deployment+: withSyncWave(1),
   distributor_service+: withSyncWave(2),
-  distributor_pdb+: withSyncWave(1),
+
   ingester_statefulset+: withSyncWave(1),
   ingester_service+: withSyncWave(2),
-  ingester_pdb+: withSyncWave(1),
+
   querier_deployment+: withSyncWave(1),
   querier_service+: withSyncWave(2),
-  querier_pdb+: withSyncWave(1),
+
   query_frontend_deployment+: withSyncWave(1),
   query_frontend_service+: withSyncWave(2),
-  query_frontend_pdb+: withSyncWave(1),
+
   query_scheduler_deployment+: withSyncWave(1),
   query_scheduler_service+: withSyncWave(2),
   query_scheduler_discovery_service+: withSyncWave(1),
-  query_scheduler_pdb+: withSyncWave(1),
+
   compactor_statefulset+: withSyncWave(2),
   compactor_service+: withSyncWave(1),
-  compactor_pdb+: withSyncWave(1),
+
   store_gateway_statefulset+: withSyncWave(1),
   store_gateway_service+: withSyncWave(2),
-  store_gateway_pdb+: withSyncWave(1),
 }
 
 # Default values for the Tanka overrides. These can be overridden by the ArgoCD application.
