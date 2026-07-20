@@ -21,6 +21,14 @@ filer:
     annotations:
       argocd.argoproj.io/sync-wave: "0"
 
+# Keep a duplicated s3 block just in case
+s3:
+  enabled: true
+  replicas: 1
+  enableAuth: false
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+
 seaweedfs:
   createBuckets:
     - name: mimir
