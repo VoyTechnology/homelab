@@ -20,6 +20,8 @@ filer:
     enableAuth: false
     annotations:
       argocd.argoproj.io/sync-wave: "0"
+    createBuckets:
+    - name: mimir
 
 # Keep a duplicated s3 block just in case
 s3:
