@@ -4,6 +4,11 @@ local mimir = import 'mimir/mimir.libsonnet';
 local deployment = k.apps.v1.deployment;
 local statefulSet = k.apps.v1.statefulSet;
 
+// withSyncWave adds the sync-wave annotations to the metadata of the resource.
+local withSyncWave(wave) = {
+  metadata+: { annotations+: { 'argocd.argoproj.io/sync-wave': std.toString(wave) } },
+};
+
 mimir {
   _config+:: {
     namespace: $._namespace,
@@ -45,6 +50,30 @@ mimir {
   querier_container+: k.util.resourcesRequests('100m', '128Mi'),
   query_frontend_container+: k.util.resourcesRequests('100m', '128Mi'),
   store_gateway_container+: k.util.resourcesRequests('100m', '128Mi'),
+
+  // Move all components to sync-wave 1 so that they are applied after the underlying storage.
+  distributor_deployment+: withSyncWave(1),
+  distributor_service+: withSyncWave(1),
+  distributor_pdb+: withSyncWave(1),
+  ingester_statefulset+: withSyncWave(1),
+  ingester_service+: withSyncWave(1),
+  ingester_pdb+: withSyncWave(1),
+  querier_deployment+: withSyncWave(1),
+  querier_service+: withSyncWave(1),
+  querier_pdb+: withSyncWave(1),
+  query_frontend_deployment+: withSyncWave(1),
+  query_frontend_service+: withSyncWave(1),
+  query_frontend_pdb+: withSyncWave(1),
+  query_scheduler_deployment+: withSyncWave(1),
+  query_scheduler_service+: withSyncWave(1),
+  query_scheduler_discovery_service+: withSyncWave(1),
+  query_scheduler_pdb+: withSyncWave(1),
+  compactor_statefulset+: withSyncWave(1),
+  compactor_service+: withSyncWave(1),
+  compactor_pdb+: withSyncWave(1),
+  store_gateway_statefulset+: withSyncWave(1),
+  store_gateway_service+: withSyncWave(1),
+  store_gateway_pdb+: withSyncWave(1),
 }
 
 # Default values for the Tanka overrides. These can be overridden by the ArgoCD application.
