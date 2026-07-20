@@ -28,7 +28,5 @@ s3:
   enableAuth: false
   annotations:
     argocd.argoproj.io/sync-wave: "0"
-
-seaweedfs:
   createBuckets:
     - name: mimir
