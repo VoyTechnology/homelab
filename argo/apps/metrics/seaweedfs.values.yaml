@@ -23,6 +23,12 @@ filer:
     createBuckets:
     - name: mimir
 
+admin:
+  enabled: true
+  replicas: 1
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+
 # Keep a duplicated s3 block just in case
 s3:
   enabled: true
