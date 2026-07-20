@@ -41,12 +41,14 @@ mimir {
     memcached_chunks_replicas: 1,
     memcached_metadata_replicas: 1,
     memcached_range_vector_splitting_replicas: 1,
+
+    # We are running the seeweedfs locally so there is no need to use TLS for the S3 endpoint.
+    storageConfig+:: {
+      'common.storage.s3.insecure': true,
+    },
   },
 
-  # We are running the seeweedfs locally so there is no need to use TLS for the S3 endpoint.
-  storageConfig+:: {
-    'common.storage.s3.insecure': true,
-  },
+  
 
   compactor_statefulset+: statefulSet.mixin.spec.withReplicas(1),
   distributor_deployment+: deployment.mixin.spec.withReplicas(1),
