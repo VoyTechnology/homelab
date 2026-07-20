@@ -16,13 +16,10 @@ filer:
     argocd.argoproj.io/sync-wave: "0"
   s3:
     enabled: true
-
-s3:
-  enabled: true
-  replicas: 1
-  enableAuth: false
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    replicas: 1
+    enableAuth: false
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
 
 seaweedfs:
   createBuckets:
