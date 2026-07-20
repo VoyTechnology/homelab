@@ -34,6 +34,13 @@ mimir {
 
     compactor_data_disk_class: null,
     compactor_data_disk_size: '2Gi',
+
+    # Scale down to 1 replica for the homelab setup.
+    memcached_frontend_replicas: 1,
+    memcached_index_queries_replicas: 1,
+    memcached_chunks_replicas: 1,
+    memcached_metadata_replicas: 1,
+    memcached_range_vector_splitting_replicas: 1,
   },
 
   compactor_statefulset+: statefulSet.mixin.spec.withReplicas(1),
@@ -61,6 +68,7 @@ mimir {
   query_scheduler_pdb:: null,
   compactor_pdb:: null,
   store_gateway_pdb:: null,
+  memcached+:: { podDisruptionBudget:: null },
 }
 
 # Adjust the sync waves for each component to ensure that they are applied in the correct order
