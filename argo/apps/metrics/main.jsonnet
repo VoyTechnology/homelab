@@ -78,29 +78,29 @@ mimir {
   memcached+:: { podDisruptionBudget:: null },
 }
 
-# Adjust the sync waves for each component to ensure that they are applied in the correct order
+# Adjust the sync-wave so that mimir resources are created after the storage layer
 + {
   distributor_deployment+: withSyncWave(1),
-  distributor_service+: withSyncWave(2),
+  distributor_service+: withSyncWave(1),
 
   ingester_statefulset+: withSyncWave(1),
-  ingester_service+: withSyncWave(2),
+  ingester_service+: withSyncWave(1),
 
   querier_deployment+: withSyncWave(1),
-  querier_service+: withSyncWave(2),
+  querier_service+: withSyncWave(1),
 
   query_frontend_deployment+: withSyncWave(1),
-  query_frontend_service+: withSyncWave(2),
+  query_frontend_service+: withSyncWave(1),
 
   query_scheduler_deployment+: withSyncWave(1),
-  query_scheduler_service+: withSyncWave(2),
+  query_scheduler_service+: withSyncWave(1),
   query_scheduler_discovery_service+: withSyncWave(1),
 
-  compactor_statefulset+: withSyncWave(2),
+  compactor_statefulset+: withSyncWave(1),
   compactor_service+: withSyncWave(1),
 
   store_gateway_statefulset+: withSyncWave(1),
-  store_gateway_service+: withSyncWave(2),
+  store_gateway_service+: withSyncWave(1),
 }
 
 # Default values for the Tanka overrides. These can be overridden by the ArgoCD application.
