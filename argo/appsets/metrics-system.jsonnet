@@ -20,7 +20,7 @@ local objectStore = helm.new(
   // renovate: datasource=helm depName=seaweedfs registryUrl=https://seaweedfs.github.io/seaweedfs/helm
   targetRevision='4.40.0',
   valuesApp='metrics',
-  valuesPrefix='seaweedfs.',
+  valuesPrefix='seaweedfs',
 );
 
 appset.new('metrics', namespace)
