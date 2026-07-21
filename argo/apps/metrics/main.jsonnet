@@ -64,12 +64,6 @@ mimir {
   store_gateway_statefulset+: statefulSet.mixin.spec.withReplicas(1),
   query_scheduler_deployment+: deployment.mixin.spec.withReplicas(1),
 
-  // Override the distributor service to be ClusterIP (not headless) so Alloy
-  // can reach it via a stable service DNS name for remote_write.
-  distributor_service+: {
-    spec+: { clusterIP: '' },
-  },
-
   compactor_container+: k.util.resourcesRequests('100m', '128Mi'),
   distributor_container+: k.util.resourcesRequests('100m', '128Mi'),
   ingester_container+: k.util.resourcesRequests('100m', '128Mi'),
