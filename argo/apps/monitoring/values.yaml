@@ -50,7 +50,7 @@ grafana:
       datasources:
         - name: Metrics
           type: prometheus
-          url: http://metrics-mimir-gateway.metrics-system.svc.cluster.local/prometheus
+          url: http://query-frontend.metrics-system.svc.cluster.local/prometheus
           access: proxy
           isDefault: true
 
@@ -260,7 +260,7 @@ alloy:
         // Remote write to local Mimir
         prometheus.remote_write "mimir" {
           endpoint {
-            url = "http://metrics-mimir-gateway.metrics-system.svc.cluster.local/api/v1/push"
+            url = "http://distributor.metrics-system.svc.cluster.local:8080/api/v1/push"
           }
         }
 

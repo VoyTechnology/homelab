@@ -13,7 +13,7 @@ mimir {
   _config+:: {
     namespace: $._namespace,
     cluster: $._cluster,
-    external_url: 'http://metrics-mimir-gateway.%s.svc.cluster.local' % $._namespace,
+    external_url: 'http://query-frontend.%s.svc.cluster.local' % $._namespace,
 
     aws_region: 'us-east-1', # unused
     storage_backend: 's3',
@@ -63,6 +63,12 @@ mimir {
   query_frontend_deployment+: deployment.mixin.spec.withReplicas(1),
   store_gateway_statefulset+: statefulSet.mixin.spec.withReplicas(1),
   query_scheduler_deployment+: deployment.mixin.spec.withReplicas(1),
+
+  // Override the distributor service to be ClusterIP (not headless) so Alloy
+  // can reach it via a stable service DNS name for remote_write.
+  distributor_service+: {
+    spec+: { clusterIP: '' },
+  },
 
   compactor_container+: k.util.resourcesRequests('100m', '128Mi'),
   distributor_container+: k.util.resourcesRequests('100m', '128Mi'),
