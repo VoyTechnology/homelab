@@ -6,7 +6,7 @@ local util = import '../lib/util.libsonnet';
 local namespace = 'monitoring';
 
 local source = tanka.new(
-  'grafana',
+  'monitoring',
   namespace=namespace,
   overrides={
     namespace: namespace,
