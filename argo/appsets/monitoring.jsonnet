@@ -1,5 +1,6 @@
 local appset = import '../lib/appset.libsonnet';
 local helm = import '../lib/helm.libsonnet';
+local tanka = import '../lib/tanka.libsonnet';
 local util = import '../lib/util.libsonnet';
 
 local namespace = 'monitoring';
