@@ -52,6 +52,11 @@ mimir {
     storageConfig+:: {
       'common.storage.s3.insecure': true,
     },
+
+    # Disable multi-tenancy for the homelab setup.
+    commonConfig+:: {
+      'auth.enabled': false,
+    },
   },
 
   
