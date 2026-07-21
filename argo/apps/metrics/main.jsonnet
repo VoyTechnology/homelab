@@ -55,7 +55,7 @@ mimir {
 
     # Disable multi-tenancy for the homelab setup.
     commonConfig+:: {
-      'auth.enabled': false,
+      'auth.multitenancy-enabled': false,
     },
   },
 
