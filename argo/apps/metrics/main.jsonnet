@@ -25,6 +25,8 @@ mimir {
     storage_s3_access_key_id: 'mimir',
     storage_s3_secret_access_key: 'mimir',
     blocks_storage_bucket_name: 'mimir',
+    # Drop replication factor to 1 as we don't run that many ingesters
+    replication_factor: 1,
     memberlist_zone_aware_routing_enabled: false,
 
     alertmanager_data_disk_class: null,
