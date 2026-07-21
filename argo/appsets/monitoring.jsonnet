@@ -2,9 +2,25 @@ local appset = import '../lib/appset.libsonnet';
 local helm = import '../lib/helm.libsonnet';
 local util = import '../lib/util.libsonnet';
 
-local source = helm.new('monitoring', values={
+local namespace = 'monitoring';
+
+local source = tanka.new(
+  'grafana',
+  namespace=namespace,
+  overrides={
+    namespace: namespace,
+    cluster: '{{ .cluster }}',
+    domain: '{{ .domain }}',
+    metricsNamespace: 'metrics-system',
+  },
+);
+
+local ignoreDifferences = [
+  { group: '*', kind: 'Secret', name: 'grafana', jsonPointers: ['/data/admin-password'] },
+];
+
+local alloySource = helm.new('monitoring', values={
   cluster_name: '{{ .cluster }}',
-  domain: '{{ .domain }}',
   alloy: {
     ingress: util.ingress('alloy', class='internal-login'),
     alloy: { extraEnv: [
@@ -17,18 +33,10 @@ local source = helm.new('monitoring', values={
       util.secretEnv('TOKEN', 'grafana-cloud', 'token'),
     ] },
   },
-  grafana: {
-    domain: '{{ .domain }}',
-    route: { main: { hostnames: ["grafana.{{ .domain }}"]}}
-  }
 });
 local extraObjects = helm.extraObjects('monitoring');
 
-local ignoreDifferences = [
-  { group: '*', kind: 'Secret', name: 'monitoring-grafana', jsonPointers: ['/data/admin-password'] },
-];
-
-appset.new('monitoring', 'monitoring')
+appset.new('monitoring', namespace)
 + appset.addSource(source)
++ appset.addSource(alloySource)
 + appset.addSource(extraObjects)
-+ appset.addIgnoreDifferences(ignoreDifferences)

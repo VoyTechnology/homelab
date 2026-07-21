@@ -2,59 +2,6 @@ domain: REPLACE_ME
 cluster_name: REPLACE_ME
 
 ####################################################################################################
-# Grafana
-####################################################################################################
-grafana:
-  enabled: true
-  grafana.ini:
-    server:
-      root_url: "https://grafana.{{ .Values.domain }}/"
-    auth.generic_oauth:
-      enabled: true
-      name: "Dex"
-      scopes: openid email profile groups offline_access
-      skip_org_role_sync: true
-      allow_sign_up: false
-      oauth_allow_insecure_email_lookup: true
-      auth_url: "https://login.{{ .Values.domain }}/auth"
-      token_url: "https://login.{{ .Values.domain }}/token"
-      api_url: "https://login.{{ .Values.domain }}/userinfo"
-  envValueFrom:
-    GF_AUTH_GENERIC_OAUTH_CLIENT_ID:
-      secretKeyRef:
-        name: grafana-cloud
-        key: oauth-client-id
-    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
-      secretKeyRef:
-        name: grafana-cloud
-        key: oauth-client-secret
-  route:
-    main:
-      enabled: true
-      parentRefs:
-        - kind: Gateway
-          namespace: envoy-gateway-system
-          name: exposed
-      hostnames:
-        - grafana.{{ .Values.domain }}
-  persistence:
-    enabled: true
-    storageClassName: longhorn
-  sidecar:
-    dashboards:
-      enabled: true
-      label: grafana_dashboard
-  datasources:
-    datasources.yaml:
-      apiVersion: 1
-      datasources:
-        - name: Metrics
-          type: prometheus
-          url: http://query-frontend.metrics-system.svc.cluster.local:8080/prometheus
-          access: proxy
-          isDefault: true
-
-####################################################################################################
 # Alloy
 ####################################################################################################
 
