@@ -30,6 +30,9 @@ platform.
 - `argo/lib/*.libsonnet` holds shared Jsonnet helpers for ApplicationSets,
   Helm sources, ingress, and env vars.
 - `argo/apps/<app>/` contains Helm values and, for local charts, templates.
+  Tanka-based apps (identified by `jsonnetfile.json`) use Jsonnet to generate
+  Kubernetes manifests and may contain `spec.json`, `main.jsonnet`, and
+  `vendor/`.
 - `charts/extra-objects/` is a tiny helper chart for app-specific raw Kubernetes
   objects supplied through `extra.values.yaml`.
 - `charts/infra/` renders Argo CD `Application` resources from values.
@@ -105,6 +108,50 @@ Cluster-specific templating uses ApplicationSet Go templates such as
 `{{ .cluster }}` and `{{ .domain }}`, sourced from files under
 `argo/clusters/`.
 
+## Tanka
+
+Some apps use Grafana Tanka instead of Helm to produce Kubernetes manifests.
+Tanka-based apps are identified by `jsonnetfile.json` in their directory and
+may contain `spec.json`, `main.jsonnet`, and `vendor/`.
+
+### The `spec.json` situation
+
+`spec.json` is **gitignored** and ephemeral. It tells Tanka which Kubernetes
+API server and namespace to target, but is never used for actual deployment.
+It is generated on the fly from cluster metadata by both the Argo CD CMP and
+the local `scripts/tk-show` helper:
+
+1. Back up any existing `spec.json`.
+2. Generate a fresh one pointing at the target apiserver/namespace.
+3. Rename `main.jsonnet` to `_main.jsonnet`, create a wrapper that applies
+   overrides.
+4. Run `tk show`, then restore original files on cleanup.
+
+### Local testing
+
+Use `scripts/tk-show` to render a Tanka app locally without Argo CD:
+
+```sh
+TANKA_NAMESPACE=<ns> scripts/tk-show argo/apps/<app>
+```
+
+Environment variables control the same knobs as the CMP:
+`TANKA_NAMESPACE`, `TANKA_APISERVER`, `TANKA_CLUSTER`, `TANKA_APP`,
+and `TANKA_OVERRIDES` (a Jsonnet expression merged into `main.jsonnet`).
+
+### The `tanka.libsonnet` helper
+
+`argo/lib/tanka.libsonnet` builds the Argo CD ApplicationSet source spec
+for Tanka apps. It sets the `plugin` field (instead of `helm` or `kustomize`)
+and passes all Tanka environment variables as ApplicationSet Go template
+expressions:
+
+```jsonnet
+local tanka = import '../lib/tanka.libsonnet';
+local source = tanka.new('metrics', namespace='metrics-system',
+  overrides={ _namespace:: 'metrics-system', _cluster:: '{{ .cluster }}' });
+```
+
 ## Adding or Updating Apps
 
 When adding an app:
@@ -130,6 +177,7 @@ Pick the lightest check that matches the change:
 
 ```sh
 jsonnet argo/appsets/<app>.jsonnet
+TANKA_NAMESPACE=<ns> scripts/tk-show argo/apps/<app>
 helm lint charts/<chart>
 helm template <release> charts/<chart> -f charts/<chart>/values.yaml
 ansible-playbook -i ansible/inventory/bet1/hosts.ini ansible/site.yml --syntax-check
