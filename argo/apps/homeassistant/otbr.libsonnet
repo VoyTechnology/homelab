@@ -10,7 +10,7 @@ local svc = k.core.v1.service;
         k.core.v1.container.new('otbr', $._images.otbr)
         + k.core.v1.container.withEnvMap({
             DEVICE: $._config.threadDongle,
-            BACKBONE_IF: $._config.backboneIf,
+            BACKBONE_IF: $._config.networkInterface,
             BAUDRATE: '460800',
             FLOW_CONTROL: '0',
             FIREWALL: '1',
@@ -45,4 +45,14 @@ local svc = k.core.v1.service;
             k.core.v1.servicePort.newNamed('web', $._config.webPort, $._config.webPort),
         ]),
     },
+} + {
+    _config+:: {
+        threadDongle: $._threadDongle,
+        networkInterface: $._networkInterface,
+        nodeName: $._nodeName,
+    }
+} + {
+    _threadDongle: error "threadDongle must be set in the config",
+    _networkInterface: error 'networkInterface must be set in the config',
+    _nodeName: error 'nodeName must be set in the config',
 }

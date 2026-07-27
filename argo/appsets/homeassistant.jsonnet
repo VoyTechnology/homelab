@@ -63,22 +63,18 @@ local source = helm.new(
 
 local extraObjects = helm.extraObjects('homeassistant');
 
-local otbr = tanka.new(
+local tankaSource = tanka.new(
   'ha-jsonnet',
   path='argo/apps/homeassistant',
   namespace='homeassistant',
   overrides={
-    _namespace:: 'homeassistant',
-    _cluster:: '{{ .cluster }}',
-    _config+:: {
-      threadDongle: usbDevices.devices['thread-dongle'],
-      backboneIf: 'enp6s0',
-      nodeName: 's1-bet1',
-    }
+    threadDongle: usbDevices.devices['thread-dongle'],
+    networkInterface: 'enp6s0',
+    nodeName: 's1-bet1',
   },
 );
 
 appset.new('homeassistant', 'homeassistant')
 + appset.addSource(source)
 + appset.addSource(extraObjects)
-+ appset.addSource(otbr)
++ appset.addSource(tankaSource)
