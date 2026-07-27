@@ -68,9 +68,9 @@ local tankaSource = tanka.new(
   path='argo/apps/homeassistant',
   namespace='homeassistant',
   overrides={
-    threadDongle: usbDevices.devices['thread-dongle'],
-    networkInterface: 'enp6s0',
-    nodeName: 's1-bet1',
+    _threadDongle: usbDevices.devices['thread-dongle'],
+    _networkInterface: 'enp6s0',
+    _nodeName: 's1-bet1',
   },
 );
 
