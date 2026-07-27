@@ -2,21 +2,31 @@ local appset = import '../lib/appset.libsonnet';
 local helm = import '../lib/helm.libsonnet';
 local util = import '../lib/util.libsonnet';
 
+// usbDevices is a list of devices that should be mounted into the homeassistant pod. The key is the name of the device, and the value is the path to the device on the host.
+local usbDevices = {
+  local devices = {
+    "zigbee-dongle": "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_48595f40c274ef1196c7cd8c8fcc3fa0-if00-port0",
+    "thread-dongle": "/dev/serial/by-id/usb-Nabu_Casa_ZBT-2_14C19FC4DBA8-if00",
+  },
+
+  additionalVolumes:: [{
+      name: device.key,
+      hostPath: {
+        path: device.value,
+      }
+  } for device in std.objectKeysValues(devices) ],
+
+  additionalMounts:: [{
+      name: device.key,
+      mountPath: device.value,
+  } for device in std.objectKeysValues(devices) ],
+};
+
 local source = helm.new(
   'homeassistant', values={
     homeassistant: {
-      additionalVolumes: [{
-        name: "zigbee-dongle",
-        hostPath: {
-          # TODO: Make this dynamic per cluster
-          path: "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_48595f40c274ef1196c7cd8c8fcc3fa0-if00-port0",
-          type: "CharDevice"
-        }
-      }],
-      additionalMounts: [{
-        name: "zigbee-dongle",
-        mountPath: "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_48595f40c274ef1196c7cd8c8fcc3fa0-if00-port0",
-      }],
+      additionalVolumes: usbDevices.additionalVolumes,
+      additionalMounts: usbDevices.additionalMounts,
       nodeSelector: {
         # TODO: Make this dynamic per cluster
         'kubernetes.io/hostname': 's1-bet1',
