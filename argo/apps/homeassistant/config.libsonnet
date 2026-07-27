@@ -4,6 +4,6 @@
         networkInterface: error 'networkInterface must be set in the config',
         nodeName: error 'nodeName must be set in the config',
         restPort: 8081,
-        webPort: 80,
+        webPort: 8082,
     }
 }
