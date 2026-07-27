@@ -52,7 +52,7 @@ local svc = k.core.v1.service;
         nodeName: $._nodeName,
     }
 } + {
-    _threadDongle: error "threadDongle must be set in the config",
-    _networkInterface: error 'networkInterface must be set in the config',
-    _nodeName: error 'nodeName must be set in the config',
+    _threadDongle: 'dongle',
+    _networkInterface: 'eth0',
+    _nodeName: 'node1',
 }
