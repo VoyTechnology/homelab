@@ -25,34 +25,22 @@ local svc = k.core.v1.service;
         ])
         + k.core.v1.container.mixin.securityContext.withPrivileged(true),
 
-    otbr: {
         dongleVolume:: k.core.v1.volume.fromHostPath('thread-dongle', $._config.threadDongle),
         tunVolume:: k.core.v1.volume.fromHostPath('tun', '/dev/net/tun'),
 
-        statefulSet:
-            sts.new('otbr', containers=[this.container], podLabels={ app: 'otbr' })
-            + sts.mixin.spec.withReplicas(1)
-            + sts.mixin.spec.template.spec.withVolumes([
-                self.dongleVolume,
-                self.tunVolume,
-            ])
-            + sts.mixin.spec.template.spec.withNodeSelector({ 'kubernetes.io/hostname': $._config.nodeName })
-            + sts.mixin.spec.template.spec.withHostNetwork(true)
-            + sts.mixin.spec.template.spec.withDnsPolicy('ClusterFirstWithHostNet'),
+    statefulSet:
+        sts.new('otbr', containers=[this.container], podLabels={ app: 'otbr' })
+        + sts.mixin.spec.withReplicas(1)
+        + sts.mixin.spec.template.spec.withVolumes([
+            self.dongleVolume,
+            self.tunVolume,
+        ])
+        + sts.mixin.spec.template.spec.withNodeSelector({ 'kubernetes.io/hostname': $._config.nodeName })
+        + sts.mixin.spec.template.spec.withHostNetwork(true)
+        + sts.mixin.spec.template.spec.withDnsPolicy('ClusterFirstWithHostNet'),
 
-        service: svc.new('otbr', { app: 'otbr' }, [
-            k.core.v1.servicePort.newNamed('rest-api', $._config.restPort, $._config.restPort),
-            k.core.v1.servicePort.newNamed('web', $._config.webPort, $._config.webPort),
-        ]),
-    },
-} + {
-    _config+:: {
-        threadDongle: $._threadDongle,
-        networkInterface: $._networkInterface,
-        nodeName: $._nodeName,
-    }
-} + {
-    _threadDongle: error "threadDongle must be set in the config",
-    _networkInterface: error 'networkInterface must be set in the config',
-    _nodeName: error 'nodeName must be set in the config',
+    service: svc.new('otbr', { app: 'otbr' }, [
+        k.core.v1.servicePort.newNamed('rest-api', $._config.restPort, $._config.restPort),
+        k.core.v1.servicePort.newNamed('web', $._config.webPort, $._config.webPort),
+    ]),
 }

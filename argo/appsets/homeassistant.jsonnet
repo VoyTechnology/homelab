@@ -67,11 +67,7 @@ local tankaSource = tanka.new(
   'ha-jsonnet',
   path='argo/apps/homeassistant',
   namespace='homeassistant',
-  overrides={
-    _threadDongle: usbDevices.devices['thread-dongle'],
-    _networkInterface: 'enp6s0',
-    _nodeName: 's1-bet1',
-  },
+  overrides={},
 );
 
 appset.new('homeassistant', 'homeassistant')
