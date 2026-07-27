@@ -15,12 +15,12 @@ local usbDevices = {
       hostPath: {
         path: device.value,
       }
-  } for device in std.objectKeysValues(super.devices) ],
+  } for device in std.objectKeysValues(self.devices) ],
 
   additionalMounts:: [{
       name: device.key,
       mountPath: device.value,
-  } for device in std.objectKeysValues(super.devices) ],
+  } for device in std.objectKeysValues(self.devices) ],
 };
 
 local source = helm.new(
