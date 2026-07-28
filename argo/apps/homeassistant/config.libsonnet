@@ -5,5 +5,8 @@
         nodeName: error 'nodeName must be set in the config',
         restPort: 8081,
         webPort: 8082,
+
+        dataStorageSize: '1Gi',
+        dataStorageClass: null,
     }
 }

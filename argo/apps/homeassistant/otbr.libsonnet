@@ -2,6 +2,7 @@ local k = import 'github.com/jsonnet-libs/k8s-libsonnet/1.35/main.libsonnet';
 
 local sts = k.apps.v1.statefulSet;
 local svc = k.core.v1.service;
+local pvcTemplate = k.core.v1.persistentVolumeClaimTemplate;
 
 {
     local this = self,
@@ -22,15 +23,23 @@ local svc = k.core.v1.service;
         + k.core.v1.container.withVolumeMounts([
             k.core.v1.volumeMount.new('thread-dongle', $._config.threadDongle),
             k.core.v1.volumeMount.new('tun', '/dev/net/tun'),
+            k.core.v1.volumeMount.new('data', '/data'),
         ])
         + k.core.v1.container.mixin.securityContext.withPrivileged(true),
 
         dongleVolume:: k.core.v1.volume.fromHostPath('thread-dongle', $._config.threadDongle),
         tunVolume:: k.core.v1.volume.fromHostPath('tun', '/dev/net/tun'),
 
+    dataPVC:: {}
+        + pvcTemplate.metadata.withName('data')
+        + pvcTemplate.spec.resources.withRequests({ storage: $._config.dataStorageSize })
+        + pvcTemplate.spec.withAccessModes(['ReadWriteOnce'])
+        + pvcTemplate.spec.withStorageClassName($._config.dataStorageClass),
+
     statefulSet:
         sts.new('otbr', containers=[this.container], podLabels={ app: 'otbr' })
         + sts.mixin.spec.withReplicas(1)
+        + sts.mixin.spec.withVolumeClaimTemplates([self.dataPVC])
         + sts.mixin.spec.template.spec.withVolumes([
             self.dongleVolume,
             self.tunVolume,
