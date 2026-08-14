@@ -7,4 +7,5 @@
 {
   argocd: import 'github.com/grafana/jsonnet-libs/argocd-mixin/mixin.libsonnet',
   envoy: import 'github.com/grafana/jsonnet-libs/envoy-mixin/mixin.libsonnet',
+  mimir: import 'github.com/grafana/mimir/operations/mimir-mixin/mixin.libsonnet',
 }

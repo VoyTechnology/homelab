@@ -54,6 +54,26 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/mimir.git",
+          "subdir": "operations/mimir-mixin"
+        }
+      },
+      "version": "f828e3db1aedb8bd5d170705ad4f58f6138f437a",
+      "sum": "JWI1ZnyB23osWGvBgBOx2lZ0KSPCVkrMfXAQAsad++k="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/rollout-operator.git",
+          "subdir": "operations/rollout-operator-mixin"
+        }
+      },
+      "version": "a0d115714858140ccc686e30f24719bc303e734d",
+      "sum": "+A9iB+GdwZepQWGYAq/hinLOcdWQQQaApATnzvDMJEE="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
           "subdir": "1.35"
         }
