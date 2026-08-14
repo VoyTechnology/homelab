@@ -77,6 +77,15 @@ local withSyncWave(wave) = {
     + grafana.addDatasource('metrics', $.metricsDatasource)
     + grafana.addMixinDashboards(mixins)
     + {
+      // The vendored grafana.libsonnet defaults to grafana/grafana:8.2.5
+      // (2021). Renovate's jsonnet custom manager only tracks
+      // `targetRevision = '...'` assignments, not image tags, so this isn't
+      // auto-bumped — check https://github.com/grafana/grafana/releases
+      // occasionally and bump by hand.
+      _images+:: {
+        grafana: 'grafana/grafana:13.1.3',
+      },
+
       _config+:: {
         # Dogfooding my own feature!
         configmap_binpack: true,
