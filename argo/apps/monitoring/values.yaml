@@ -130,6 +130,33 @@ alloy:
             regex = "(https?)"
             replacement = "$1"
           }
+          // Stamp namespace and cluster onto scraped metrics, so dashboards
+          // can filter/template on them -- without these, $namespace/
+          // $cluster selectors have nothing to match and panels come back
+          // empty.
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            action = "replace"
+            target_label = "namespace"
+            regex = "(.+)"
+            replacement = "$1"
+          }
+          rule {
+            action       = "replace"
+            target_label = "cluster"
+            replacement  = sys.env("CLUSTER_NAME")
+          }
+          // Many dashboards select series by job=~"($namespace)/(component.*)"
+          // rather than a flat job name. Reconstruct that "<namespace>/<name>"
+          // format whenever a pod carries a "name" label identifying its
+          // component. Pods without one keep the flat job_name set below.
+          rule {
+            source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_label_name"]
+            action = "replace"
+            target_label = "job"
+            regex = "(.+);(.+)"
+            replacement = "$1/$2"
+          }
         }
 
         // Scrape kubelet /metrics
@@ -196,10 +223,10 @@ alloy:
         // Remote write to Grafana Cloud
         prometheus.remote_write "cloud" {
           endpoint {
-            url = env("PROMETHEUS_URL")
+            url = sys.env("PROMETHEUS_URL")
             basic_auth {
-              username = env("GRAFANA_USER")
-              password = env("TOKEN")
+              username = sys.env("GRAFANA_USER")
+              password = sys.env("TOKEN")
             }
           }
         }
