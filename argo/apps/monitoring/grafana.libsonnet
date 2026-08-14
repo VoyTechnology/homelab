@@ -107,10 +107,15 @@ local withSyncWave(wave) = {
       // configmaps.libsonnet), not a sidecar, so the deployment only needs
       // the grafana-data volume wired up to back the PVC above. Sync-wave 2
       // so the PVC (wave 1) exists before the pod tries to mount it.
+      //
+      // fsGroup is required because the grafana image runs as uid 472, but a
+      // fresh PVC mounts root-owned — without it the container can't write
+      // to /var/lib/grafana and crashloops on "Permission denied".
       grafana_deployment+:
         k.apps.v1.deployment.mixin.spec.template.spec.withVolumesMixin([
           volume.fromPersistentVolumeClaim('grafana-data', 'grafana-data'),
         ])
+        + k.apps.v1.deployment.mixin.spec.template.spec.securityContext.withFsGroup(472)
         + withSyncWave(2),
     }
 }
