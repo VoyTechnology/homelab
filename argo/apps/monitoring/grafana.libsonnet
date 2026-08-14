@@ -83,7 +83,14 @@ local withSyncWave(wave) = {
       },
 
       grafana_container+::
-        container.withEnv([
+        // withEnv (unlike withEnvMixin) replaces the whole env list, which
+        // was silently wiping out the base container's GF_PATHS_CONFIG and
+        // GF_INSTALL_PLUGINS (set via withEnvMap in the vendored
+        // deployment.libsonnet). That meant grafana-server fell back to its
+        // baked-in /etc/grafana/grafana.ini default instead of our
+        // configmap-mounted config, so OAuth (and everything else in
+        // iniConfig) was silently never applied.
+        container.withEnvMixin([
           { name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_ID', valueFrom: { secretKeyRef: { name: 'grafana-cloud', key: 'oauth-client-id' } } },
           { name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET', valueFrom: { secretKeyRef: { name: 'grafana-cloud', key: 'oauth-client-secret' } } },
         ])
