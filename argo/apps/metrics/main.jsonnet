@@ -92,10 +92,16 @@ mimir {
   // deadlocks forever: every pod-template change tries to schedule a second
   // query-scheduler pod on the same node before killing the old one, which
   // the anti-affinity rule forbids, leaving the new pod Pending and the
-  // rollout permanently stuck ("exceeded its progress deadline").
+  // rollout permanently stuck ("exceeded its progress deadline"). Dropping
+  // the anti-affinity rule isn't enough by itself: maxSurge(1)/
+  // maxUnavailable(0) still tries to run two query-scheduler pods at once
+  // during every rollout, which a one-node cluster has no spare capacity
+  // for. Switch to Recreate so the old pod is torn down before the new one
+  // is created, matching how single-node homelab rollouts actually work.
   query_scheduler_deployment+:
     deployment.mixin.spec.withReplicas(1)
-    + { spec+: { template+: { spec+: { affinity: null } } } },
+    + deployment.mixin.spec.strategy.withType('Recreate')
+    + { spec+: { strategy+: { rollingUpdate: null }, template+: { spec+: { affinity: null } } } },
 
   compactor_container+: k.util.resourcesRequests('100m', '128Mi'),
   distributor_container+: k.util.resourcesRequests('100m', '128Mi'),
