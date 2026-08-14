@@ -70,7 +70,17 @@ mimir {
   querier_deployment+: deployment.mixin.spec.withReplicas(1),
   query_frontend_deployment+: deployment.mixin.spec.withReplicas(1),
   store_gateway_statefulset+: statefulSet.mixin.spec.withReplicas(1),
-  query_scheduler_deployment+: deployment.mixin.spec.withReplicas(1),
+  // query-scheduler.libsonnet unconditionally sets a hard podAntiAffinity
+  // (unlike ingester/store-gateway, which respect the
+  // *_allow_multiple_replicas_on_same_node config above) combined with
+  // maxSurge(1)/maxUnavailable(0). On this single-node homelab cluster that
+  // deadlocks forever: every pod-template change tries to schedule a second
+  // query-scheduler pod on the same node before killing the old one, which
+  // the anti-affinity rule forbids, leaving the new pod Pending and the
+  // rollout permanently stuck ("exceeded its progress deadline").
+  query_scheduler_deployment+:
+    deployment.mixin.spec.withReplicas(1)
+    + { spec+: { template+: { spec+: { affinity: null } } } },
 
   compactor_container+: k.util.resourcesRequests('100m', '128Mi'),
   distributor_container+: k.util.resourcesRequests('100m', '128Mi'),
