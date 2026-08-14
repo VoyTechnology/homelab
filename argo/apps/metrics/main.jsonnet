@@ -9,6 +9,21 @@ local withSyncWave(wave) = {
   metadata+: { annotations+: { 'argocd.argoproj.io/sync-wave': std.toString(wave) } },
 };
 
+// withScrapeAnnotations adds prometheus.io/scrape annotations to a pod
+// template so Alloy's annotation-based pod discovery (see
+// argo/apps/monitoring/values.yaml) picks up the component's own /metrics
+// endpoint. Without this, none of Mimir's components are scraped by
+// anything, so Mimir never has its own cortex_*/mimir_* self-monitoring
+// metrics (what the mimir-mixin dashboards query) even though it happily
+// stores everything remote-written to it.
+local withScrapeAnnotations = {
+  spec+: { template+: { metadata+: { annotations+: {
+    'prometheus.io/scrape': 'true',
+    // Every component serves its own metrics on server_http_port (8080).
+    'prometheus.io/port': '8080',
+  } } } },
+};
+
 mimir {
   _config+:: {
     namespace: $._namespace,
@@ -88,6 +103,17 @@ mimir {
   querier_container+: k.util.resourcesRequests('100m', '128Mi'),
   query_frontend_container+: k.util.resourcesRequests('100m', '128Mi'),
   store_gateway_container+: k.util.resourcesRequests('100m', '128Mi'),
+}
+# Let Alloy scrape each Mimir component's own /metrics via pod annotations,
+# so Mimir's self-monitoring metrics end up in Mimir (see withScrapeAnnotations above).
++ {
+  compactor_statefulset+: withScrapeAnnotations,
+  distributor_deployment+: withScrapeAnnotations,
+  ingester_statefulset+: withScrapeAnnotations,
+  querier_deployment+: withScrapeAnnotations,
+  query_frontend_deployment+: withScrapeAnnotations,
+  query_scheduler_deployment+: withScrapeAnnotations,
+  store_gateway_statefulset+: withScrapeAnnotations,
 }
 # With the tiny setup in the homelab, podDisruptionBudget is causing issues with syncing.
 # Remove them for now and revisit in the future IF there are more nodes.
