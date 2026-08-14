@@ -105,11 +105,12 @@ local withSyncWave(wave) = {
 
       // Dashboard delivery goes through configmap_mounts (see grafana lib's
       // configmaps.libsonnet), not a sidecar, so the deployment only needs
-      // the grafana-data volume wired up to back the PVC above.
+      // the grafana-data volume wired up to back the PVC above. Sync-wave 2
+      // so the PVC (wave 1) exists before the pod tries to mount it.
       grafana_deployment+:
         k.apps.v1.deployment.mixin.spec.template.spec.withVolumesMixin([
           volume.fromPersistentVolumeClaim('grafana-data', 'grafana-data'),
         ])
-        + withSyncWave(0),
+        + withSyncWave(2),
     }
 }
