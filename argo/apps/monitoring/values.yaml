@@ -144,7 +144,7 @@ alloy:
           rule {
             action       = "replace"
             target_label = "cluster"
-            replacement  = env("CLUSTER_NAME")
+            replacement  = sys.env("CLUSTER_NAME")
           }
           // Many dashboards select series by job=~"($namespace)/(component.*)"
           // rather than a flat job name. Reconstruct that "<namespace>/<name>"
@@ -223,10 +223,10 @@ alloy:
         // Remote write to Grafana Cloud
         prometheus.remote_write "cloud" {
           endpoint {
-            url = env("PROMETHEUS_URL")
+            url = sys.env("PROMETHEUS_URL")
             basic_auth {
-              username = env("GRAFANA_USER")
-              password = env("TOKEN")
+              username = sys.env("GRAFANA_USER")
+              password = sys.env("TOKEN")
             }
           }
         }
