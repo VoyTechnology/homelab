@@ -10,6 +10,21 @@ volume:
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 
+# Static admin credentials for the S3 gateway, matching the
+# storage_s3_access_key_id/storage_s3_secret_access_key used by mimir
+# (see argo/apps/metrics/main.jsonnet). enableAuth: false does NOT mean
+# "accept any credentials" -- it means "run the S3 gateway with no
+# identities configured at all", which only accepts unsigned/anonymous
+# requests. Mimir's S3 client always sends SigV4-signed requests when
+# given static credentials, so those get rejected with "Signed request
+# requires setting up SeaweedFS S3 authentication" unless an identity
+# matching the access key is configured here.
+s3:
+  credentials:
+    admin:
+      accessKey: mimir
+      secretKey: mimir
+
 filer:
   replicas: 1
   annotations:
@@ -17,7 +32,7 @@ filer:
   s3:
     enabled: true
     replicas: 1
-    enableAuth: false
+    enableAuth: true
     annotations:
       argocd.argoproj.io/sync-wave: "0"
     createBuckets:
