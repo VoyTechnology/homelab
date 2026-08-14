@@ -93,7 +93,6 @@ local withSyncWave(wave) = {
           )
         + container.withVolumeMounts([
             volumeMount.new('grafana-data', '/var/lib/grafana', false),
-            volumeMount.new('grafana-dashboards-sidecar', '/var/lib/grafana/dashboards/default', false),
           ]),
 
       grafana_data_pvc:
@@ -104,15 +103,13 @@ local withSyncWave(wave) = {
 
       grafana_http_route: $.httpRoute,
 
-      // grafana_deployment+:
-      //   k.apps.v1.deployment.mixin.spec.template.spec.withContainers([
-      //     $.grafana_container,
-      //     $.dashboardSidecar,
-      //   ])
-      //   + k.apps.v1.deployment.mixin.spec.template.spec.withVolumesMixin([
-      //     volume.fromPersistentVolumeClaim('grafana-data', 'grafana-data'),
-      //     volume.emptyDir.new('grafana-dashboards-sidecar'),
-      //   ])
-      //   + withSyncWave(0),
+      // Dashboard delivery goes through configmap_mounts (see grafana lib's
+      // configmaps.libsonnet), not a sidecar, so the deployment only needs
+      // the grafana-data volume wired up to back the PVC above.
+      grafana_deployment+:
+        k.apps.v1.deployment.mixin.spec.template.spec.withVolumesMixin([
+          volume.fromPersistentVolumeClaim('grafana-data', 'grafana-data'),
+        ])
+        + withSyncWave(0),
     }
 }
