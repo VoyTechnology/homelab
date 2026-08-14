@@ -18,10 +18,11 @@ mimir {
     aws_region: 'us-east-1', # unused
     storage_backend: 's3',
     storage_s3_endpoint: 'seaweedfs-s3.%s.svc.cluster.local:8333' % $._namespace,
-    # SeaweedFS runs with enableAuth: false, so any static credentials are
-    # accepted. They must be non-empty to stop the AWS SDK from falling back
-    # to the EC2 instance metadata service (169.254.169.254), which would
-    # hang and time out in this homelab (no cloud metadata endpoint).
+    # Must match the S3 gateway admin identity configured in
+    # argo/apps/metrics/seaweedfs.values.yaml (filer.s3.enableAuth / s3.credentials).
+    # Also must be non-empty to stop the AWS SDK from falling back to the EC2
+    # instance metadata service (169.254.169.254), which would hang and time
+    # out in this homelab (no cloud metadata endpoint).
     storage_s3_access_key_id: 'mimir',
     storage_s3_secret_access_key: 'mimir',
     blocks_storage_bucket_name: 'mimir',
