@@ -130,11 +130,14 @@ alloy:
             regex = "(https?)"
             replacement = "$1"
           }
-          // Grafana mixin dashboards (mimir, loki, tempo, ...) drive their
-          // $namespace/$cluster template variables and job selectors off
-          // real "namespace"/"cluster" labels on the metrics, not just
-          // Kubernetes metadata -- without these, those dropdowns have no
-          // options and every panel query comes back empty.
+          // "namespace" and "cluster" aren't Grafana-specific concepts --
+          // namespace is a native Kubernetes field on every pod, and most
+          // dashboards/mixins (Grafana's own or otherwise) that are built
+          // around standard Kubernetes labels drive their $namespace/
+          // $cluster template variables and job selectors off real
+          // "namespace"/"cluster" labels on the metrics themselves, not
+          // just Kubernetes metadata -- without these, those dropdowns have
+          // no options and every panel query comes back empty.
           rule {
             source_labels = ["__meta_kubernetes_namespace"]
             action = "replace"
@@ -147,12 +150,13 @@ alloy:
             target_label = "cluster"
             replacement  = env("CLUSTER_NAME")
           }
-          // Most Grafana mixin dashboards also select series by
+          // Many dashboards/mixins also select series by
           // job=~"($namespace)/(componentname.*)" rather than a flat job
-          // name. Pods built with jsonnet-libs/ksonnet-util (as ours are)
-          // consistently carry a "name" label identifying the component
-          // (e.g. name=distributor), so reconstruct that "<namespace>/<name>"
-          // job format whenever both are present. Pods without a "name"
+          // name. "name" (or app.kubernetes.io/name) identifying the
+          // component is a generic, widely-used Kubernetes/Helm labeling
+          // convention -- not something particular to Mimir, jsonnet-libs,
+          // or Grafana products -- so reconstruct that "<namespace>/<name>"
+          // job format whenever a pod carries one. Pods without a "name"
           // label keep the flat job_name set below.
           rule {
             source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_label_name"]
