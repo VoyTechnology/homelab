@@ -6,3 +6,8 @@ out.txt
 # Ignore jsonnet files
 vendor/
 spec.json
+
+# Ignore downloaded Helm chart dependency archives (`helm dependency
+# update`/`build` populate argo/apps/*/charts/ with these; they're
+# reproducible from Chart.lock, not something to commit)
+charts/*.tgz
