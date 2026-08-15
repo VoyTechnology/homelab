@@ -13,12 +13,16 @@ local withSyncWave(wave) = {
 // The mimir-mixin's recording rules (the ones the mixin dashboards query,
 // e.g. cluster_namespace_job_route:cortex_request_duration_seconds:sum_rate)
 // are never evaluated unless something loads them into the ruler. Build them
-// here from the same mixin config used un-overridden by argo/apps/monitoring
-// (see mixins.libsonnet there) so the recording rule names match exactly
-// what the dashboards query. Alerting rules are intentionally left out for
-// now: alertmanager_enabled is false below, and ruler.alertmanager-url
-// points at a service that doesn't exist, so alert rules would just fail to
-// notify.
+// here from the same base mixin config imported by argo/apps/monitoring (see
+// mixins.libsonnet there) so the recording rule names match exactly what the
+// dashboards query. argo/apps/monitoring layers a `dashboards_default_latency_mode:
+// 'native'` override on top of this config, but that key only picks the
+// default value of a dashboard template variable -- it doesn't affect which
+// recording rules get generated (that's the separate record_native default,
+// already true in the vendored mixin), so the rule names built here still
+// match. Alerting rules are intentionally left out for now:
+// alertmanager_enabled is false below, and ruler.alertmanager-url points at
+// a service that doesn't exist, so alert rules would just fail to notify.
 local mimirMixinRecordingRules =
   (import 'mimir-mixin/config.libsonnet')
   + (import 'mimir-mixin/groups.libsonnet')

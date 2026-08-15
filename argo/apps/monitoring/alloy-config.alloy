@@ -84,8 +84,24 @@ discovery.relabel "pod_annotations" {
   }
   // Many dashboards select series by job=~"($namespace)/(component.*)"
   // rather than a flat job name. Reconstruct that "<namespace>/<name>"
-  // format whenever a pod carries a "name" label identifying its
-  // component. Pods without one keep the flat job_name set below.
+  // format whenever a pod carries a label identifying its component.
+  //
+  // Most workloads here are plain Helm charts, which stamp the standard
+  // app.kubernetes.io/name label, not the bare "name" label used by
+  // ksonnet-util/kausal-based apps (e.g. this repo's own Mimir jsonnet).
+  // Apply the Helm-style rule first, then let the kausal-style "name"
+  // rule override it for the apps that actually carry that label -- a
+  // later `replace` only takes effect when its own regex matches, so
+  // this ordering means every Helm pod gets a real job label instead of
+  // silently falling through to the flat job_name ("pod-metrics") below,
+  // while kausal-style pods still win with their own convention.
+  rule {
+    source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+    action = "replace"
+    target_label = "job"
+    regex = "(.+);(.+)"
+    replacement = "$1/$2"
+  }
   rule {
     source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_label_name"]
     action = "replace"
@@ -106,6 +122,21 @@ prometheus.scrape "kubelet" {
     ca_file        = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
     insecure_skip_verify = true
   }
+  // Convert classic (bucketed) histograms to native histograms with
+  // custom buckets (NHCB) at scrape time, so mixin dashboards/recording
+  // rules that query native histograms (histogram_quantile/_count over
+  // the bare metric name) actually have data, without requiring every
+  // scraped target to change its own instrumentation. Mimir's ingester
+  // accepts native histogram samples by default
+  // (ingester.native-histograms-ingestion-enabled=true).
+  //
+  // scrape_classic_histograms keeps the original classic _bucket/_sum/
+  // _count series alongside the synthesized native one -- without it,
+  // conversion *replaces* classic series instead of adding to them,
+  // which would break every classic-histogram query (recording rules,
+  // latency panels, _count-based QPS panels) that isn't native-aware.
+  convert_classic_histograms_to_nhcb = true
+  scrape_classic_histograms = true
   forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
 }
 
@@ -120,6 +151,9 @@ prometheus.scrape "cadvisor" {
     ca_file        = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
     insecure_skip_verify = true
   }
+  // See the kubelet scrape above for why these are set.
+  convert_classic_histograms_to_nhcb = true
+  scrape_classic_histograms = true
   forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
 }
 
@@ -129,6 +163,9 @@ prometheus.scrape "node_exporter" {
     __address__ = "node-exporter.monitoring.svc.cluster.local:9100",
   }]
   job_name   = "node-exporter"
+  // See the kubelet scrape above for why these are set.
+  convert_classic_histograms_to_nhcb = true
+  scrape_classic_histograms = true
   forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
 }
 
@@ -142,6 +179,9 @@ prometheus.scrape "kube_state_metrics" {
     __address__ = "kube-state-metrics.monitoring.svc.cluster.local:8080",
   }]
   job_name   = "kube-state-metrics"
+  // See the kubelet scrape above for why these are set.
+  convert_classic_histograms_to_nhcb = true
+  scrape_classic_histograms = true
   forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
 }
 
@@ -149,10 +189,19 @@ prometheus.scrape "kube_state_metrics" {
 prometheus.scrape "pods" {
   targets    = discovery.relabel.pod_annotations.output
   job_name   = "pod-metrics"
+  // See the kubelet scrape above for why these are set. This is the path
+  // Envoy and Mimir's own self-scrape (see argo/apps/metrics/main.jsonnet)
+  // go through, so this is what actually makes their histogram-backed
+  // dashboard panels (latency quantiles, etc.) have data.
+  convert_classic_histograms_to_nhcb = true
+  scrape_classic_histograms = true
   forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
 }
 
-// Scrape ServiceMonitor targets
+// Scrape ServiceMonitor targets. No classic->native conversion knob exists
+// for this component (only scrape_native_histograms, for targets that
+// already emit native histograms natively, which none of ours do), so
+// ArgoCD's metrics stay classic-histogram-only here.
 prometheus.operator.servicemonitors "services" {
   forward_to = [prometheus.remote_write.mimir.receiver]
 }
