@@ -48,12 +48,40 @@
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt
           tls: true
+        metrics:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+            # The argocd-mixin dashboards select on this literal job name,
+            # not on anything derivable from pod labels.
+            relabelings:
+              - targetLabel: job
+                replacement: integrations/argocd/argocd-server
       controller:
         extraArgs:
           - --repo-server-timeout-seconds
           - "500" # account for slow Argo with multiple deps.
+        metrics:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+            relabelings:
+              - targetLabel: job
+                replacement: integrations/argocd/application-controller
+      applicationSet:
+        metrics:
+          enabled: true
+          serviceMonitor:
+            enabled: true
       repoServer:
         replicas: 2
+        metrics:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+            relabelings:
+              - targetLabel: job
+                replacement: integrations/argocd/repo-server
         env:
           - name: "ARGOCD_EXEC_TIMEOUT"
             value: "5m"
@@ -158,14 +186,6 @@
           scopes: "[email,groups]"
       dex:
         enabled: false # We use our own dex instance
-
-      metrics:
-        enabled: true
-        # Will this work if the CRD is not yet created?
-        serviceMonitor:
-          enabled: true
-        rules:
-          enabled: true
 
 - name: ArgoCD | Setup Projects
   with_items: "{{ argocd_projects }}"
