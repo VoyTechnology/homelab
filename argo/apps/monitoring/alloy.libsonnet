@@ -23,10 +23,6 @@ local clusterRole = k.rbac.v1.clusterRole;
 local clusterRoleBinding = k.rbac.v1.clusterRoleBinding;
 local subject = k.rbac.v1.subject;
 local deployment = k.apps.v1.deployment;
-local ingress = k.networking.v1.ingress;
-local ingressRule = k.networking.v1.ingressRule;
-local httpIngressPath = k.networking.v1.httpIngressPath;
-local ingressTLS = k.networking.v1.ingressTLS;
 
 config + {
   local this = self,
@@ -143,25 +139,38 @@ config + {
       [servicePort.newNamed('http-metrics', 12345, 12345)],
     ),
 
-  // Alloy's UI, behind the same internal-login ingress class as before.
-  // The previous Helm values also punched an extra /faro path through to
-  // a port (12347) that no container or receiver in alloy-config.alloy
-  // ever exposed -- dropped as dead config rather than carried forward.
-  alloy_ingress:
-    ingress.new('alloy')
-    + ingress.metadata.withAnnotations({ 'cert-manager.io/cluster-issuer': 'letsencrypt' })
-    + ingress.spec.withIngressClassName('internal-login')
-    + ingress.spec.withRules([
-      ingressRule.withHost('alloy.%s' % this.domain)
-      + ingressRule.http.withPaths([
-        httpIngressPath.withPath('/')
-        + httpIngressPath.withPathType('Prefix')
-        + httpIngressPath.backend.service.withName('alloy')
-        + httpIngressPath.backend.service.port.withNumber(12345),
-      ]),
-    ])
-    + ingress.spec.withTls([
-      ingressTLS.withHosts(['alloy.%s' % this.domain])
-      + ingressTLS.withSecretName('alloy-tls'),
-    ]),
+  // Alloy's UI, via the Gateway API "internal" Gateway (LAN-only, not
+  // internet-exposed) instead of the internal-login Ingress class. Note
+  // this is a real change, not just a mechanical port: internal-login
+  // fronted the UI with an oauth2-proxy login gate (see
+  // ansible/playbooks/roles/k3s/services/tasks/ingress/internal_login.yml);
+  // the "internal" Gateway has no equivalent auth gate wired up yet, so
+  // this trades "LAN + login" for "LAN only". Same pattern as
+  // grafana.libsonnet's httpRoute, which uses the "exposed" Gateway
+  // instead. The previous Helm values also punched an extra /faro path
+  // through to a port (12347) that no container or receiver in
+  // alloy-config.alloy ever exposed -- dropped as dead config rather than
+  // carried forward.
+  alloy_http_route: {
+    apiVersion: 'gateway.networking.k8s.io/v1',
+    kind: 'HTTPRoute',
+    metadata: {
+      name: 'alloy',
+      namespace: this.namespace,
+    },
+    spec: {
+      parentRefs: [{
+        kind: 'Gateway',
+        namespace: 'envoy-gateway-system',
+        name: 'internal',
+      }],
+      hostnames: ['alloy.%s' % this.domain],
+      rules: [{
+        backendRefs: [{
+          name: 'alloy',
+          port: 12345,
+        }],
+      }],
+    },
+  },
 }
