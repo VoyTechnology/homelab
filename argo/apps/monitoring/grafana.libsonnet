@@ -1,3 +1,4 @@
+local config = import 'config.libsonnet';
 local grafana = import 'github.com/grafana/jsonnet-libs/grafana/grafana.libsonnet';
 local k = import 'k.libsonnet';
 
@@ -11,14 +12,7 @@ local withSyncWave(wave) = {
   metadata+: { annotations+: { 'argocd.argoproj.io/sync-wave': std.toString(wave) } },
 };
 
-// Tanka override defaults (visible fields so std.toString in tanka.libsonnet
-// serializes them into TANKA_OVERRIDES — hidden fields would be stripped)
-{
-  namespace:: 'monitoring',
-  cluster:: 'unknown',
-  domain:: 'REPLACE_ME',
-  metricsNamespace:: 'metrics-system',
-
+config + {
   metricsDatasource::
     grafana.datasource.new(
       'Metrics',
