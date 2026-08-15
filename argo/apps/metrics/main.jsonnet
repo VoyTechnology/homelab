@@ -101,7 +101,10 @@ mimir {
   query_scheduler_deployment+:
     deployment.mixin.spec.withReplicas(1)
     + deployment.mixin.spec.strategy.withType('Recreate')
-    + { spec+: { strategy+: { rollingUpdate: null }, template+: { spec+: { affinity: null } } } },
+    + { spec+: {
+        strategy+: { rollingUpdate: null },
+        template+: { spec+: { affinity: null } } }
+      },
 
   compactor_container+: k.util.resourcesRequests('100m', '128Mi'),
   distributor_container+: k.util.resourcesRequests('100m', '128Mi'),
