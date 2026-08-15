@@ -214,12 +214,13 @@ mimir {
 }
 
 # The mixin recording rules ConfigMap mounted into the ruler (see
-# rulerRulesConfigMap above). Give it the same namespace and sync-wave as the
-# rest of the Mimir resources so it lands before the ruler tries to mount it.
+# rulerRulesConfigMap above). Namespace comes from Tanka's environment
+# default (spec.json), same as every other resource in this app. Give it the
+# same sync-wave as the rest of the Mimir resources so it lands before the
+# ruler tries to mount it.
 + {
   mimir_recording_rules_configmap:
     rulerRulesConfigMap
-    + configMap.mixin.metadata.withNamespace($._namespace)
     + withSyncWave(1),
 }
 
