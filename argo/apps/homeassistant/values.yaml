@@ -26,6 +26,23 @@ homeassistant:
     accessMode: ReadWriteOnce
     size: 5Gi
 
+  # Exposes the built-in Prometheus integration (chart auto-enables
+  # `prometheus:` in configuration.yaml once this is on) at /api/prometheus
+  # and creates a ServiceMonitor for it. Alloy already watches
+  # ServiceMonitor targets cluster-wide (prometheus.operator.servicemonitors
+  # in alloy-config.alloy), so no scrape config changes are needed there.
+  # HA's API requires auth on every request, so the endpoint is secured with
+  # a bearer token pulled from the same long-lived access token used by
+  # Matter Hub below (homeassistant-matterhub secret, key: token) -- HA
+  # tokens aren't scope-limited, so reusing it avoids provisioning a second
+  # one just for scraping.
+  serviceMonitor:
+    enabled: true
+    scrapeInterval: 30s
+    bearerToken:
+      secretName: homeassistant-matterhub
+      secretKey: token
+
 matter:
   # Can this be hardcoded? Will we need to do some funky lookups?
   networkInterface: enp6s0
@@ -38,6 +55,8 @@ matter:
 # The Home Assistant URL and access token are automatically pulled from the
 # shared-secrets in kube-system namespace via External Secrets Operator.
 # Keys used: homeassistant_url and homeassistant_token
+# The resulting homeassistant-matterhub secret's `token` key is also reused
+# above by homeassistant.serviceMonitor.bearerToken for Prometheus scraping.
 matterhub:
   enabled: true
   image:
