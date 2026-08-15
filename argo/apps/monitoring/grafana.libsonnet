@@ -121,11 +121,22 @@ config + {
       // fsGroup is required because the grafana image runs as uid 472, but a
       // fresh PVC mounts root-owned — without it the container can't write
       // to /var/lib/grafana and crashloops on "Permission denied".
+      //
+      // Recreate instead of the default RollingUpdate: grafana-data is a
+      // single RWO PVC and Grafana takes an exclusive file lock on its
+      // bleve search index inside it, so a rolling update that starts the
+      // new pod before killing the old one leaves the new pod permanently
+      // crashlooping on "index is locked by another process" (same
+      // single-node-homelab failure mode as query_scheduler_deployment in
+      // argo/apps/metrics/main.jsonnet). Recreate tears down the old pod
+      // first, releasing the lock before the new one starts.
       grafana_deployment+:
         k.apps.v1.deployment.mixin.spec.template.spec.withVolumesMixin([
           volume.fromPersistentVolumeClaim('grafana-data', 'grafana-data'),
         ])
         + k.apps.v1.deployment.mixin.spec.template.spec.securityContext.withFsGroup(472)
+        + k.apps.v1.deployment.mixin.spec.strategy.withType('Recreate')
+        + { spec+: { strategy+: { rollingUpdate: null } } }
         + withSyncWave(2),
     }
 }
