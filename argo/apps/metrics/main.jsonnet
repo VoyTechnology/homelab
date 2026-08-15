@@ -85,7 +85,13 @@ mimir {
     alertmanager_data_disk_size: '1Gi',
 
     ingester_data_disk_class: null,
-    ingester_data_disk_size: '1Gi',
+    // Was 1Gi; the ingester crash-looped ("no space left on device" during
+    // TSDB head compaction) once real ingestion volume hit it, especially
+    // after the max_global_series_per_user bump above (150k -> 300k). Local
+    // disk here only needs to hold the WAL plus not-yet-shipped blocks --
+    // blocks_storage_backend is s3 (seaweedfs) -- so 10Gi is generous
+    // without eating into this single-node cluster's ~46Gi free headroom.
+    ingester_data_disk_size: '10Gi',
     ingester_allow_multiple_replicas_on_same_node: true,
 
     store_gateway_data_disk_class: null,
