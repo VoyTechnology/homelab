@@ -120,6 +120,27 @@ mimir {
     commonConfig+:: {
       'auth.multitenancy-enabled': false,
     },
+
+    # Bump the per-tenant series budget from the extra_small_user default
+    # (150k) to the medium_small_user tier's series/metadata caps (300k),
+    # layered on top of extra_small_user rather than switching tiers
+    # outright -- medium_small_user has no compactor_blocks_retention_period,
+    # which compactor.libsonnet requires unconditionally, so a bare
+    # `overrides.medium_small_user` breaks compactor rendering.
+    #
+    # We hit the 150k ceiling exactly once the kubelet/cadvisor scrape fix
+    # (see argo/apps/monitoring alloy-config.alloy history) started actually
+    # ingesting data for the first time -- the distributor then rejects any
+    # push containing series it hasn't seen before, cluster-wide, which
+    # silently blocks onboarding anything new (e.g. homeassistant's
+    # ServiceMonitor). alloy-config.alloy also trims the biggest offender
+    # (k3s's kubelet endpoint leaking apiserver/etcd/scheduler control-plane
+    # metrics), but bump the ceiling too so there's real headroom instead of
+    # living right at 150k again.
+    limits: $._config.overrides.extra_small_user + {
+      max_global_series_per_user: 300000,
+      max_global_metadata_per_user: std.ceil(self.max_global_series_per_user * 0.2),
+    },
   },
 
   
