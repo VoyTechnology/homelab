@@ -3,11 +3,43 @@ local mimir = import 'mimir/mimir.libsonnet';
 
 local deployment = k.apps.v1.deployment;
 local statefulSet = k.apps.v1.statefulSet;
+local configMap = k.core.v1.configMap;
 
 // withSyncWave adds the sync-wave annotations to the metadata of the resource.
 local withSyncWave(wave) = {
   metadata+: { annotations+: { 'argocd.argoproj.io/sync-wave': std.toString(wave) } },
 };
+
+// The mimir-mixin's recording rules (the ones the mixin dashboards query,
+// e.g. cluster_namespace_job_route:cortex_request_duration_seconds:sum_rate)
+// are never evaluated unless something loads them into the ruler. Build them
+// here from the same mixin config used un-overridden by argo/apps/monitoring
+// (see mixins.libsonnet there) so the recording rule names match exactly
+// what the dashboards query. Alerting rules are intentionally left out for
+// now: alertmanager_enabled is false below, and ruler.alertmanager-url
+// points at a service that doesn't exist, so alert rules would just fail to
+// notify.
+local mimirMixinRecordingRules =
+  (import 'mimir-mixin/config.libsonnet')
+  + (import 'mimir-mixin/groups.libsonnet')
+  + (import 'mimir-mixin/utils.libsonnet')
+  + (import 'mimir-mixin/recording_rules.libsonnet');
+
+// Mimir's ruler reads per-tenant rule files from <ruler_local_directory>/<tenant>/.
+// Multi-tenancy is disabled below, so everything is written under Mimir's
+// no-auth tenant (auth.no-auth-tenant default, "anonymous").
+local rulerRulesTenant = 'anonymous';
+// Distinct from the ruler's own scratch directory (ruler.rule-path, /rules)
+// where it materializes rule groups pulled from this directory, and from
+// /etc/mimir (the "overrides" ConfigMap mount) so this volume doesn't nest
+// inside another ConfigMap's mount path.
+local rulerRulesDir = '/etc/mimir-rules';
+
+local rulerRulesConfigMap =
+  configMap.new('mimir-recording-rules')
+  + configMap.withDataMixin({
+    'mimir-mixin.yaml': std.manifestYamlDoc({ groups: mimirMixinRecordingRules.prometheusRules.groups }),
+  });
 
 // withScrapeAnnotations adds prometheus.io/scrape annotations to a pod
 // template so Alloy's annotation-based pod discovery (see
@@ -58,6 +90,15 @@ mimir {
 
     compactor_data_disk_class: null,
     compactor_data_disk_size: '2Gi',
+
+    # Enable the ruler so the mixin's recording rules (which the mixin
+    # dashboards query) actually get evaluated. Rule groups are loaded from
+    # a ConfigMap-backed local directory (see rulerRulesConfigMap below)
+    # rather than the S3 backend, so there's no need for a mimirtool/CI job
+    # to push them -- they're just part of the GitOps sync.
+    ruler_enabled: true,
+    ruler_storage_backend: 'local',
+    ruler_local_directory: rulerRulesDir,
 
     # Scale down to 1 replica for the homelab setup.
     memcached_frontend_replicas: 1,
@@ -112,6 +153,11 @@ mimir {
   querier_container+: k.util.resourcesRequests('100m', '128Mi'),
   query_frontend_container+: k.util.resourcesRequests('100m', '128Mi'),
   store_gateway_container+: k.util.resourcesRequests('100m', '128Mi'),
+
+  ruler_deployment+:
+    deployment.mixin.spec.withReplicas(1)
+    + k.util.configMapVolumeMount(rulerRulesConfigMap, rulerRulesDir + '/' + rulerRulesTenant),
+  ruler_container+: k.util.resourcesRequests('100m', '128Mi'),
 }
 # Let Alloy scrape each Mimir component's own /metrics via pod annotations,
 # so Mimir's self-monitoring metrics end up in Mimir (see withScrapeAnnotations above).
@@ -123,6 +169,7 @@ mimir {
   query_frontend_deployment+: withScrapeAnnotations,
   query_scheduler_deployment+: withScrapeAnnotations,
   store_gateway_statefulset+: withScrapeAnnotations,
+  ruler_deployment+: withScrapeAnnotations,
 }
 # With the tiny setup in the homelab, podDisruptionBudget is causing issues with syncing.
 # Remove them for now and revisit in the future IF there are more nodes.
@@ -134,6 +181,7 @@ mimir {
   query_scheduler_pdb:: null,
   compactor_pdb:: null,
   store_gateway_pdb:: null,
+  ruler_pdb:: null,
   memcached+:: { podDisruptionBudget:: null },
 }
 
@@ -160,6 +208,19 @@ mimir {
 
   store_gateway_statefulset+: withSyncWave(1),
   store_gateway_service+: withSyncWave(1),
+
+  ruler_deployment+: withSyncWave(1),
+  ruler_service+: withSyncWave(1),
+}
+
+# The mixin recording rules ConfigMap mounted into the ruler (see
+# rulerRulesConfigMap above). Give it the same namespace and sync-wave as the
+# rest of the Mimir resources so it lands before the ruler tries to mount it.
++ {
+  mimir_recording_rules_configmap:
+    rulerRulesConfigMap
+    + configMap.mixin.metadata.withNamespace($._namespace)
+    + withSyncWave(1),
 }
 
 # Default values for the Tanka overrides. These can be overridden by the ArgoCD application.
