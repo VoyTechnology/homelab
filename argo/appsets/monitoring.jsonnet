@@ -19,15 +19,12 @@ local ignoreDifferences = [
   { group: '*', kind: 'Secret', name: 'grafana', jsonPointers: ['/data/admin-password'] },
 ];
 
-// Alloy and kube-state-metrics are rendered by the Tanka source above
-// (alloy.libsonnet, kube-state-metrics.libsonnet). This Helm source is left
-// only for prometheus-node-exporter, still a subchart of argo/apps/monitoring
-// (see Chart.yaml) since it has to run as a DaemonSet, which doesn't fit the
-// hand-rolled jsonnet pattern as cleanly as the chart's own templates.
-local nodeExporterSource = helm.new('monitoring');
+// Alloy, kube-state-metrics, and node-exporter are all rendered by the
+// Tanka source above (alloy.libsonnet, kube-state-metrics.libsonnet,
+// node-exporter.libsonnet) -- nothing in this app is templated through
+// Helm anymore except the shared extra-objects chart below.
 local extraObjects = helm.extraObjects('monitoring');
 
 appset.new('monitoring', namespace)
 + appset.addSource(source)
-+ appset.addSource(nodeExporterSource)
 + appset.addSource(extraObjects)

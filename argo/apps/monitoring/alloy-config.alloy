@@ -126,7 +126,7 @@ prometheus.scrape "cadvisor" {
 // Scrape node exporter
 prometheus.scrape "node_exporter" {
   targets = [{
-    __address__ = "monitoring-prometheus-node-exporter.monitoring.svc.cluster.local:9100",
+    __address__ = "node-exporter.monitoring.svc.cluster.local:9100",
   }]
   job_name   = "node-exporter"
   forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
