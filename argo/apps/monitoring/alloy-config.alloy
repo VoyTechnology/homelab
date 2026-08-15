@@ -147,7 +147,28 @@ prometheus.scrape "kubelet" {
   // latency panels, _count-based QPS panels) that isn't native-aware.
   convert_classic_histograms_to_nhcb = true
   scrape_classic_histograms = true
-  forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
+  forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.relabel.kubelet_filter.receiver]
+}
+
+// Drop k3s's embedded control-plane metrics that leak onto the kubelet's
+// own :10250/metrics endpoint. k3s runs the API server, etcd, scheduler,
+// and kubelet as a single binary/process on server nodes, so scraping the
+// "kubelet" target above also picks up apiserver_*/etcd_*/scheduler_*
+// metrics with full verb/resource/code histogram-bucket cardinality --
+// confirmed via Mimir (count({job="integrations/kubernetes/kubelet"}) by
+// prefix) these accounted for ~90% of this job's ~71k series, none of
+// which any dashboard/recording rule here queries. Dropping them recovers
+// a large chunk of the per-tenant series budget (see max_global_series_per_user
+// in argo/apps/metrics/main.jsonnet) without losing anything currently used.
+// workqueue_*/rest_client_* are dropped for the same reason -- generic
+// client-go instrumentation, not kubelet-specific.
+prometheus.relabel "kubelet_filter" {
+  forward_to = [prometheus.remote_write.mimir.receiver]
+  rule {
+    source_labels = ["__name__"]
+    action = "drop"
+    regex = "(apiserver|etcd|scheduler|workqueue|rest_client)_.*"
+  }
 }
 
 // Scrape cadvisor container metrics
