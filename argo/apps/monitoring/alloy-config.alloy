@@ -18,20 +18,30 @@ discovery.kubernetes "pods" {
 }
 
 // Relabel node internal IP to kubelet address
+//
+// discovery.kubernetes's node role exposes each node's addresses as
+// __meta_kubernetes_node_address_<Type> (e.g. ..._address_InternalIP), not
+// ..._internal_ip -- that label name doesn't exist, so source_labels was
+// always resolving to empty, leaving __address__ as ":10250" (no host).
+// Confirmed live via Alloy's component debug API
+// (/api/v0/web/components/prometheus.scrape.cadvisor), which showed
+// exactly that empty-host address, and up{job=~".*kubelet.*|.*cadvisor.*"}
+// == 0 in Mimir -- these scrapes have never actually succeeded.
 discovery.relabel "kubelet" {
   targets = discovery.kubernetes.nodes.targets
   rule {
-    source_labels = ["__meta_kubernetes_node_internal_ip"]
+    source_labels = ["__meta_kubernetes_node_address_InternalIP"]
     target_label  = "__address__"
     replacement   = "$1:10250"
   }
 }
 
-// Relabel node internal IP for cadvisor
+// Relabel node internal IP for cadvisor. See the kubelet relabel above for
+// why source_labels names __meta_kubernetes_node_address_InternalIP.
 discovery.relabel "cadvisor" {
   targets = discovery.kubernetes.nodes.targets
   rule {
-    source_labels = ["__meta_kubernetes_node_internal_ip"]
+    source_labels = ["__meta_kubernetes_node_address_InternalIP"]
     target_label  = "__address__"
     replacement   = "$1:10250"
   }
