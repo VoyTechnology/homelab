@@ -5,6 +5,7 @@
 // addMixinDashboards's `mixins[name].grafanaDashboards` lookup never matched
 // anything, so no dashboard ever made it into a ConfigMap.
 local envoyMixin = import 'github.com/grafana/jsonnet-libs/envoy-mixin/mixin.libsonnet';
+local argocdMixin = import 'github.com/grafana/jsonnet-libs/argocd-mixin/mixin.libsonnet';
 
 // envoy-mixin's dashboards.libsonnet hand-writes the "job" and "instance"
 // template variables with current='' (a literal empty string), unlike
@@ -26,8 +27,34 @@ local fixEmptyVarDefault(dashboard) =
     },
   };
 
+// argocd-mixin's dashboard hand-codes the "datasource" template variable's
+// current value as "grafanacloud-k8sintegrations-prom" -- a leftover from
+// the Grafana Cloud onboarding flow this dashboard was authored for. That
+// name doesn't match any datasource provisioned here (only "Metrics",
+// added via grafana.addDatasource in grafana.libsonnet), so every panel's
+// `${datasource}` reference fails to resolve and comes back empty,
+// regardless of whether the underlying metrics exist in Mimir. Point it at
+// "default" instead, like the Envoy and Mimir dashboards already do, so it
+// picks up whichever datasource is marked default=true.
+local fixDatasourceVarDefault(dashboard) =
+  dashboard {
+    templating+: {
+      list: [
+        if v.type == 'datasource' && v.name == 'datasource'
+        then v { current: { selected: false, text: 'default', value: 'default' } }
+        else v
+        for v in dashboard.templating.list
+      ],
+    },
+  };
+
 {
-  argocd: import 'github.com/grafana/jsonnet-libs/argocd-mixin/mixin.libsonnet',
+  argocd: argocdMixin {
+    grafanaDashboards+:: {
+      [name]: fixDatasourceVarDefault(argocdMixin.grafanaDashboards[name])
+      for name in std.objectFields(argocdMixin.grafanaDashboards)
+    },
+  },
   envoy: envoyMixin {
     grafanaDashboards+:: {
       [name]: fixEmptyVarDefault(envoyMixin.grafanaDashboards[name])
