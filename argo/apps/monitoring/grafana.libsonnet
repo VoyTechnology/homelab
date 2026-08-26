@@ -13,13 +13,15 @@ local withSyncWave(wave) = {
 };
 
 config + {
+  // Alloy actually scrapes every 1m; without this, Grafana assumes 15s and computes too-narrow a $__rate_interval for rate() to return data.
   metricsDatasource::
     grafana.datasource.new(
       'Metrics',
       'http://query-frontend.%s.svc.cluster.local:8080/prometheus' % $.metricsNamespace,
       type='prometheus',
       default=true,
-    ),
+    )
+    + grafana.datasource.withJsonData({ timeInterval: '1m' }),
 
   iniConfig:: {
     sections+: {
