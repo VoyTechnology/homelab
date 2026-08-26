@@ -6,6 +6,7 @@
 // anything, so no dashboard ever made it into a ConfigMap.
 local envoyMixin = import 'github.com/grafana/jsonnet-libs/envoy-mixin/mixin.libsonnet';
 local argocdMixin = import 'github.com/grafana/jsonnet-libs/argocd-mixin/mixin.libsonnet';
+local kubernetesMixin = import 'github.com/kubernetes-monitoring/kubernetes-mixin/mixin.libsonnet';
 
 // envoy-mixin's dashboards.libsonnet hand-writes the "job" and "instance"
 // template variables with current='' (a literal empty string), unlike
@@ -59,6 +60,21 @@ local fixDatasourceVarDefault(dashboard) =
     grafanaDashboards+:: {
       [name]: fixEmptyVarDefault(envoyMixin.grafanaDashboards[name])
       for name in std.objectFields(envoyMixin.grafanaDashboards)
+    },
+  },
+  // kube-state-metrics and node-exporter are scraped under their default
+  // mixin job names already (see alloy-config.alloy), but kubelet and
+  // cadvisor are scraped under "integrations/kubernetes/kubelet" and
+  // "integrations/kubernetes/cadvisor" here rather than the mixin's
+  // "kubelet"/"cadvisor" defaults -- override the selectors to match.
+  // kube-apiserver/scheduler/controller-manager/proxy aren't scraped as
+  // their own jobs (k3s embeds them in the kubelet process and that
+  // traffic is filtered out, see kubelet_filter), so those dashboards
+  // will stay empty.
+  kubernetes: (import 'github.com/kubernetes-monitoring/kubernetes-mixin/mixin.libsonnet') + {
+    _config+:: {
+      kubeletSelector: 'job="integrations/kubernetes/kubelet"',
+      cadvisorSelector: 'job="integrations/kubernetes/cadvisor"',
     },
   },
   mimir: (import 'github.com/grafana/mimir/operations/mimir-mixin/mixin.libsonnet') + {
