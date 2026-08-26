@@ -71,7 +71,8 @@ local fixDatasourceVarDefault(dashboard) =
   // their own jobs (k3s embeds them in the kubelet process and that
   // traffic is filtered out, see kubelet_filter), so those dashboards
   // will stay empty.
-  kubernetes: (import 'github.com/kubernetes-monitoring/kubernetes-mixin/mixin.libsonnet') + {
+  kubernetes: kubernetesMixin {
+    grafanaDashboardFolder: 'Kubernetes',
     _config+:: {
       kubeletSelector: 'job="integrations/kubernetes/kubelet"',
       cadvisorSelector: 'job="integrations/kubernetes/cadvisor"',
