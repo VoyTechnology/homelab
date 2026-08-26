@@ -80,14 +80,10 @@ local fixDatasourceVarDefault(dashboard) =
   },
   mimir: (import 'github.com/grafana/mimir/operations/mimir-mixin/mixin.libsonnet') + {
     _config+:: {
-      // Alloy converts classic histograms to native histograms with
-      // custom buckets (NHCB) at scrape time (see
-      // convert_classic_histograms_to_nhcb in alloy-config.alloy), so
-      // default the dashboards' latency panels to the native query path
-      // rather than classic buckets. Historical data recorded before
-      // that change stays classic-only and won't show under this mode --
-      // acceptable here since this homelab doesn't need it preserved.
-      dashboards_default_latency_mode: 'native',
+      // No 'native' override here: Alloy wasn't actually delivering NHCB samples (see alloy-config.alloy), so it defaults to the mixin's own 'classic' mode.
+
+      // This deployment runs classic S3 block storage ingestion, not Kafka-backed ingest storage, so those panels can never have data.
+      show_ingest_storage_panels: false,
     },
   },
 }
