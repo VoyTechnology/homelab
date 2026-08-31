@@ -1,6 +1,6 @@
 helm            4.2.4
 kubectl         1.36.1
-yq              4.53.3
+yq              4.53.6
 kubectx         0.8.0
 go-jsonnet      0.20.0
 tanka           0.37.5
