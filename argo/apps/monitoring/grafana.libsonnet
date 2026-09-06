@@ -26,7 +26,12 @@ config + {
   iniConfig:: {
     sections+: {
       auth+: {
-        disable_login_form: false,
+        disable_login_form: true,
+      },
+      // Fully disables username/password auth (the login form flag above
+      // only hides it from the UI, basic auth would still work otherwise).
+      'auth.basic'+: {
+        enabled: false,
       },
       'auth.generic_oauth'+: {
         enabled: true,
