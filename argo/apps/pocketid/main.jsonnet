@@ -55,6 +55,8 @@ operator + {
       appUrl: 'https://%s' % $._host,
       encryptionKey: { valueFrom: { secretKeyRef: { name: 'pocketid-encryption-key', key: 'encryptionKey' } } },
       persistence: { enabled: true, size: '1Gi' },
+      // Cloudflare tunnel sets the real client IP in this header.
+      env: [{ name: 'TRUSTED_PLATFORM', value: 'CF-Connecting-IP' }],
       // Traffic arrives via the in-cluster cloudflared pod, so only trust private ranges.
       trustedProxies: {
         enabled: true,
