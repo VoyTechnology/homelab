@@ -104,6 +104,8 @@ local secretEnv(name, secret, key) = {
       + container.withPorts([k.core.v1.containerPort.new(6379)]),
     ])
     + deployment.spec.strategy.withType('Recreate')
+    // Service links would inject PAPERLESS_PORT=tcp://..., which clashes with Paperless's own setting.
+    + deployment.spec.template.spec.withEnableServiceLinks(false)
     + deployment.spec.template.spec.withNodeSelector({ 'kubernetes.io/hostname': nodeName })
     + deployment.spec.template.spec.withVolumes([
       volume.fromHostPath(d, '%s/%s' % [storagePath, d]) + { hostPath+: { type: 'DirectoryOrCreate' } }
