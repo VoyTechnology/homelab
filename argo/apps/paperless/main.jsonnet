@@ -22,16 +22,19 @@ local secretEnv(name, secret, key) = {
 
 {
   // Pocket ID is used for login only: accounts are created on first SSO login, groups are not synced.
-  // $(VAR) is expanded by Kubernetes from the env entries defined above it, which keeps the client
-  // secret out of the manifest.
+  // The mobile app runs the token exchange itself without a secret, so the client is public and PKCE
+  // is used by the server as well. $(VAR) is expanded by Kubernetes from the env entries above it.
   _oidcProviders:: {
     openid_connect: {
       APPS: [{
         provider_id: 'pocketid',
         name: 'Pocket ID',
         client_id: '$(OIDC_CLIENT_ID)',
-        secret: '$(OIDC_CLIENT_SECRET)',
-        settings: { server_url: 'https://%s/.well-known/openid-configuration' % $._oidcHost },
+        secret: '',
+        settings: {
+          server_url: 'https://%s/.well-known/openid-configuration' % $._oidcHost,
+          oauth_pkce_enabled: true,
+        },
       }],
     },
   },
@@ -68,6 +71,8 @@ local secretEnv(name, secret, key) = {
     },
     spec: {
       name: 'Paperless',
+      isPublic: true,
+      pkceEnabled: true,
       callbackUrls: [
         'https://%s/accounts/oidc/pocketid/login/callback/' % $._host,
         // Paperless mobile apps return to this custom scheme after login.
@@ -95,7 +100,6 @@ local secretEnv(name, secret, key) = {
         { name: 'PAPERLESS_APPS', value: 'allauth.socialaccount.providers.openid_connect' },
         secretEnv('PAPERLESS_SECRET_KEY', 'paperless-secret-key', 'secretKey'),
         secretEnv('OIDC_CLIENT_ID', 'paperless-oidc-credentials', 'client_id'),
-        secretEnv('OIDC_CLIENT_SECRET', 'paperless-oidc-credentials', 'client_secret'),
         { name: 'PAPERLESS_SOCIALACCOUNT_PROVIDERS', value: std.toString($._oidcProviders) },
       ])
       + container.withVolumeMounts([volumeMount.new(d, '/usr/src/paperless/' + d) for d in dirs])
