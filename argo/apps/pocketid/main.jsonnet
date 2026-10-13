@@ -65,6 +65,46 @@ operator + {
     },
   },
 
+  // Cloudflare Rocket Loader rewrites Pocket ID's scripts and leaves a blank page.
+  // `Cache-Control: no-transform` tells Cloudflare not to modify the response, so the
+  // tunnel goes through the internal Envoy gateway which appends that header.
+  gateway_service: {
+    apiVersion: 'v1',
+    kind: 'Service',
+    metadata: { name: 'pocketid-gateway' },
+    spec: {
+      type: 'ExternalName',
+      // Envoy Gateway's proxy Service for the `internal` Gateway.
+      externalName: 'envoy-envoy-gateway-system-internal-afea4c94.envoy-gateway-system.svc.cluster.local',
+      ports: [{ port: 80, targetPort: 80 }],
+    },
+  },
+
+  route: {
+    apiVersion: 'gateway.networking.k8s.io/v1',
+    kind: 'HTTPRoute',
+    metadata: { name: 'pocketid' } + withSyncWave(1).metadata,
+    spec: {
+      parentRefs: [{
+        group: 'gateway.networking.k8s.io',
+        kind: 'Gateway',
+        name: 'internal',
+        namespace: 'envoy-gateway-system',
+        sectionName: 'http',
+      }],
+      hostnames: [$._host],
+      rules: [{
+        // The operator names the Service after the PocketIDInstance.
+        backendRefs: [{ name: 'pocket-id', port: 1411 }],
+        filters: [{
+          type: 'ResponseHeaderModifier',
+          // add (not set) keeps Pocket ID's own Cache-Control: no-store.
+          responseHeaderModifier: { add: [{ name: 'Cache-Control', value: 'no-transform' }] },
+        }],
+      }],
+    },
+  },
+
   ingress: {
     apiVersion: 'networking.k8s.io/v1',
     kind: 'Ingress',
@@ -82,8 +122,7 @@ operator + {
         http: { paths: [{
           path: '/',
           pathType: 'Prefix',
-          // The operator names the Service after the PocketIDInstance.
-          backend: { service: { name: 'pocket-id', port: { number: 1411 } } },
+          backend: { service: { name: 'pocketid-gateway', port: { number: 80 } } },
         }] },
       }],
     },
