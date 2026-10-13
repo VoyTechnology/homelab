@@ -30,10 +30,17 @@ operator + {
     spec: {
       refreshInterval: '1h',
       secretStoreRef: { kind: 'ClusterSecretStore', name: 'cluster-secrets' },
-      target: { name: 'pocketid-encryption-key', creationPolicy: 'Owner' },
+      target: { name: 'pocketid-encryption-key', creationPolicy: 'Owner', deletionPolicy: 'Retain' },
       data: [{
         secretKey: 'encryptionKey',
-        remoteRef: { key: 'shared-secrets', property: 'pocketid_encryption_key' },
+        // Defaults spelled out so Argo does not report drift against what ESO fills in.
+        remoteRef: {
+          key: 'shared-secrets',
+          property: 'pocketid_encryption_key',
+          conversionStrategy: 'Default',
+          decodingStrategy: 'None',
+          metadataPolicy: 'None',
+        },
       }],
     },
   },
