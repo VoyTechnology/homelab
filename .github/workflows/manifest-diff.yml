@@ -42,6 +42,12 @@ jobs:
           # kubectl/kubectx aren't needed, and kubectx has no linux asset.
           install_args: helm go-jsonnet jsonnet-bundler tanka yq
 
+      - name: Put tools on PATH
+        # Shims resolve versions from the cwd, and the renderer runs tools
+        # from temp dirs, so use the real binaries instead.
+        working-directory: head
+        run: mise bin-paths >> "$GITHUB_PATH"
+
       - name: Render base
         # The base may predate the script or be broken; use the head's script
         # and tolerate failures so the diff still shows what changed.
