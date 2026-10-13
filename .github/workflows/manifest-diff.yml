@@ -1,0 +1,82 @@
+name: Manifest diff
+
+# Renders every ApplicationSet at the PR base and head with scripts/render-apps
+# and posts the resulting manifest diff as a PR comment. Secrets are never
+# decrypted here; encrypted files are not needed to render.
+on:
+  pull_request:
+    paths:
+      - "argo/**"
+      - "charts/**"
+      - "scripts/render-apps.js"
+      - ".tool-versions"
+      - ".github/workflows/manifest-diff.yml"
+
+concurrency:
+  group: manifest-diff-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout head
+        uses: actions/checkout@v6
+        with:
+          path: head
+
+      - name: Checkout base
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
+
+      - name: Install tools
+        uses: jdx/mise-action@v2
+        with:
+          working_directory: head
+
+      - name: Render base
+        # The base may predate the script or be broken; use the head's script
+        # and tolerate failures so the diff still shows what changed.
+        working-directory: head
+        run: node scripts/render-apps.js render ../base ../out-base || true
+
+      - name: Render head
+        id: render_head
+        working-directory: head
+        run: node scripts/render-apps.js render ../head ../out-head
+        continue-on-error: true
+
+      - name: Build diff
+        run: |
+          node head/scripts/render-apps.js diff out-base out-head 60000 > comment.md
+          node head/scripts/render-apps.js diff out-base out-head 900000 > summary.md
+          cat summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on PR
+        # Fork PRs get a read-only token and cannot comment.
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: manifest-diff
+          path: comment.md
+
+      - name: Upload full diff
+        uses: actions/upload-artifact@v4
+        with:
+          name: manifest-diff
+          path: |
+            summary.md
+            out-base
+            out-head
+
+      - name: Fail if head did not render
+        if: steps.render_head.outcome == 'failure'
+        run: |
+          echo "One or more applications failed to render at head; see the Render head step." >&2
+          exit 1
