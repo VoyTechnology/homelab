@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/aclerici38/pocket-id-operator.git",
+          "subdir": "dist"
+        }
+      },
+      "version": "v0.15.0"
+    }
+  ],
+  "legacyImports": true
+}
