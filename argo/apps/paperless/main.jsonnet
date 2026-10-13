@@ -68,7 +68,11 @@ local secretEnv(name, secret, key) = {
     },
     spec: {
       name: 'Paperless',
-      callbackUrls: ['https://%s/accounts/oidc/pocketid/login/callback/' % $._host],
+      callbackUrls: [
+        'https://%s/accounts/oidc/pocketid/login/callback/' % $._host,
+        // Paperless mobile apps return to this custom scheme after login.
+        'x-paperless://oidc-callback',
+      ],
       launchUrl: 'https://%s' % $._host,
       allowedUserGroups: [{ name: 'member', namespace: $._pocketidNamespace }],
       secret: { name: 'paperless-oidc-credentials' },
