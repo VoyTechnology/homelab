@@ -183,6 +183,16 @@ helm template <release> charts/<chart> -f charts/<chart>/values.yaml
 ansible-playbook -i ansible/inventory/bet1/hosts.ini ansible/site.yml --syntax-check
 ```
 
+To see what a change would actually alter, render every ApplicationSet to plain
+manifests and diff against another checkout (this is what the `Manifest diff`
+workflow does on PRs; Secret values are redacted):
+
+```sh
+scripts/render-apps.js render . /tmp/head
+scripts/render-apps.js render ../homelab-main /tmp/base
+scripts/render-apps.js diff /tmp/base /tmp/head
+```
+
 Some checks may require installed Ansible collections, cluster access, decrypted
 secrets, or network access. If validation cannot run locally, say exactly what
 was and was not checked.
