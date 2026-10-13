@@ -22,7 +22,22 @@ local operator = {
   if o != null && o.kind != 'Namespace'
 };
 
+// User groups managed by the operator. The key is the group name in Pocket ID.
+local groups = {
+  infra: 'Infra',
+  member: 'Member',
+  guest: 'Guest',
+};
+
 operator + {
+  ['group_' + name]: {
+    apiVersion: 'pocketid.internal/v1alpha1',
+    kind: 'PocketIDUserGroup',
+    metadata: { name: name } + withSyncWave(2).metadata,
+    spec: { friendlyName: groups[name] },
+  }
+  for name in std.objectFields(groups)
+} + {
   encryption_key: {
     apiVersion: 'external-secrets.io/v1',
     kind: 'ExternalSecret',
