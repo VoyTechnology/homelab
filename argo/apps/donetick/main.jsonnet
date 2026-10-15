@@ -111,7 +111,11 @@ local secretEnv(name, secret, key) = {
     },
     spec: {
       name: 'Donetick',
-      callbackUrls: [$._config.oauth2.redirect_url],
+      callbackUrls: [
+        $._config.oauth2.redirect_url,
+        // The Donetick mobile app returns to this custom scheme after login.
+        'donetick://auth/oauth2',
+      ],
       launchUrl: 'https://%s' % $._host,
       allowedUserGroups: [{ name: 'member', namespace: $._pocketidNamespace }],
       secret: { name: 'donetick-oidc-credentials' },
