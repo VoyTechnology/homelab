@@ -148,13 +148,20 @@ async function renderTanka(src, root) {
 // in the diff. Also:
 //  - YAML embedded in ConfigMap data (*.yaml / *.yml) gets the same treatment, as
 //    Helm's toYaml and jsonnet's manifestYamlDoc format it differently.
-//  - metadata.namespace is dropped when it is the application's namespace: Tanka
-//    sets it explicitly, Helm leaves it to the destination.
+//  - Namespaced resources without metadata.namespace (Helm leaves it to the
+//    destination, Tanka may set it) get the application's namespace, so every
+//    resource is identified by namespace + name on both sides.
 // Lists keep their order, as it is significant to Kubernetes.
+const CLUSTER_SCOPED = [
+  'APIService', 'ClusterIssuer', 'ClusterRole', 'ClusterRoleBinding', 'ClusterSecretStore',
+  'ClusterExternalSecret', 'CustomResourceDefinition', 'IngressClass', 'MutatingWebhookConfiguration',
+  'Namespace', 'Node', 'PersistentVolume', 'PriorityClass', 'StorageClass',
+  'ValidatingWebhookConfiguration', 'VolumeSnapshotClass',
+];
 const CANONICAL =
   '(select(.kind == "ConfigMap") | .data.[] | select(key | test("\\.ya?ml$"))) |= ' +
   '(from_yaml | sort_keys(..) | ... style="" | to_yaml | trim) | ' +
-  'del(select(.metadata.namespace == strenv(RENDER_NAMESPACE)) | .metadata.namespace) | ' +
+  `(select(.metadata != null and .metadata.namespace == null and (${CLUSTER_SCOPED.map((k) => `.kind != "${k}"`).join(' and ')})) | .metadata.namespace) = strenv(RENDER_NAMESPACE) | ` +
   'sort_keys(..) | ... style="" | ... comments=""';
 
 async function canonicalize(text, namespace) {
