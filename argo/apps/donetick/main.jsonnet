@@ -140,6 +140,8 @@ local secretEnv(name, secret, key) = {
         volumeMount.new('data-volume', '/data'),
       ]),
     ])
+    // deployment.new adds a name label to the selector; the selector is immutable, so keep the original.
+    + { spec+: { selector: { matchLabels: labels }, template+: { metadata: { labels: labels } } } }
     + deployment.metadata.withLabels(labels)
     // Restart the pod when the rendered config changes.
     + deployment.spec.template.metadata.withAnnotations({ 'checksum/config': std.md5(std.toString($._config)) })

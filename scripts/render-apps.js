@@ -144,10 +144,24 @@ async function renderTanka(src, root) {
 
 // Helm keeps template key order and quoting, Tanka emits sorted keys, so the same
 // resource renders differently depending on the tool. Re-emit every document with
-// sorted keys and no explicit scalar styles so only real changes show in the diff.
+// sorted keys, no comments and no explicit scalar styles so only real changes show
+// in the diff. Also:
+//  - YAML embedded in ConfigMap data (*.yaml / *.yml) gets the same treatment, as
+//    Helm's toYaml and jsonnet's manifestYamlDoc format it differently.
+//  - metadata.namespace is dropped when it is the application's namespace: Tanka
+//    sets it explicitly, Helm leaves it to the destination.
 // Lists keep their order, as it is significant to Kubernetes.
-async function canonicalize(text) {
-  return run('yq', ['-P', 'sort_keys(..) | ... style="" | ... comments=""', '-'], { input: text });
+const CANONICAL =
+  '(select(.kind == "ConfigMap") | .data.[] | select(key | test("\\.ya?ml$"))) |= ' +
+  '(from_yaml | sort_keys(..) | ... style="" | to_yaml | trim) | ' +
+  'del(select(.metadata.namespace == strenv(RENDER_NAMESPACE)) | .metadata.namespace) | ' +
+  'sort_keys(..) | ... style="" | ... comments=""';
+
+async function canonicalize(text, namespace) {
+  return run('yq', ['-P', CANONICAL, '-'], {
+    input: text,
+    env: { ...process.env, RENDER_NAMESPACE: namespace },
+  });
 }
 
 function splitDocs(text) {
@@ -223,7 +237,7 @@ async function renderApplication(app, root, out) {
     for (const src of app.spec.sources) {
       if (src.ref && !src.path && !src.chart) continue;
       const text = src.plugin ? await renderTanka(src, root) : await renderHelm(src, root, ns);
-      docs.push(...splitDocs(await canonicalize(text)));
+      docs.push(...splitDocs(await canonicalize(text, ns)));
     }
     writeApp(out, name, docs);
     return [name, null];
