@@ -25,7 +25,11 @@ const CONCURRENCY = 4;
 function run(cmd, args, { cwd, env, input } = {}) {
   return new Promise((resolve, reject) => {
     const p = spawn(cmd, args, { cwd, env, stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'] });
-    if (input !== undefined) p.stdin.end(input);
+    if (input !== undefined) {
+      // The child may exit before reading everything; its stderr explains why.
+      p.stdin.on('error', () => {});
+      p.stdin.end(input);
+    }
     let out = '';
     let err = '';
     p.stdout.on('data', (d) => (out += d));
@@ -158,17 +162,22 @@ const CLUSTER_SCOPED = [
   'Namespace', 'Node', 'PersistentVolume', 'PriorityClass', 'StorageClass',
   'ValidatingWebhookConfiguration', 'VolumeSnapshotClass',
 ];
-const CANONICAL =
+const EMBEDDED_YAML =
   '(select(.kind == "ConfigMap") | .data.[] | select(key | test("\\.ya?ml$"))) |= ' +
-  '(from_yaml | sort_keys(..) | ... style="" | to_yaml | trim) | ' +
+  '(from_yaml | sort_keys(..) | ... style="" | to_yaml | trim) | ';
+const CANONICAL =
   `(select(.metadata != null and .metadata.namespace == null and (${CLUSTER_SCOPED.map((k) => `.kind != "${k}"`).join(' and ')})) | .metadata.namespace) = strenv(RENDER_NAMESPACE) | ` +
   'sort_keys(..) | ... style="" | ... comments=""';
 
 async function canonicalize(text, namespace) {
-  return run('yq', ['-P', CANONICAL, '-'], {
-    input: text,
-    env: { ...process.env, RENDER_NAMESPACE: namespace },
-  });
+  const env = { ...process.env, RENDER_NAMESPACE: namespace };
+  try {
+    return await run('yq', ['-P', EMBEDDED_YAML + CANONICAL, '-'], { input: text, env });
+  } catch {
+    // Some ConfigMap *.yaml values are templates, empty or multi-document and do not
+    // parse; keep them verbatim rather than failing the whole application.
+    return run('yq', ['-P', CANONICAL, '-'], { input: text, env });
+  }
 }
 
 function splitDocs(text) {
