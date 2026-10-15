@@ -8,6 +8,7 @@
  * Mirrors what Argo CD does for this repo: ApplicationSets are evaluated with
  * jsonnet, expanded per argo/clusters/*.yaml, and each source is rendered with
  * Helm or with the Tanka CMP flow (see ansible .../services/tasks/argocd.yml).
+ * Output is canonicalized with yq (sorted keys) so Helm and Tanka renders compare.
  * Needs node, jsonnet, helm, yq, tk, jb and diff on PATH, plus network access
  * for charts. No secrets are read; encrypted files are never touched.
  */
@@ -21,9 +22,14 @@ const path = require('path');
 const TEMPLATE_RE = /\{\{\s*(?:index\s+)?\.([\w.]+)(?:\s+"([^"]+)")?\s*\}\}/g;
 const CONCURRENCY = 4;
 
-function run(cmd, args, { cwd, env } = {}) {
+function run(cmd, args, { cwd, env, input } = {}) {
   return new Promise((resolve, reject) => {
-    const p = spawn(cmd, args, { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
+    const p = spawn(cmd, args, { cwd, env, stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'] });
+    if (input !== undefined) {
+      // The child may exit before reading everything; its stderr explains why.
+      p.stdin.on('error', () => {});
+      p.stdin.end(input);
+    }
     let out = '';
     let err = '';
     p.stdout.on('data', (d) => (out += d));
@@ -140,6 +146,40 @@ async function renderTanka(src, root) {
   }
 }
 
+// Helm keeps template key order and quoting, Tanka emits sorted keys, so the same
+// resource renders differently depending on the tool. Re-emit every document with
+// sorted keys, no comments and no explicit scalar styles so only real changes show
+// in the diff. Also:
+//  - YAML embedded in ConfigMap data (*.yaml / *.yml) gets the same treatment, as
+//    Helm's toYaml and jsonnet's manifestYamlDoc format it differently.
+//  - Namespaced resources without metadata.namespace (Helm leaves it to the
+//    destination, Tanka may set it) get the application's namespace, so every
+//    resource is identified by namespace + name on both sides.
+// Lists keep their order, as it is significant to Kubernetes.
+const CLUSTER_SCOPED = [
+  'APIService', 'ClusterIssuer', 'ClusterRole', 'ClusterRoleBinding', 'ClusterSecretStore',
+  'ClusterExternalSecret', 'CustomResourceDefinition', 'IngressClass', 'MutatingWebhookConfiguration',
+  'Namespace', 'Node', 'PersistentVolume', 'PriorityClass', 'StorageClass',
+  'ValidatingWebhookConfiguration', 'VolumeSnapshotClass',
+];
+const EMBEDDED_YAML =
+  '(select(.kind == "ConfigMap") | .data.[] | select(key | test("\\.ya?ml$"))) |= ' +
+  '(from_yaml | sort_keys(..) | ... style="" | to_yaml | trim) | ';
+const CANONICAL =
+  `(select(.metadata != null and .metadata.namespace == null and (${CLUSTER_SCOPED.map((k) => `.kind != "${k}"`).join(' and ')})) | .metadata.namespace) = strenv(RENDER_NAMESPACE) | ` +
+  'sort_keys(..) | ... style="" | ... comments=""';
+
+async function canonicalize(text, namespace) {
+  const env = { ...process.env, RENDER_NAMESPACE: namespace };
+  try {
+    return await run('yq', ['-P', EMBEDDED_YAML + CANONICAL, '-'], { input: text, env });
+  } catch {
+    // Some ConfigMap *.yaml values are templates, empty or multi-document and do not
+    // parse; keep them verbatim rather than failing the whole application.
+    return run('yq', ['-P', CANONICAL, '-'], { input: text, env });
+  }
+}
+
 function splitDocs(text) {
   // Drop comment-only / empty documents (helm "# Source:" headers).
   return text
@@ -213,7 +253,7 @@ async function renderApplication(app, root, out) {
     for (const src of app.spec.sources) {
       if (src.ref && !src.path && !src.chart) continue;
       const text = src.plugin ? await renderTanka(src, root) : await renderHelm(src, root, ns);
-      docs.push(...splitDocs(text));
+      docs.push(...splitDocs(await canonicalize(text, ns)));
     }
     writeApp(out, name, docs);
     return [name, null];

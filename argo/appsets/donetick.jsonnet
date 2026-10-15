@@ -1,17 +1,16 @@
 local appset = import '../lib/appset.libsonnet';
-local helm = import '../lib/helm.libsonnet';
-local util = import '../lib/util.libsonnet';
+local tanka = import '../lib/tanka.libsonnet';
 
-local source = helm.new('donetick', values={
-  ingress: util.ingress('donetick', domain='chores.bednarzak.com', class='external') {
-    annotations+: {
-      // Do not create the DNS entry as its being managed by the tunnel.
-      'dns.kubernetes.io/exclude': 'true',
-    }
-  }
-});
-local extraObjects = helm.extraObjects('donetick');
+local namespace = 'donetick';
 
-appset.new('donetick', 'donetick')
+local source = tanka.new(
+  'donetick',
+  namespace=namespace,
+  overrides={
+    _namespace:: namespace,
+    _host:: 'chores.bednarzak.com',
+  },
+);
+
+appset.new('donetick', namespace)
 + appset.addSource(source)
-+ appset.addSource(extraObjects)

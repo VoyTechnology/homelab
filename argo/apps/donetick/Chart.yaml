@@ -1,5 +1,0 @@
-apiVersion: v2
-name: donetick
-description: Donetick task management application
-version: 0.0.1
-appVersion: "latest"
