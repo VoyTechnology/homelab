@@ -33,6 +33,16 @@ spec:
                 secretKeyRef:
                   name: donetick-secrets
                   key: DT_TELEGRAM_TOKEN
+            - name: DT_OAUTH2_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: donetick-oidc-credentials
+                  key: client_id
+            - name: DT_OAUTH2_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: donetick-oidc-credentials
+                  key: client_secret
             - name: DT_SQLITE_PATH
               value: /data/donetick.db
           volumeMounts:
