@@ -24,6 +24,9 @@ local envVar = k.core.v1.envVar;
         'app.kubernetes.io/name': name,
         'app.kubernetes.io/instance': name,
     },
+    // Metadata labels. Kept apart from `selector`: the selector is immutable and must
+    // never grow, while these may change freely.
+    local labels = selector + { 'app.kubernetes.io/managed-by': 'Tanka' },
     local devices = {
         'zigbee-dongle': $._config.zigbeeDongle,
         'thread-dongle': $._config.threadDongle,
@@ -33,13 +36,13 @@ local envVar = k.core.v1.envVar;
     haServiceAccount: {
         apiVersion: 'v1',
         kind: 'ServiceAccount',
-        metadata: { name: name, labels: selector },
+        metadata: { name: name, labels: labels },
     },
 
     haService: {
         apiVersion: 'v1',
         kind: 'Service',
-        metadata: { name: name, labels: selector },
+        metadata: { name: name, labels: labels },
         spec: {
             type: 'ClusterIP',
             ports: [{ name: 'http', port: cfg.port, targetPort: 'http', protocol: 'TCP' }],
@@ -52,7 +55,7 @@ local envVar = k.core.v1.envVar;
         kind: 'Ingress',
         metadata: {
             name: name,
-            labels: selector,
+            labels: labels,
             annotations: {
                 'cert-manager.io/cluster-issuer': 'letsencrypt',
                 // Do not create the DNS entry as its being managed by the tunnel.
@@ -82,7 +85,7 @@ local envVar = k.core.v1.envVar;
     haServiceMonitor: {
         apiVersion: 'monitoring.coreos.com/v1',
         kind: 'ServiceMonitor',
-        metadata: { name: name, labels: selector },
+        metadata: { name: name, labels: labels },
         spec: {
             endpoints: [{
                 port: 'http',
@@ -154,7 +157,7 @@ local envVar = k.core.v1.envVar;
     haStatefulSet: {
         apiVersion: 'apps/v1',
         kind: 'StatefulSet',
-        metadata: { name: name, labels: selector },
+        metadata: { name: name, labels: labels },
         spec: {
             serviceName: name,
             replicas: 1,
@@ -164,7 +167,7 @@ local envVar = k.core.v1.envVar;
             persistentVolumeClaimRetentionPolicy: { whenDeleted: 'Retain', whenScaled: 'Retain' },
             template: {
                 metadata: {
-                    labels: selector,
+                    labels: labels,
                 } + (if sync.enabled then {
                     // Restart the pod sidecars when the script changes.
                     annotations: { 'checksum/sync-script': std.md5(importstr 'sync.py') },
