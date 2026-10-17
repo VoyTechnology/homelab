@@ -3,10 +3,6 @@ name: homeassistant
 description: Homeassistant Chart
 version: 0.0.1
 dependencies:
-  - name: home-assistant
-    alias: homeassistant
-    repository: https://pajikos.github.io/home-assistant-helm-chart/
-    version: 0.3.81
   - name: home-assistant-matter-server
     alias: matter
     repository: https://charts.derwitt.dev

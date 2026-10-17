@@ -3,56 +3,11 @@ local helm = import '../lib/helm.libsonnet';
 local tanka = import '../lib/tanka.libsonnet';
 local util = import '../lib/util.libsonnet';
 
-// usbDevices is a list of devices that should be mounted into the homeassistant pod. The key is the name of the device, and the value is the path to the device on the host.
-local usbDevices = {
-  devices:: {
-    "zigbee-dongle": "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_48595f40c274ef1196c7cd8c8fcc3fa0-if00-port0",
-    "thread-dongle": "/dev/serial/by-id/usb-Nabu_Casa_ZBT-2_14C19FC4DBA8-if00",
-  },
-
-  additionalVolumes:: [{
-      name: device.key,
-      hostPath: {
-        path: device.value,
-      }
-  } for device in std.objectKeysValues(self.devices) ],
-
-  additionalMounts:: [{
-      name: device.key,
-      mountPath: device.value,
-  } for device in std.objectKeysValues(self.devices) ],
-};
-
+// Home Assistant itself (StatefulSet, Service, Ingress, ServiceMonitor, the USB device
+// mounts) is rendered by Tanka, see argo/apps/homeassistant/homeassistant.libsonnet.
+// This chart only carries Matter Server and Matter Hub.
 local source = helm.new(
   'homeassistant', values={
-    homeassistant: {
-      additionalVolumes: usbDevices.additionalVolumes,
-      additionalMounts: usbDevices.additionalMounts,
-      nodeSelector: {
-        # TODO: Make this dynamic per cluster
-        'kubernetes.io/hostname': 's1-bet1',
-      },
-      # The chart does not follow the standards. 
-      ingress: {
-        enabled: true,
-        className: 'external',  // should be ingressClassName
-        annotations+: {
-          // Do not create the DNS entry as its being managed by the tunnel.
-          'dns.kubernetes.io/exclude': 'true',
-        },
-        hosts: [{
-          host: '{{ .domain }}',
-          paths: [{
-            path: '/',
-            pathType: 'ImplementationSpecific',
-          }],
-        }],
-        tls: [{
-          secretName: 'homeassistant-tls',
-          hosts: ['{{ .domain }}'],
-        }],
-      },
-    },
     matterhub: {
       ingress: util.ingress('matter', class='internal'),
       # TODO: Make this dynamic per cluster
@@ -67,7 +22,9 @@ local tankaSource = tanka.new(
   'ha-jsonnet',
   path='argo/apps/homeassistant',
   namespace='homeassistant',
-  overrides={},
+  // A string is passed through verbatim as Jsonnet source (std.toString of an object would
+  // drop hidden fields and the `+` of `_config+::`, so the override would replace _config).
+  overrides="{ _config+:: { domain: '{{ .domain }}' } }",
 );
 
 appset.new('homeassistant', 'homeassistant')
