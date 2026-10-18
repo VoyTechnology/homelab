@@ -1,9 +1,11 @@
 {
     _config:: {
         threadDongle: error "threadDongle must be set in the config",
-        zigbeeDongle: error "zigbeeDongle must be set in the config",
         networkInterface: error 'networkInterface must be set in the config',
         nodeName: error 'nodeName must be set in the config',
+        // Host devices passed through to Home Assistant, any number of them:
+        // volume/mount name -> path on the node (also the path inside the container).
+        devices: {},
         domain: error 'domain must be set in the config',
         restPort: 8081,
         webPort: 8082,

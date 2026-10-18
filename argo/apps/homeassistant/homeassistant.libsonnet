@@ -27,10 +27,8 @@ local envVar = k.core.v1.envVar;
     // Metadata labels. Kept apart from `selector`: the selector is immutable and must
     // never grow, while these may change freely.
     local labels = selector + { 'app.kubernetes.io/managed-by': 'Tanka' },
-    local devices = {
-        'zigbee-dongle': $._config.zigbeeDongle,
-        'thread-dongle': $._config.threadDongle,
-    },
+    // Host devices (name -> host path) mounted at the same path inside the container.
+    local devices = $._config.devices,
     local sync = cfg.configSync,
 
     haServiceAccount: {
