@@ -4,7 +4,8 @@ local tanka = import '../lib/tanka.libsonnet';
 local util = import '../lib/util.libsonnet';
 
 // Home Assistant itself (StatefulSet, Service, Ingress, ServiceMonitor, the USB device
-// mounts) is rendered by Tanka, see argo/apps/homeassistant/homeassistant.libsonnet.
+// mounts) is rendered by Tanka from the home-libsonnet homeassistant library, with the
+// ha-data repo imported as a mixin, see argo/apps/homeassistant/main.jsonnet.
 // This chart only carries Matter Server and Matter Hub.
 local source = helm.new(
   'homeassistant', values={
