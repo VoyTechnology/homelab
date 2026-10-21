@@ -9,6 +9,23 @@
         }
       },
       "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "homeassistant"
+        }
+      },
+      "version": "feat/homeassistant"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/ha-data.git"
+        }
+      },
+      "version": "main"
     }
   ],
   "legacyImports": true
