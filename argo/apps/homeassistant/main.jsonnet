@@ -49,4 +49,4 @@ ha + config + images + ingress + otbr {
     },
   },
 }
-+ ha.addMixins({ home: home })
++ ha.addMixins(home)
