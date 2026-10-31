@@ -208,11 +208,13 @@ function docId(doc) {
   return `${parts.join('.').replace(/[^A-Za-z0-9._-]+/g, '_')}.yaml`;
 }
 
-// Redact Secret values (diffs get posted publicly) and checksum annotations
+// Redact Secret values and ha-data mixin ConfigMaps (diffs get posted publicly), and checksum annotations
 // that change on every render because charts feed random values into them.
 function normalize(doc) {
   doc = doc.replace(/^([ \t]+checksum\/[\w.-]+:[ \t]*).+$/gm, '$1<checksum>');
-  if (!/^kind:[ \t]*Secret[ \t]*$/m.test(doc)) return doc;
+  // ha-mixins-* ConfigMaps carry the private ha-data repo's rendered config.
+  const isMixins = /^kind:[ \t]*ConfigMap[ \t]*$/m.test(doc) && /^ {2}name:[ \t]*ha-mixins-/m.test(doc);
+  if (!isMixins && !/^kind:[ \t]*Secret[ \t]*$/m.test(doc)) return doc;
   const out = [];
   let section = false;
   let skipping = false;
