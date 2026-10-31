@@ -4,11 +4,31 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/VoyTechnology/ha-data.git",
+          "subdir": ""
+        }
+      },
+      "version": "ac8a001afbed012f75b3d7f845f7329443bb6919",
+      "sum": "LmrPvsg/WiXPjmitKgw1NMlEeBdDtgC2qgH/QDuC+tc="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "homeassistant"
+        }
+      },
+      "version": "2d2ae060209f9bafdc8f3a9c3cc1715bfad775b3",
+      "sum": "kjcRZN1nd+2hb/2C/EIsXJNgblHuGXPsVDNY4jwGJZQ="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
           "subdir": "1.35"
         }
       },
-      "version": "ee5c4c5ee02571eaf82f1170c60af47eee5496be",
+      "version": "f66023fcddc92e89c3e81bd49c1f528a984505ef",
       "sum": "B+1kudlxnkbH6warwOHHh+gmADl2w5VFJQ5D0SxcO6M="
     }
   ],

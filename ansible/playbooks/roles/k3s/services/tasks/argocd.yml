@@ -33,7 +33,7 @@
           tk show . --dangerous-allow-redirect
 
 - name: ArgoCD | Tanka Git Deploy Key
-  no_log: true # Do not show logs as they contain the private ssh key
+  no_log: true # Do not show logs as they contain the GitHub token
   kubernetes.core.k8s:
     state: present
     definition:
@@ -44,7 +44,7 @@
         namespace: "{{ argocd_k8s_namespace }}"
       type: Opaque
       stringData:
-        ssh-privatekey: "{{ argocd_tanka_git_ssh_key }}"
+        token: "{{ argocd_tanka_git_token }}"
 
 - name: ArgoCD | Deploy Helm Chart
   kubernetes.core.helm:
@@ -130,11 +130,9 @@
               runAsNonRoot: true
               runAsUser: 999
             env:
-              # Lets `jb install` clone the private ha-data repo (see the plugin init).
+              # Where the plugin init writes the ha-data https token rewrite.
               - name: GIT_CONFIG_GLOBAL
                 value: /tmp/tanka-gitconfig
-              - name: GIT_SSH_COMMAND
-                value: ssh -i /tmp/tanka-git-key -o UserKnownHostsFile=/tmp/tanka-known-hosts -o StrictHostKeyChecking=accept-new
             volumeMounts:
               - mountPath: /var/run/argocd
                 name: var-files
@@ -166,14 +164,13 @@
             tanka-plugin:
               version: v1.0
               init:
-                # ssh rejects the secret mount's permissions, so use a 0600 copy of the key.
+                # ssh can't run here (uid 999 has no passwd entry), so use a token over https.
                 command:
                   - sh
                   - -c
                   - |
                     set -e
-                    install -m 600 /etc/tanka-git/ssh-privatekey /tmp/tanka-git-key
-                    git config --global url."git@github.com:VoyTechnology/ha-data".insteadOf "https://github.com/VoyTechnology/ha-data"
+                    git config --global url."https://x-access-token:$(cat /etc/tanka-git/token)@github.com/VoyTechnology/ha-data".insteadOf "https://github.com/VoyTechnology/ha-data"
                     jb install
               generate:
                 command: [sh, /home/argocd/cmp-server/scripts/tanka-generate.sh]
