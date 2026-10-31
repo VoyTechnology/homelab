@@ -15,6 +15,7 @@
 'use strict';
 
 const { spawn, spawnSync } = require('child_process');
+const crypto = require('crypto');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -208,10 +209,18 @@ function docId(doc) {
   return `${parts.join('.').replace(/[^A-Za-z0-9._-]+/g, '_')}.yaml`;
 }
 
-// Redact Secret values (diffs get posted publicly) and checksum annotations
+// Redact Secret values and ha-data mixin ConfigMaps (diffs get posted publicly), and checksum annotations
 // that change on every render because charts feed random values into them.
 function normalize(doc) {
   doc = doc.replace(/^([ \t]+checksum\/[\w.-]+:[ \t]*).+$/gm, '$1<checksum>');
+  // ha-mixins-* ConfigMaps carry the private ha-data repo's rendered config: drop keys
+  // and values, keeping only a hash so changes still show up in the diff.
+  if (/^kind:[ \t]*ConfigMap[ \t]*$/m.test(doc) && /^ {2}name:[ \t]*ha-mixins-/m.test(doc)) {
+    return doc.replace(/^data:\n((?: .*\n|\n)*)/m, (_, body) =>
+      `data:\n  <redacted>: sha256-${crypto.createHash('sha256').update(body).digest('hex').slice(0, 12)}\n`);
+  }
+  // Mounts of those ConfigMaps list the file names; hide them too.
+  doc = doc.replace(/^( +)items:\n(?:\1  - key: .*\n\1    path: .*\n)+(?=\1name: ha-mixins-)/gm, '$1items: <redacted>\n');
   if (!/^kind:[ \t]*Secret[ \t]*$/m.test(doc)) return doc;
   const out = [];
   let section = false;
