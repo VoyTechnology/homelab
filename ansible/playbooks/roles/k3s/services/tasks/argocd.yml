@@ -32,6 +32,20 @@
           TMPEOF
           tk show . --dangerous-allow-redirect
 
+- name: ArgoCD | Tanka Git Deploy Key
+  no_log: true # Do not show logs as they contain the private ssh key
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: argocd-tanka-git
+        namespace: "{{ argocd_k8s_namespace }}"
+      type: Opaque
+      stringData:
+        ssh-privatekey: "{{ argocd_tanka_git_ssh_key }}"
+
 - name: ArgoCD | Deploy Helm Chart
   kubernetes.core.helm:
     name: argocd
@@ -97,6 +111,9 @@
               defaultMode: 493
           - name: tmp-dir
             emptyDir: {}
+          - name: tanka-git
+            secret:
+              secretName: argocd-tanka-git
         extraContainers:
           - name: tanka
             command: [/var/run/argocd/argocd-cmp-server]
@@ -112,9 +129,18 @@
             securityContext:
               runAsNonRoot: true
               runAsUser: 999
+            env:
+              # Lets `jb install` clone the private ha-data repo (see the plugin init).
+              - name: GIT_CONFIG_GLOBAL
+                value: /tmp/tanka-gitconfig
+              - name: GIT_SSH_COMMAND
+                value: ssh -i /tmp/tanka-git-key -o UserKnownHostsFile=/tmp/tanka-known-hosts -o StrictHostKeyChecking=accept-new
             volumeMounts:
               - mountPath: /var/run/argocd
                 name: var-files
+              - mountPath: /etc/tanka-git
+                name: tanka-git
+                readOnly: true
               - mountPath: /home/argocd/cmp-server/plugins
                 name: plugins
               - mountPath: /home/argocd/cmp-server/config/plugin.yaml
@@ -140,7 +166,15 @@
             tanka-plugin:
               version: v1.0
               init:
-                command: [sh, -c, 'jb install']
+                # ssh rejects the secret mount's permissions, so use a 0600 copy of the key.
+                command:
+                  - sh
+                  - -c
+                  - |
+                    set -e
+                    install -m 600 /etc/tanka-git/ssh-privatekey /tmp/tanka-git-key
+                    git config --global url."git@github.com:VoyTechnology/ha-data".insteadOf "https://github.com/VoyTechnology/ha-data"
+                    jb install
               generate:
                 command: [sh, /home/argocd/cmp-server/scripts/tanka-generate.sh]
               discover:
