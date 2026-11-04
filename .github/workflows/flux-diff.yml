@@ -1,0 +1,68 @@
+name: Flux diff
+
+# Generates the manifests for the PR head and diffs them against what is currently in
+# VoyTechnology/homelab-manifests, i.e. what Flux reconciles. Both sides are redacted with
+# scripts/redact.yaml before diffing, as the comment is public and the manifests repo is not.
+# Needs MANIFESTS_READ_KEY: a read-only deploy key on homelab-manifests.
+on:
+  pull_request:
+    paths:
+      - "apps/**"
+      - "scripts/render-apps.js"
+      - "scripts/redact.yaml"
+      - ".tool-versions"
+      - ".github/workflows/flux-diff.yml"
+
+concurrency:
+  group: flux-diff-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout head
+        uses: actions/checkout@v6
+        with:
+          path: head
+
+      - name: Install tools
+        uses: jdx/mise-action@v2
+        with:
+          working_directory: head
+          install_args: go-jsonnet jsonnet-bundler tanka yq
+
+      - name: Put tools on PATH
+        working-directory: head
+        run: mise bin-paths >> "$GITHUB_PATH"
+
+      - name: Add homelab-manifests read key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MANIFESTS_READ_KEY }}
+
+      - name: Checkout homelab-manifests
+        run: git clone -q --depth 1 git@github.com:VoyTechnology/homelab-manifests.git base || mkdir base
+
+      - name: Generate head
+        working-directory: head
+        run: node scripts/render-apps.js generate . ../out-head
+
+      - name: Build diff
+        run: |
+          args=(--redact="$PWD/head/scripts/redact.yaml" --description="What Flux would apply, compared with the current contents of homelab-manifests.")
+          node head/scripts/render-apps.js diff base out-head 60000 "${args[@]}" > comment.md
+          node head/scripts/render-apps.js diff base out-head 900000 "${args[@]}" > summary.md
+          cat summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on PR
+        # Fork PRs get a read-only token and no secrets.
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: flux-diff
+          path: comment.md

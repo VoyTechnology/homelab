@@ -1,4 +1,24 @@
 {
+  // Native layout: apps/<name>/environments/<cluster>/ is a committed Tanka
+  // environment, so nothing is generated and no overrides are passed in.
+  // The namespace lives in the environment's spec.json.
+  newNative(
+    name,
+    repoURL='git@github.com:Voytechnology/homelab.git',
+    targetRevision='HEAD',
+  ): {
+    repoURL: repoURL,
+    targetRevision: targetRevision,
+    path: 'apps/%s' % name,
+    plugin: {
+      env: [
+        { name: 'TANKA_CLUSTER', value: '{{ .cluster }}' },
+        { name: 'TANKA_APP', value: name },
+        { name: 'TANKA_ENV_DIR', value: 'environments/{{ .cluster }}' },
+      ],
+    },
+  },
+
   new(
     name,
     repoURL='git@github.com:Voytechnology/homelab.git',

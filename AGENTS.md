@@ -127,9 +127,42 @@ the local `scripts/tk-show` helper:
    overrides.
 4. Run `tk show`, then restore original files on cleanup.
 
+### Native layout (experimental, `apps/`)
+
+`apps/<app>/` is the new home for apps, without the `argo/` prefix; only
+`apps/x-tanka` uses it so far, other apps move later. Instead of a faked
+environment it has committed environments:
+
+```
+apps/<app>/jsonnetfile.json
+apps/<app>/lib/*.libsonnet                 # shared code
+apps/<app>/environments/<cluster>/main.jsonnet
+apps/<app>/environments/<cluster>/spec.json  # namespace; no apiServer needed
+```
+
+Apps read cluster and namespace with `std.extVar('tanka.dev/environment')`
+(`.metadata.name` is `environments/<cluster>`, `.spec.namespace`). Per-cluster
+overrides live in the environment's `main.jsonnet`. `tanka.newNative(...)` in
+`argo/lib/tanka.libsonnet` builds the Argo source (`TANKA_ENV_DIR`).
+
+The `Generate` workflow renders every environment with `scripts/render-apps.js generate`
+and publishes `<cluster>/<app>/*.yaml` to the private `VoyTechnology/homelab-manifests`
+repo, which Flux reconciles. That repo is never edited by hand. Flux itself is installed by
+Ansible (`flux.yml`, Helm chart); the `GitRepository`/`Kustomization` that sync
+`homelab-manifests` come from `apps/flux` (built on `jsonnet-libs/fluxcd-libsonnet`), applied
+once by Ansible and then kept in sync by Flux itself.
+
+The `Flux diff` PR workflow generates the head and diffs it against the `homelab-manifests`
+checkout. Both sides are redacted by the rules in `scripts/redact.yaml` (Secrets, mixin
+ConfigMaps, checksums); add rules there rather than in the script. Secrets needed:
+`MANIFESTS_DEPLOY_KEY` (write) for `Generate`, `MANIFESTS_READ_KEY` (read-only) for
+`Flux diff`, and `flux_manifests_deploy_key` (read-only) in the git-crypt'd
+`ansible/inventory/<cluster>/group_vars/all/flux.secret.yml`.
+
 ### Local testing
 
-Use `scripts/tk-show` to render a Tanka app locally without Argo CD:
+Use `scripts/tk-show` to render a Tanka app locally without Argo CD (apps with
+`environments/` render natively; `TANKA_CLUSTER` picks the cluster):
 
 ```sh
 TANKA_NAMESPACE=<ns> scripts/tk-show argo/apps/<app>

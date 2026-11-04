@@ -1,7 +1,9 @@
 #!/bin/zsh
 set -euo pipefail
 
-# Run Tanka against an environment-less app, like the Argo CD CMP wrapper.
+# Run Tanka against an app. Apps with environments/<cluster>/ render natively
+# (cluster from TANKA_CLUSTER, default bet1); otherwise act like the Argo CD CMP
+# wrapper and fake an environment.
 APP_PATH="${1:-${MISE_ORIGINAL_CWD:-.}}"
 if [[ $# -gt 0 ]]; then
   shift
@@ -11,6 +13,12 @@ namespace="${TANKA_NAMESPACE:-default}"
 api_server="${TANKA_APISERVER:-https://kubernetes.default.svc}"
 cluster="${TANKA_CLUSTER:-}"
 app="${TANKA_APP:-$(basename "$PWD")}"
+
+# Native layout: committed environments, nothing to generate.
+if [[ -d "$APP_PATH/environments" ]]; then
+  exec tk show "$APP_PATH/environments/${cluster:-bet1}" "$@"
+fi
+
 spec="$APP_PATH/spec.json"
 main="$APP_PATH/main.jsonnet"
 main_backup=""

@@ -1,0 +1,25 @@
+# Redaction rules for diffs posted publicly (scripts/render-apps.js). Applied in order to
+# every rendered manifest, one document per file. Rule shapes:
+#
+#   replace: { pattern, with, flags? }       regex replace over the document (flags default gm)
+#   action: redact-values                    keep keys of data/stringData, hide values
+#   action: hash-data                        hide keys and values of data, keep a short hash
+#   action: hide-items, name: <regex>        hide `items:` key/path lists of volume sources
+#                                            named <regex>
+#   match: { kind, name }                    optional; kind is exact, name is a regex
+rules:
+  # Charts feed random values into checksum annotations, so they change on every render.
+  - replace:
+      pattern: '^([ \t]+checksum/[\w.-]+:[ \t]*).+$'
+      with: '$1<checksum>'
+
+  - match: { kind: Secret }
+    action: redact-values
+
+  # ha-mixins-* ConfigMaps carry the private ha-data repo's rendered config: drop keys and
+  # values, keeping only a hash so changes still show up in the diff.
+  - match: { kind: ConfigMap, name: '^ha-mixins-' }
+    action: hash-data
+  # Mounts of those ConfigMaps list the file names; hide them too.
+  - action: hide-items
+    name: 'ha-mixins-'

@@ -40,6 +40,19 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
 
+      - name: Install Tanka
+        # Renders the Flux sync objects (apps/flux) during the Flux bootstrap.
+        uses: jdx/mise-action@v2
+        with:
+          install_args: go-jsonnet jsonnet-bundler tanka
+
+      - name: Put tools on PATH
+        run: mise bin-paths >> "$GITHUB_PATH"
+
+      - name: Install Flux app dependencies
+        working-directory: apps/flux
+        run: jb install
+
       - name: Install Ansible
         run: |
           sudo apt update

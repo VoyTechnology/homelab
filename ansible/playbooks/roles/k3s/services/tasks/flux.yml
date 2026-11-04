@@ -1,0 +1,56 @@
+---
+- name: Flux | Add Helm Repo
+  kubernetes.core.helm_repository:
+    name: fluxcd-community
+    repo_url: https://fluxcd-community.github.io/helm-charts
+
+- name: Flux | Deploy Helm Chart
+  kubernetes.core.helm:
+    name: flux
+    chart_ref: fluxcd-community/flux2
+    chart_version: "{{ flux_chart_version }}"
+    release_namespace: "{{ flux_k8s_namespace }}"
+    create_namespace: true
+    update_repo_cache: true
+    wait: true
+    values:
+      # Only what is needed to apply plain manifests from git.
+      helmController:
+        create: false
+      imageAutomationController:
+        create: false
+      imageReflectionController:
+        create: false
+      notificationController:
+        create: false
+
+- name: Flux | homelab-manifests Deploy Key
+  no_log: true # Do not show logs as they contain the private ssh key
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ flux_manifests_secret }}"
+        namespace: "{{ flux_k8s_namespace }}"
+      type: Opaque
+      stringData:
+        identity: "{{ flux_manifests_deploy_key }}"
+        known_hosts: "{{ flux_known_hosts }}"
+
+# The sync objects are rendered by Tanka (apps/flux) and are also published to
+# homelab-manifests, so Flux keeps them in sync with itself after this bootstrap.
+- name: Flux | Render sync objects
+  delegate_to: localhost
+  become: false
+  changed_when: false
+  check_mode: false
+  ansible.builtin.command:
+    cmd: tk show {{ flux_sync_env }} --dangerous-allow-redirect
+  register: flux_sync_rendered
+
+- name: Flux | Apply sync objects
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ flux_sync_rendered.stdout | from_yaml_all | select | list }}"

@@ -23,6 +23,10 @@
   import_tasks: argocd.yml
   tags: k8s_argo
 
+- name: Setup Flux
+  import_tasks: flux.yml
+  tags: k8s_flux
+
 - name: Setup Extra CRDs
   import_tasks: crds.yml
   tags: k8s_crds

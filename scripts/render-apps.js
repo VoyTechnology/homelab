@@ -3,7 +3,13 @@
  * Render every Argo CD ApplicationSet in a checkout to plain manifests.
  *
  *   render-apps.js render <repo-root> <out-dir>   render all apps, one file per resource
+ *   render-apps.js generate <repo-root> <out-dir>   committed Tanka environments under apps/, unredacted, as <cluster>/<app>/
+ *                                                    (the content of the homelab-manifests repo)
  *   render-apps.js diff <base-out> <head-out> [max-chars]   markdown diff of two renders
+ *       [--redact[=file]]  redact both sides first with the rules in scripts/redact.yaml (or file),
+ *                          for diffing unredacted trees such as `generate` output against the
+ *                          homelab-manifests checkout
+ *       [--description=text]  sentence under the diff heading
  *
  * Mirrors what Argo CD does for this repo: ApplicationSets are evaluated with
  * jsonnet, expanded per argo/clusters/*.yaml, and each source is rendered with
@@ -126,6 +132,10 @@ async function renderTanka(src, root) {
     fs.cpSync(path.join(root, src.path), app, { recursive: true });
     fs.rmSync(path.join(app, 'vendor'), { recursive: true, force: true });
     await run('jb', ['install'], { cwd: app });
+    if (env.TANKA_ENV_DIR) {
+      // Native layout: the committed environment is rendered as-is.
+      return await run('tk', ['show', env.TANKA_ENV_DIR, '--dangerous-allow-redirect'], { cwd: app });
+    }
     const ns = env.TANKA_NAMESPACE;
     fs.writeFileSync(
       path.join(app, 'spec.json'),
@@ -191,37 +201,48 @@ function splitDocs(text) {
 
 const unquote = (s) => s.trim().replace(/^["']|["']$/g, '');
 
-function docId(doc) {
+// kind / namespace / name of a single canonicalized document (sorted keys, 2-space indent).
+function meta(doc) {
   const top = (key) => {
     const m = doc.match(new RegExp(`^${key}:[ \\t]*(.+?)[ \\t]*$`, 'm'));
     return m ? unquote(m[1]) : null;
   };
   let name = null;
   let ns = null;
-  const meta = doc.match(/^metadata:[ \t]*\n((?:[ \t]+.*\n?|\n)*)/m);
-  if (meta) {
-    const n = meta[1].match(/^ {2}name:[ \t]*(.+?)[ \t]*$/m);
-    const s = meta[1].match(/^ {2}namespace:[ \t]*(.+?)[ \t]*$/m);
+  const md = doc.match(/^metadata:[ \t]*\n((?:[ \t]+.*\n?|\n)*)/m);
+  if (md) {
+    const n = md[1].match(/^ {2}name:[ \t]*(.+?)[ \t]*$/m);
+    const s = md[1].match(/^ {2}namespace:[ \t]*(.+?)[ \t]*$/m);
     name = n ? unquote(n[1]) : null;
     ns = s ? unquote(s[1]) : null;
   }
-  const parts = [top('kind') || 'unknown', ns, name || 'unnamed'].filter(Boolean);
+  return { kind: top('kind'), ns, name };
+}
+
+function docId(doc) {
+  const { kind, ns, name } = meta(doc);
+  const parts = [kind || 'unknown', ns, name || 'unnamed'].filter(Boolean);
   return `${parts.join('.').replace(/[^A-Za-z0-9._-]+/g, '_')}.yaml`;
 }
 
-// Redact Secret values and ha-data mixin ConfigMaps (diffs get posted publicly), and checksum annotations
-// that change on every render because charts feed random values into them.
-function normalize(doc) {
-  doc = doc.replace(/^([ \t]+checksum\/[\w.-]+:[ \t]*).+$/gm, '$1<checksum>');
-  // ha-mixins-* ConfigMaps carry the private ha-data repo's rendered config: drop keys
-  // and values, keeping only a hash so changes still show up in the diff.
-  if (/^kind:[ \t]*ConfigMap[ \t]*$/m.test(doc) && /^ {2}name:[ \t]*ha-mixins-/m.test(doc)) {
-    return doc.replace(/^data:\n((?: .*\n|\n)*)/m, (_, body) =>
-      `data:\n  <redacted>: sha256-${crypto.createHash('sha256').update(body).digest('hex').slice(0, 12)}\n`);
-  }
-  // Mounts of those ConfigMaps list the file names; hide them too.
-  doc = doc.replace(/^( +)items:\n(?:\1  - key: .*\n\1    path: .*\n)+(?=\1name: ha-mixins-)/gm, '$1items: <redacted>\n');
-  if (!/^kind:[ \t]*Secret[ \t]*$/m.test(doc)) return doc;
+// Redaction (diffs get posted publicly). The rules live in scripts/redact.yaml so nothing
+// project specific is hardcoded here; each rule is one of:
+//   replace:  { pattern, with, flags? }  regex replace over the whole document
+//   action:   redact-values  keep the keys of data / stringData, hide the values
+//             hash-data      hide keys and values of data, keep a short hash so changes still show
+//             hide-items     hide `items:` key/path lists of volume sources whose name matches `name`
+// optionally narrowed with match: { kind, name } (kind is exact, name is a regex).
+const DEFAULT_REDACT = path.join(__dirname, 'redact.yaml');
+
+function loadRules(file = DEFAULT_REDACT) {
+  const r = spawnSync('yq', ['-o=json', '.', file], { encoding: 'utf8' });
+  if (r.status !== 0) throw new Error(`cannot read redaction rules ${file}: ${r.stderr}`);
+  return JSON.parse(r.stdout).rules || [];
+}
+
+const dataHash = (body) => crypto.createHash('sha256').update(body).digest('hex').slice(0, 12);
+
+function redactValues(doc) {
   const out = [];
   let section = false;
   let skipping = false;
@@ -241,12 +262,42 @@ function normalize(doc) {
   return `${out.join('\n').replace(/\n+$/, '')}\n`;
 }
 
-function writeApp(out, appName, docs) {
+function applyRule(doc, rule) {
+  if (rule.replace) {
+    const { pattern, with: to, flags } = rule.replace;
+    return doc.replace(new RegExp(pattern, flags || 'gm'), to);
+  }
+  const { kind, name } = rule.match || {};
+  const m = meta(doc);
+  const matches = (!kind || m.kind === kind) && (!name || (m.name && new RegExp(name).test(m.name)));
+  switch (rule.action) {
+    case 'redact-values':
+      return matches ? redactValues(doc) : doc;
+    case 'hash-data':
+      return matches
+        ? doc.replace(/^data:\n((?: .*\n|\n)*)/m, (_, body) => `data:\n  <redacted>: sha256-${dataHash(body)}\n`)
+        : doc;
+    case 'hide-items': {
+      // Mounts list the file names of the sources above; the name line follows the items.
+      const re = new RegExp(`^( +)items:\\n(?:\\1  - key: .*\\n\\1    path: .*\\n)+(?=\\1name: ${rule.name})`, 'gm');
+      return doc.replace(re, '$1items: <redacted>\n');
+    }
+    default:
+      throw new Error(`unknown redaction rule: ${JSON.stringify(rule)}`);
+  }
+}
+
+function normalize(doc, rules) {
+  return rules.reduce(applyRule, doc);
+}
+
+// rules=null writes the manifests verbatim, for the generated manifests.
+function writeApp(out, appName, docs, rules = loadRules()) {
   const dir = path.join(out, appName);
   fs.mkdirSync(dir, { recursive: true });
   const seen = {};
   for (const raw of docs) {
-    const doc = normalize(raw);
+    const doc = rules ? normalize(raw, rules) : raw;
     let fn = docId(doc);
     seen[fn] = (seen[fn] || 0) + 1;
     if (seen[fn] > 1) fn = fn.replace('.yaml', `.${seen[fn]}.yaml`);
@@ -274,6 +325,42 @@ async function renderApplication(app, root, out) {
   }
 }
 
+// Render every committed Tanka environment (apps/<app>/environments/<cluster>) to
+// <out>/<cluster>/<app>/*.yaml, the content published to homelab-manifests. Unredacted:
+// this is what Flux applies. Independent of the Argo CD ApplicationSets.
+async function generate(rootArg, outArg) {
+  const root = path.resolve(rootArg);
+  const out = path.resolve(outArg);
+  fs.rmSync(out, { recursive: true, force: true });
+  fs.mkdirSync(out, { recursive: true });
+  const jobs = [];
+  const appsDir = path.join(root, 'apps');
+  for (const app of fs.existsSync(appsDir) ? fs.readdirSync(appsDir).sort() : []) {
+    const envsDir = path.join(appsDir, app, 'environments');
+    if (!fs.existsSync(envsDir)) continue;
+    for (const cluster of fs.readdirSync(envsDir).sort()) {
+      const spec = JSON.parse(fs.readFileSync(path.join(envsDir, cluster, 'spec.json'), 'utf8'));
+      jobs.push({ app, cluster, namespace: spec.spec.namespace });
+    }
+  }
+  const results = await pool(jobs, CONCURRENCY, async ({ app, cluster, namespace }) => {
+    try {
+      const src = {
+        path: `apps/${app}`,
+        plugin: { env: [{ name: 'TANKA_ENV_DIR', value: `environments/${cluster}` }] },
+      };
+      const text = await renderTanka(src, root);
+      writeApp(path.join(out, cluster), app, splitDocs(await canonicalize(text, namespace)), null);
+      return null;
+    } catch (e) {
+      console.error(`FAILED ${cluster}/${app}: ${e.message}`);
+      return e;
+    }
+  });
+  console.log(`generated ${results.filter((e) => !e).length}/${results.length} applications`);
+  return results.some(Boolean) ? 1 : 0;
+}
+
 async function pool(items, limit, fn) {
   const results = new Array(items.length);
   let next = 0;
@@ -287,23 +374,30 @@ async function pool(items, limit, fn) {
   return results;
 }
 
+async function load(root) {
+  const clusterDir = path.join(root, 'argo/clusters');
+  const clusters = [];
+  for (const f of fs.readdirSync(clusterDir).filter((f) => f.endsWith('.yaml')).sort()) {
+    clusters.push(JSON.parse(await run('yq', ['-o=json', '.', path.join(clusterDir, f)])));
+  }
+  const appsets = [];
+  const appsetDir = path.join(root, 'argo/appsets');
+  for (const f of fs.readdirSync(appsetDir).filter((f) => f.endsWith('.jsonnet')).sort()) {
+    const appset = JSON.parse(await run('jsonnet', [path.join(appsetDir, f)], { cwd: root }));
+    if (appset.kind === 'ApplicationSet') appsets.push(appset);
+  }
+  return { clusters, appsets };
+}
+
 async function render(rootArg, outArg) {
   const root = path.resolve(rootArg);
   const out = path.resolve(outArg);
   fs.rmSync(out, { recursive: true, force: true });
   fs.mkdirSync(out, { recursive: true });
 
-  const clusterDir = path.join(root, 'argo/clusters');
-  const clusters = [];
-  for (const f of fs.readdirSync(clusterDir).filter((f) => f.endsWith('.yaml')).sort()) {
-    clusters.push(JSON.parse(await run('yq', ['-o=json', '.', path.join(clusterDir, f)])));
-  }
-
+  const { clusters, appsets } = await load(root);
   const apps = [];
-  const appsetDir = path.join(root, 'argo/appsets');
-  for (const f of fs.readdirSync(appsetDir).filter((f) => f.endsWith('.jsonnet')).sort()) {
-    const appset = JSON.parse(await run('jsonnet', [path.join(appsetDir, f)], { cwd: root }));
-    if (appset.kind !== 'ApplicationSet') continue;
+  for (const appset of appsets) {
     for (const params of clusters) apps.push(subst(appset.spec.template, params));
   }
 
@@ -314,11 +408,15 @@ async function render(rootArg, outArg) {
   return failed.length ? 1 : 0;
 }
 
-function walk(dir, base = dir, acc = {}) {
+function walk(dir, rules, base = dir, acc = {}) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+    if (e.name.startsWith('.')) continue; // .git and friends
     const p = path.join(dir, e.name);
-    if (e.isDirectory()) walk(p, base, acc);
-    else if (/\.(yaml|txt)$/.test(e.name)) acc[path.relative(base, p).split(path.sep).join('/')] = fs.readFileSync(p, 'utf8');
+    if (e.isDirectory()) walk(p, rules, base, acc);
+    else if (/\.(yaml|txt)$/.test(e.name)) {
+      const text = fs.readFileSync(p, 'utf8');
+      acc[path.relative(base, p).split(path.sep).join('/')] = rules ? normalize(text, rules) : text;
+    }
   }
   return acc;
 }
@@ -336,11 +434,13 @@ function unified(oldText, newText, fromLabel, toLabel, tmp) {
   return [`--- ${fromLabel}`, `+++ ${toLabel}`, ...lines];
 }
 
-function diff(baseOut, headOut, limit) {
-  const a = walk(path.resolve(baseOut));
-  const b = walk(path.resolve(headOut));
+function diff(baseOut, headOut, limit, { rules = null, description } = {}) {
+  const a = walk(path.resolve(baseOut), rules);
+  const b = walk(path.resolve(headOut), rules);
   const files = [...new Set([...Object.keys(a), ...Object.keys(b)])].sort();
-  const apps = [...new Set(files.map((f) => f.split('/')[0]))];
+  // A group is a file's directory: <app> for renders, <cluster>/<app> for homelab-manifests.
+  const groupOf = (f) => path.posix.dirname(f);
+  const apps = [...new Set(files.map(groupOf))];
   const tmp = mkTmp();
   const summary = [];
   const sections = [];
@@ -350,7 +450,7 @@ function diff(baseOut, headOut, limit) {
       let removed = 0;
       let changed = 0;
       const body = [];
-      for (const f of files.filter((f) => f.split('/')[0] === app)) {
+      for (const f of files.filter((f) => groupOf(f) === app)) {
         const oldText = a[f];
         const newText = b[f];
         if (oldText === newText) continue;
@@ -380,7 +480,7 @@ function diff(baseOut, headOut, limit) {
   const out = [
     '### Rendered manifest diff',
     '',
-    'What Argo CD would apply, rendered from the base and head commits (resources added / changed / removed).',
+    description || 'What Argo CD would apply, rendered from the base and head commits (resources added / changed / removed).',
     '',
     '| Application | Added | Changed | Removed |',
     '|---|---|---|---|',
@@ -403,15 +503,27 @@ function diff(baseOut, headOut, limit) {
 }
 
 async function main(argv) {
-  const [cmd, ...rest] = argv.slice(2);
+  const opts = {};
+  const args = [];
+  for (const a of argv.slice(2)) {
+    const m = a.match(/^--(redact|description)(?:=(.*))?$/);
+    if (m) opts[m[1]] = m[2] === undefined ? true : m[2];
+    else args.push(a);
+  }
+  const [cmd, ...rest] = args;
   if (cmd === 'render' && rest.length === 2) return render(rest[0], rest[1]);
+  if (cmd === 'generate' && rest.length === 2) return generate(rest[0], rest[1]);
   if (cmd === 'diff' && rest.length >= 2) {
-    process.stdout.write(diff(rest[0], rest[1], rest[2] ? parseInt(rest[2], 10) : Infinity));
+    const rules = opts.redact ? loadRules(opts.redact === true ? DEFAULT_REDACT : opts.redact) : null;
+    process.stdout.write(
+      diff(rest[0], rest[1], rest[2] ? parseInt(rest[2], 10) : Infinity, { rules, description: opts.description }),
+    );
     return 0;
   }
   console.error(
     'usage: render-apps.js render <repo-root> <out-dir>\n' +
-      '       render-apps.js diff <base-out> <head-out> [max-chars]',
+      '       render-apps.js generate <repo-root> <out-dir>\n' +
+      '       render-apps.js diff <base-out> <head-out> [max-chars] [--redact[=file]] [--description=text]',
   );
   return 2;
 }

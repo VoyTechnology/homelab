@@ -17,6 +17,10 @@
         tanka-generate.sh: |
           #!/bin/sh
           set -e
+          # Native layout: the committed environment is the source of truth.
+          if [ -n "${ARGOCD_ENV_TANKA_ENV_DIR:-}" ]; then
+            exec tk show "$ARGOCD_ENV_TANKA_ENV_DIR" --dangerous-allow-redirect
+          fi
           printf '{
             "apiVersion": "tanka.dev/v1alpha1",
             "kind": "Environment",
