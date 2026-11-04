@@ -4,6 +4,7 @@ local config = import 'config.libsonnet';
 local images = import 'images.libsonnet';
 local ingress = import 'ingress.libsonnet';
 local otbr = import 'otbr.libsonnet';
+local reload = import 'reload.libsonnet';
 
 local threadDongle = '/dev/serial/by-id/usb-Nabu_Casa_ZBT-2_14C19FC4DBA8-if00';
 
@@ -11,7 +12,7 @@ local threadDongle = '/dev/serial/by-id/usb-Nabu_Casa_ZBT-2_14C19FC4DBA8-if00';
 // are loaded through the `template:` and `utility_meter:` sections of configuration.yaml.
 local hidden(o) = [o[n] for n in std.objectFieldsAll(o)];
 
-ha + config + images + ingress + otbr {
+ha + config + images + ingress + otbr + reload {
   // TODO: Pass this through overrides once I figure out how...
   _config+:: {
     threadDongle: threadDongle,
