@@ -47,8 +47,10 @@ for env in "$root"/apps/*/environments/"$cluster"; do
     yq -i -P 'del(.metadata.annotations."tanka.dev/namespaced") | del(.metadata.annotations | select(length == 0))' "$f"
   done
 
-  # Optional ordering: spec.json metadata.labels.depends-on = "app-a,app-b".
-  depends="$(jq -r '.metadata.labels["depends-on"] // empty' "$env/spec.json")"
+  # Optional ordering: one label per dependency in spec.json, e.g.
+  #   "labels": { "depends-on.homelab.bednarzak.com/external-secrets": "true" }
+  prefix="depends-on.homelab.bednarzak.com/"
+  depends="$(jq -r --arg p "$prefix" '[(.metadata.labels // {}) | keys[] | select(startswith($p)) | ltrimstr($p)] | join(",")' "$env/spec.json")"
   flux create kustomization "$app" --namespace=flux-system \
     --source=GitRepository/flux-system --path="./apps/$cluster/$app" \
     --prune=true --wait=true --interval=10m ${depends:+--depends-on="$depends"} \

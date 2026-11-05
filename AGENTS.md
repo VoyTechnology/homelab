@@ -123,9 +123,10 @@ Rules:
   the type. Use `_config+::` (not `_config::`) so defaults are kept.
 - Ship CRDs in the same app as the objects that use them. Flux applies CRDs and
   namespaces first, so no extra ordering is needed inside an app.
-- Order between apps with `spec.json` `metadata.labels["depends-on"]`, a comma
-  separated list of app names, e.g. apps that use `ExternalSecret` depend on
-  `external-secrets`. The generated `Kustomization` waits (`wait: true`) for them.
+- Order between apps with one label per dependency in `spec.json`, for example
+  `"labels": { "depends-on.homelab.bednarzak.com/external-secrets": "true" }`. Apps
+  that use `ExternalSecret` depend on `external-secrets`. The generated
+  `Kustomization` waits (`wait: true`) for them.
 - Namespaces Flux creates are plain `k8s-libsonnet` namespaces annotated
   `kustomize.toolkit.fluxcd.io/prune: disabled`, so removing an app never deletes
   the namespace and its volumes. Never manage `kube-system` or other pre-existing
