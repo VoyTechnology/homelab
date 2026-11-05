@@ -1,5 +1,6 @@
 // Flux bootstrap sync config for a cluster. Returns the files to render
-// (gotk-sync.yaml, kustomization.yaml); see scripts/render-flux.sh.
+// (gotk-sync.yaml, kustomization.yaml) and the Flux version that
+// scripts/render-flux.sh exports gotk-components.yaml for.
 local flux = import 'github.com/jsonnet-libs/fluxcd-libsonnet/2.9.4/main.libsonnet';
 local git = flux.source.v1.gitRepository;
 local ks = flux.kustomize.v1.kustomization;
@@ -12,7 +13,12 @@ local ks = flux.kustomize.v1.kustomization;
     namespace='flux-system',
     path='./clusters/' + cluster,
     secretName='flux-system',
+    // renovate: datasource=github-releases depName=fluxcd/flux2
+    version='v2.10.0',
   ):: {
+    // Hidden: read by scripts/render-flux.sh to export gotk-components.yaml.
+    version:: version,
+
     local sync = [
       git.new('flux-system')
       + git.metadata.withNamespace(namespace)
