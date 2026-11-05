@@ -1,0 +1,49 @@
+---
+# Renders clusters/environments/<cluster> (the same source CI publishes to
+# homelab-manifests), so Ansible and Flux apply identical manifests.
+- name: Flux | Render manifests
+  delegate_to: localhost
+  become: false
+  run_once: true
+  changed_when: false
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: flux-
+  register: flux_render_dir
+
+- name: Flux | Render cluster config
+  delegate_to: localhost
+  become: false
+  run_once: true
+  changed_when: false
+  ansible.builtin.command:
+    argv:
+      - "{{ inventory_dir }}/../../../scripts/render-flux.sh"
+      - "{{ cluster_name }}"
+      - "{{ flux_render_dir.path }}"
+
+- name: Flux | Install controllers and CRDs
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ flux_render_dir.path }}/gotk-components.yaml"
+    server_side_apply:
+      field_manager: ansible
+      force_conflicts: true
+
+- name: Flux | Wait for source CRD
+  kubernetes.core.k8s_info:
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: gitrepositories.source.toolkit.fluxcd.io
+    wait: true
+    wait_condition:
+      type: Established
+      status: "True"
+
+- name: Flux | Configure sync from homelab-manifests
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ flux_render_dir.path }}/gotk-sync.yaml"
+    server_side_apply:
+      field_manager: ansible
+      force_conflicts: true

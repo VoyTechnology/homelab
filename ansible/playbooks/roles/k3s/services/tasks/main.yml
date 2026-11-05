@@ -7,6 +7,10 @@
   import_tasks: secrets.yml
   tags: k8s_secrets
 
+- name: Setup Flux
+  import_tasks: flux.yml
+  tags: [k8s_flux, never]
+
 - name: Setup Cert Manager
   import_tasks: cert_manager.yml
   tags: k8s_cert_manager
