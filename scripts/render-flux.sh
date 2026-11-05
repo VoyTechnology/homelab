@@ -14,6 +14,8 @@ mkdir -p "$out"
 (cd "$root/clusters" && jb install >/dev/null)
 
 jsonnet -J "$root/clusters/vendor" -S -m "$out" "$env_dir/main.jsonnet" >/dev/null
+# jsonnet -S adds a trailing newline only in some versions; normalize to one.
+for f in "$out"/kustomization.yaml; do printf '%s\n' "$(cat "$f")" > "$f"; done
 # jsonnet quotes every string; flux does not.
 yq -i -P '.' "$out/gotk-sync.yaml"
 
