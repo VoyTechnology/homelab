@@ -4,6 +4,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "external-secrets"
+        }
+      },
+      "version": "5a38bfe64091135a1cf5f9912a1c455aba3cde7f",
+      "sum": "74OIHYMaPkCJBTCvUp5aO72RIS8Fzq/ze41vwEYMnYw="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
           "subdir": "1.3"
         }

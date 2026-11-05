@@ -103,7 +103,7 @@ Layout in this repo:
 
 ```text
 apps/
-  jsonnetfile.json          shared deps (fluxcd, k8s, external-secrets libsonnet)
+  jsonnetfile.json          shared deps (fluxcd, k8s, external-secrets and home-libsonnet)
   <app>/
     main.libsonnet          app definition: `new(cluster, ...)`
     environments/<cluster>/main.jsonnet   `(import '../../main.libsonnet').new('<cluster>')`
@@ -125,8 +125,10 @@ Rules:
   needs them, annotated `kustomize.toolkit.fluxcd.io/prune: disabled` so removing
   an app never deletes the namespace and its volumes. Never manage `kube-system`
   or other pre-existing namespaces.
-- Helm charts are `HelmRelease` objects in `flux-system`. Keep an app's `renovate:`
-  comment above its chart version.
+- Prefer a library from `home-libsonnet` (`github.com/VoyTechnology/home-libsonnet`)
+  to deploy the app itself, for example `external-secrets`. Only when none exists,
+  use a `HelmRelease` in `flux-system` and keep a `renovate:` comment above its
+  chart version.
 - Per-cluster differences are parameters of `new(...)` set in
   `environments/<cluster>/main.jsonnet`; keep that file minimal.
 - Secrets are never in these files. Reference them by name/key through
