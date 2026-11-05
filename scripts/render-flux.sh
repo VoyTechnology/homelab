@@ -6,7 +6,8 @@ set -euo pipefail
 #     clusters/<cluster>/flux-system/   Flux itself, from clusters/environments/<cluster>
 #     clusters/<cluster>/apps/          one Flux Kustomization per app unit
 #     apps/<cluster>/<unit>/            the units' manifests
-# Apps come from apps/*/environments/<cluster>/main.jsonnet. The Flux version for
+# Apps come from apps/*/environments/<cluster>/main.jsonnet, which evaluate to
+# a map of repo-relative path => object. The Flux version for
 # gotk-components.yaml is defined in the cluster environment, not by the CLI.
 cluster="${1:?usage: render-flux.sh <cluster> <out-root>}"
 out="${2:?usage: render-flux.sh <cluster> <out-root>}"
@@ -33,10 +34,10 @@ rm -rf "$out/clusters/$cluster/apps" "$out/apps/$cluster"
 for main in "$root"/apps/*/environments/"$cluster"/main.jsonnet; do
   [[ -e "$main" ]] || continue
   json="$(jsonnet -J "$root/apps/vendor" "$main")"
-  # jsonnet -m can't create subdirectories, so write the path => content map by hand.
+  # Each value is an object; write it as YAML at its repo-relative path.
   jq -r 'keys[]' <<<"$json" | while IFS= read -r path; do
     mkdir -p "$out/$(dirname "$path")"
-    jq -r --arg p "$path" '.[$p]' <<<"$json" > "$out/$path"
-    yq -i -P '.' "$out/$path"
+    jq -c --arg p "$path" '.[$p]' <<<"$json" | yq -P -p json -o yaml \
+      'del(.metadata.annotations."tanka.dev/namespaced") | del(.metadata.annotations | select(length == 0))' > "$out/$path"
   done
 done

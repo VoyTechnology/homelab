@@ -104,27 +104,29 @@ Layout in this repo:
 ```text
 apps/
   jsonnetfile.json          shared deps (fluxcd, k8s, external-secrets libsonnet)
-  lib/flux.libsonnet        helpers: namespace, helmRepository, helmRelease, unit, render
   <app>/
-    main.libsonnet          app definition: `new(cluster, ...)` returns rendered files
+    main.libsonnet          app definition: `new(cluster, ...)`
     environments/<cluster>/main.jsonnet   `(import '../../main.libsonnet').new('<cluster>')`
 ```
 
 Rules:
 
-- An app environment returns a map of repo-relative paths to YAML. `flux.render`
-  produces `clusters/<cluster>/apps/<unit>.yaml` (a Flux `Kustomization`) and
-  `apps/<cluster>/<unit>/*.yaml` (the manifests).
-- Split an app into several *units* when one needs another's CRDs
-  (`flux.unit(name, objects, dependsOn=[...])`). Units wait for their dependencies
-  to be ready. For example `external-secrets-config` depends on `external-secrets`.
-- Use `flux.namespace(name)` for namespaces so Flux owns them. Pruning is disabled
-  on them so removing an app never deletes its namespace and volumes. Do not manage
-  system namespaces such as `kube-system`.
-- Helm charts are `HelmRelease` objects in `flux-system` via `flux.helmRelease`.
-  Keep an app's `renovate:` comment above its chart version.
-- Prefer library constructors (fluxcd, k8s, external-secrets libsonnet) over raw
-  objects; fall back to plain objects when a library lacks the type.
+- Build objects with the generated libraries directly (`fluxcd-libsonnet`,
+  `k8s-libsonnet`, `external-secrets-libsonnet`); do not add wrapper layers. Fall
+  back to plain objects only when a library lacks the type.
+- An app environment evaluates to a map of repo-relative path => object.
+  `scripts/render-flux.sh` writes each as YAML. Put a Flux `Kustomization` at
+  `clusters/<cluster>/apps/<unit>.yaml` (picked up by `flux-system`) pointing at the
+  unit's manifests in `apps/<cluster>/<unit>/`.
+- Split an app into several units when one needs another's CRDs, and give the
+  dependent unit's `Kustomization` a `dependsOn` (with `wait: true` on the first).
+  For example `external-secrets-config` depends on `external-secrets`.
+- Namespaces Flux creates are plain `k8s-libsonnet` namespaces in the unit that
+  needs them, annotated `kustomize.toolkit.fluxcd.io/prune: disabled` so removing
+  an app never deletes the namespace and its volumes. Never manage `kube-system`
+  or other pre-existing namespaces.
+- Helm charts are `HelmRelease` objects in `flux-system`. Keep an app's `renovate:`
+  comment above its chart version.
 - Per-cluster differences are parameters of `new(...)` set in
   `environments/<cluster>/main.jsonnet`; keep that file minimal.
 - Secrets are never in these files. Reference them by name/key through

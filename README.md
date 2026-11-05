@@ -39,8 +39,8 @@ apps/<app>/environments/<cluster>/main.jsonnet   per-cluster entrypoint
 
 To add an app:
 
-1. Create `apps/<app>/main.libsonnet` using the helpers in `apps/lib/flux.libsonnet`
-   (`namespace`, `helmRepository`, `helmRelease`, `unit`, `render`). Look at
+1. Create `apps/<app>/main.libsonnet` using the `fluxcd-libsonnet`,
+   `k8s-libsonnet` and other generated libraries directly. Look at
    `apps/external-secrets` for an example.
 1. Add `apps/<app>/environments/<cluster>/main.jsonnet` for each cluster that runs it.
 1. Render locally with `scripts/render-flux.sh <cluster> /tmp/out`.
