@@ -10,6 +10,8 @@ set -euo pipefail
 # gotk-components.yaml is defined in the cluster environment, not by the CLI.
 cluster="${1:?usage: render-flux.sh <cluster> <out-root>}"
 out="${2:?usage: render-flux.sh <cluster> <out-root>}"
+mkdir -p "$out"
+out="$(cd "$out" && pwd)" # absolute: tk runs from apps/
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 env_dir="$root/clusters/environments/$cluster"
 flux_out="$out/clusters/$cluster/flux-system"
