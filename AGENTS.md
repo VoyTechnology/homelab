@@ -118,8 +118,8 @@ Rules:
   writes `apps/<cluster>/<app>/` in `homelab-manifests`, plus a Flux `Kustomization`
   in `clusters/<cluster>/apps/<app>.yaml` that it generates (do not write one).
 - Build objects with the generated libraries directly (`external-secrets-libsonnet`,
-  `k8s-libsonnet`, ...) and with app libraries from `home-libsonnet` where they
-  exist; do not add wrapper layers. Fall back to plain objects when a library lacks
+  `k8s-libsonnet`, ...) and with app libraries from `home-libsonnet`; do not add
+  wrapper layers. Fall back to plain objects when a library lacks
   the type. Use `_config+::` (not `_config::`) so defaults are kept.
 - Ship CRDs in the same app as the objects that use them. Flux applies CRDs and
   namespaces first, so no extra ordering is needed inside an app.
@@ -130,9 +130,9 @@ Rules:
   `kustomize.toolkit.fluxcd.io/prune: disabled`, so removing an app never deletes
   the namespace and its volumes. Never manage `kube-system` or other pre-existing
   namespaces.
-- Prefer a `home-libsonnet` library to deploy the app itself. Only when none exists,
-  deploy the chart with a Flux `HelmRelease` in `flux-system`, with a `renovate:`
-  comment above its chart version.
+- Deploy the app itself in this order of preference: (1) an existing open source
+  library; (2) if none exists, create one in `home-libsonnet` and use that. Do not
+  fall back to a Helm chart.
 - Secrets are never in these files. Reference them by name/key through
   `ExternalSecret` objects against the `cluster-secrets` `ClusterSecretStore`.
 - Deleting an app from `apps/` removes it from the cluster once rendered, because
