@@ -8,7 +8,7 @@
           "subdir": "external-secrets"
         }
       },
-      "version": "feat/external-secrets"
+      "version": "main"
     },
     {
       "source": {
