@@ -59,7 +59,7 @@ jobs:
         with:
           repository: VoyTechnology/homelab-manifests
           token: ${{ secrets.MANIFESTS_REPO_TOKEN }}
-          path: manifests
+          path: base
 
       - name: Install tools
         uses: jdx/mise-action@v2
@@ -72,13 +72,13 @@ jobs:
         run: mise bin-paths >> "$GITHUB_PATH"
 
       - name: Render
-        run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} "out/$OUT_DIR"
+        run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} "head/$OUT_DIR"
 
       - name: Diff against homelab-manifests
         run: |
           {
             echo "### Flux \`${{ matrix.cluster }}\`: diff against homelab-manifests"
-            if diff=$(diff -ru "manifests/$OUT_DIR" "out/$OUT_DIR"); then
+            if diff=$(diff -ru "base/$OUT_DIR" "head/$OUT_DIR"); then
               echo "No changes."
             else
               echo '```diff'
@@ -99,9 +99,9 @@ jobs:
 
       - name: Commit to homelab-manifests
         if: github.event_name != 'pull_request'
-        working-directory: manifests
+        working-directory: base
         run: |
-          rsync -a --delete "../out/$OUT_DIR/" "$OUT_DIR/"
+          rsync -a --delete "../head/$OUT_DIR/" "$OUT_DIR/"
           git add -A "$OUT_DIR"
           if git diff --cached --quiet; then
             echo "No changes."
