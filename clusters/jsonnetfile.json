@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/fluxcd-libsonnet.git",
+          "subdir": "2.9.4"
+        }
+      },
+      "version": "main"
+    }
+  ],
+  "legacyImports": true
+}

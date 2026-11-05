@@ -5,3 +5,4 @@ kubectx         0.8.0
 go-jsonnet      0.20.0
 tanka           0.37.5
 jsonnet-bundler 0.6.0
+flux2           2.10.0

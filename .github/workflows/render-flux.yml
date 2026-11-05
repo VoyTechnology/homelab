@@ -1,0 +1,114 @@
+name: Render Flux
+
+# Renders the Flux bootstrap config (clusters/environments/<cluster>). On PRs
+# it comments the diff against homelab-manifests; on main it commits the result
+# straight to main there, which Flux then reconciles.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "clusters/**"
+      - "scripts/render-flux.sh"
+      - ".tool-versions"
+      - ".github/workflows/render-flux.yml"
+  pull_request:
+    paths:
+      - "clusters/**"
+      - "scripts/render-flux.sh"
+      - ".tool-versions"
+      - ".github/workflows/render-flux.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: render-flux-${{ github.event.pull_request.number || github.ref }}
+  # Never cancel a run that may be pushing to homelab-manifests.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  clusters:
+    runs-on: ubuntu-latest
+    outputs:
+      clusters: ${{ steps.list.outputs.clusters }}
+    steps:
+      - uses: actions/checkout@v6
+      - id: list
+        # One cluster per clusters/environments/<name> directory.
+        run: echo "clusters=$(ls clusters/environments | jq -R . | jq -sc .)" >> "$GITHUB_OUTPUT"
+
+  render:
+    needs: clusters
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cluster: ${{ fromJSON(needs.clusters.outputs.clusters) }}
+    env:
+      OUT_DIR: clusters/${{ matrix.cluster }}/flux-system
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          path: homelab
+
+      - name: Checkout homelab-manifests
+        uses: actions/checkout@v6
+        with:
+          repository: VoyTechnology/homelab-manifests
+          token: ${{ secrets.MANIFESTS_REPO_TOKEN }}
+          path: manifests
+
+      - name: Install tools
+        uses: jdx/mise-action@v2
+        with:
+          working_directory: homelab
+          install_args: go-jsonnet jsonnet-bundler yq flux2
+
+      - name: Put tools on PATH
+        working-directory: homelab
+        run: mise bin-paths >> "$GITHUB_PATH"
+
+      - name: Render
+        run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} "out/$OUT_DIR"
+
+      - name: Diff against homelab-manifests
+        run: |
+          {
+            echo "### Flux \`${{ matrix.cluster }}\`: diff against homelab-manifests"
+            if diff=$(diff -ru "manifests/$OUT_DIR" "out/$OUT_DIR"); then
+              echo "No changes."
+            else
+              echo '```diff'
+              # gotk-components.yaml can be huge; keep the comment readable.
+              echo "$diff" | head -c 60000
+              echo '```'
+            fi
+          } > comment.md
+          cat comment.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on PR
+        # Fork PRs get a read-only token and no secrets.
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: render-flux-${{ matrix.cluster }}
+          path: comment.md
+
+      - name: Commit to homelab-manifests
+        if: github.event_name != 'pull_request'
+        working-directory: manifests
+        run: |
+          rsync -a --delete "../out/$OUT_DIR/" "$OUT_DIR/"
+          git add -A "$OUT_DIR"
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "flux(${{ matrix.cluster }}): render from homelab@${{ github.sha }}"
+          git pull --rebase origin main
+          git push origin HEAD:main
