@@ -33,17 +33,19 @@ The `Render Flux` workflow renders both, comments the diff against
 `homelab-manifests` on pull requests, and commits the result on merge to `main`.
 
 ```text
-apps/<app>/main.libsonnet                    app definition
-apps/<app>/environments/<cluster>/main.jsonnet   per-cluster entrypoint
+apps/<app>/main.libsonnet                        app definition
+apps/<app>/environments/<cluster>/main.jsonnet   per-cluster Tanka environment
+apps/<app>/environments/<cluster>/spec.json      Tanka spec (namespace, ...)
 ```
 
 To add an app:
 
-1. Create `apps/<app>/main.libsonnet` using the `fluxcd-libsonnet`,
-   `k8s-libsonnet` and other generated libraries directly, plus app libraries from
-   [home-libsonnet](https://github.com/VoyTechnology/home-libsonnet) where they exist. Look at
-   `apps/external-secrets` for an example.
-1. Add `apps/<app>/environments/<cluster>/main.jsonnet` for each cluster that runs it.
+1. Create `apps/<app>/main.libsonnet` using the generated libraries directly
+   (`k8s-libsonnet` and others), plus app libraries from
+   [home-libsonnet](https://github.com/VoyTechnology/home-libsonnet) where they exist.
+   Look at `apps/external-secrets` for an example.
+1. Add `apps/<app>/environments/<cluster>/` with a `main.jsonnet` and a `spec.json` for
+   each cluster that runs it. The Flux `Kustomization` is generated for you.
 1. Render locally with `scripts/render-flux.sh <cluster> /tmp/out`.
 1. Open a pull request and review the rendered diff comment.
 

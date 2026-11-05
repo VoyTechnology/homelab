@@ -99,47 +99,49 @@ Flux reads rendered manifests from the separate `homelab-manifests` repository
 (`VoyTechnology/homelab-manifests`), which the `Render Flux` workflow writes on
 merge to `main`. Never edit that repository by hand.
 
-Layout in this repo:
+Layout in this repo (every app is a Tanka application):
 
 ```text
 apps/
-  jsonnetfile.json          shared deps (fluxcd, k8s, external-secrets and home-libsonnet)
+  jsonnetfile.json          shared deps (external-secrets, k8s and home-libsonnet)
   <app>/
-    main.libsonnet          app definition: `new(cluster, ...)`
-    environments/<cluster>/main.jsonnet   `(import '../../main.libsonnet').new('<cluster>')`
+    main.libsonnet          app definition, shared by all clusters
+    environments/<cluster>/
+      main.jsonnet          extends ../../main.libsonnet with per-cluster `_config+::`
+      spec.json             Tanka Environment (committed, unlike the Argo apps')
 ```
 
 Rules:
 
-- Build objects with the generated libraries directly (`fluxcd-libsonnet`,
-  `k8s-libsonnet`, `external-secrets-libsonnet`); do not add wrapper layers. Fall
-  back to plain objects only when a library lacks the type.
-- An app environment evaluates to a map of repo-relative path => object.
-  `scripts/render-flux.sh` writes each as YAML. Put a Flux `Kustomization` at
-  `clusters/<cluster>/apps/<unit>.yaml` (picked up by `flux-system`) pointing at the
-  unit's manifests in `apps/<cluster>/<unit>/`.
-- Split an app into several units when one needs another's CRDs, and give the
-  dependent unit's `Kustomization` a `dependsOn` (with `wait: true` on the first).
-  For example `external-secrets-config` depends on `external-secrets`.
-- Namespaces Flux creates are plain `k8s-libsonnet` namespaces in the unit that
-  needs them, annotated `kustomize.toolkit.fluxcd.io/prune: disabled` so removing
-  an app never deletes the namespace and its volumes. Never manage `kube-system`
-  or other pre-existing namespaces.
-- Prefer a library from `home-libsonnet` (`github.com/VoyTechnology/home-libsonnet`)
-  to deploy the app itself, for example `external-secrets`. Only when none exists,
-  use a `HelmRelease` in `flux-system` and keep a `renovate:` comment above its
-  chart version.
-- Per-cluster differences are parameters of `new(...)` set in
-  `environments/<cluster>/main.jsonnet`; keep that file minimal.
+- Each `environments/<cluster>` is a Tanka environment whose output is the app's
+  Kubernetes objects. `scripts/render-flux.sh` runs `tk export` on every one and
+  writes `apps/<cluster>/<app>/` in `homelab-manifests`, plus a Flux `Kustomization`
+  in `clusters/<cluster>/apps/<app>.yaml` that it generates (do not write one).
+- Build objects with the generated libraries directly (`external-secrets-libsonnet`,
+  `k8s-libsonnet`, ...) and with app libraries from `home-libsonnet` where they
+  exist; do not add wrapper layers. Fall back to plain objects when a library lacks
+  the type. Use `_config+::` (not `_config::`) so defaults are kept.
+- Ship CRDs in the same app as the objects that use them. Flux applies CRDs and
+  namespaces first, so no extra ordering is needed inside an app.
+- Order between apps with `spec.json` `metadata.labels["depends-on"]`, a comma
+  separated list of app names, e.g. apps that use `ExternalSecret` depend on
+  `external-secrets`. The generated `Kustomization` waits (`wait: true`) for them.
+- Namespaces Flux creates are plain `k8s-libsonnet` namespaces annotated
+  `kustomize.toolkit.fluxcd.io/prune: disabled`, so removing an app never deletes
+  the namespace and its volumes. Never manage `kube-system` or other pre-existing
+  namespaces.
+- Prefer a `home-libsonnet` library to deploy the app itself. Only when none exists,
+  deploy the chart with a Flux `HelmRelease` in `flux-system`, with a `renovate:`
+  comment above its chart version.
 - Secrets are never in these files. Reference them by name/key through
   `ExternalSecret` objects against the `cluster-secrets` `ClusterSecretStore`.
 - Deleting an app from `apps/` removes it from the cluster once rendered, because
-  units are pruned. Check the CI diff comment before merging.
+  the `Kustomization` is pruned. Check the CI diff comment before merging.
 
 Render and compare locally:
 
 ```sh
-scripts/render-flux.sh bet1 /tmp/out   # needs jsonnet, jb, yq, flux, jq and network
+scripts/render-flux.sh bet1 /tmp/out   # needs jsonnet, jb, tk, yq, flux, jq and network
 ```
 
 ## Argo CD and Jsonnet Patterns (legacy)

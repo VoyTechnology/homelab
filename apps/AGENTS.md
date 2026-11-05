@@ -2,11 +2,13 @@
 
 Read the "Flux Apps" section in the root `AGENTS.md` first. Short version:
 
-- One directory per app: `main.libsonnet` plus `environments/<cluster>/main.jsonnet`.
-- Use the generated libsonnet libraries directly, no wrapper helpers. An
-  environment evaluates to a map of repo-relative path => object.
-- Split apps into units with `dependsOn` when CRDs must exist first.
-- Render with `scripts/render-flux.sh <cluster> /tmp/out` and inspect the output
-  before proposing changes. `vendor/` is gitignored; `jb install` fills it.
+- Every app is a Tanka application: `main.libsonnet` plus
+  `environments/<cluster>/{main.jsonnet,spec.json}`. `spec.json` is committed here.
+- Use the generated libsonnet libraries and `home-libsonnet` directly, no wrapper
+  helpers. Do not write Flux `Kustomization`s; `scripts/render-flux.sh` generates one
+  per environment. Order apps with the `depends-on` label in `spec.json`.
+- Render with `scripts/render-flux.sh <cluster> /tmp/out` (or `tk show` in this
+  directory) and inspect the output before proposing changes. `vendor/` is
+  gitignored; `jb install` fills it.
 - Never put secret values here; use `ExternalSecret` against `cluster-secrets`.
 - Do not manage `kube-system` or other pre-existing namespaces.
