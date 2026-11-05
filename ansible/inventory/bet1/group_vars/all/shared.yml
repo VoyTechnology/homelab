@@ -9,6 +9,7 @@ monitoring_namespace: "monitoring"
 
 # List of infra namespaces to create which are pre-created or used in Ansible
 infra_namespaces:
+  - flux-system
   - "{{ internal_ingress_namespace }}"
   - "{{ argocd_k8s_namespace }}"
   - "{{ cert_manager_namespace }}"
