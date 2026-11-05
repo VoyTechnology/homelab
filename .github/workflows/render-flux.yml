@@ -1,6 +1,7 @@
 name: Render Flux
 
-# Renders the Flux bootstrap config (clusters/environments/<cluster>). On PRs
+# Renders Flux itself (clusters/environments/<cluster>) and every app
+# (apps/*/environments/<cluster>). On PRs
 # it comments the diff against homelab-manifests; on main it commits the result
 # straight to main there, which Flux then reconciles.
 on:
@@ -8,12 +9,14 @@ on:
     branches: [main]
     paths:
       - "clusters/**"
+      - "apps/**"
       - "scripts/render-flux.sh"
       - ".tool-versions"
       - ".github/workflows/render-flux.yml"
   pull_request:
     paths:
       - "clusters/**"
+      - "apps/**"
       - "scripts/render-flux.sh"
       - ".tool-versions"
       - ".github/workflows/render-flux.yml"
@@ -47,7 +50,11 @@ jobs:
       matrix:
         cluster: ${{ fromJSON(needs.clusters.outputs.clusters) }}
     env:
-      OUT_DIR: clusters/${{ matrix.cluster }}/flux-system
+      # The render owns exactly these paths in homelab-manifests.
+      OUT_PATHS: >-
+        clusters/${{ matrix.cluster }}/flux-system
+        clusters/${{ matrix.cluster }}/apps
+        apps/${{ matrix.cluster }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -72,20 +79,24 @@ jobs:
         run: mise bin-paths >> "$GITHUB_PATH"
 
       - name: Render
-        run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} "head/$OUT_DIR"
+        run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} head
 
       - name: Diff against homelab-manifests
         run: |
           {
             echo "### Flux \`${{ matrix.cluster }}\`: diff against homelab-manifests"
-            if diff=$(diff -ru "base/$OUT_DIR" "head/$OUT_DIR"); then
-              echo "No changes."
-            else
+            changed=false
+            for p in $OUT_PATHS; do
+              mkdir -p "base/$p" "head/$p"
+              # Large files (gotk-components.yaml) are capped to keep the comment readable.
+              if diff=$(diff -ruN "base/$p" "head/$p"); then continue; fi
+              changed=true
+              echo "#### \`$p\`"
               echo '```diff'
-              # gotk-components.yaml can be huge; keep the comment readable.
-              echo "$diff" | head -c 60000
+              echo "$diff" | head -c 30000
               echo '```'
-            fi
+            done
+            $changed || echo "No changes."
           } > comment.md
           cat comment.md >> "$GITHUB_STEP_SUMMARY"
 
@@ -101,8 +112,11 @@ jobs:
         if: github.event_name != 'pull_request'
         working-directory: base
         run: |
-          rsync -a --delete "../head/$OUT_DIR/" "$OUT_DIR/"
-          git add -A "$OUT_DIR"
+          for p in $OUT_PATHS; do
+            mkdir -p "$p" "../head/$p"
+            rsync -a --delete "../head/$p/" "$p/"
+            git add -A "$p"
+          done
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0

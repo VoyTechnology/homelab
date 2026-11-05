@@ -1,23 +1,42 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Render the Flux bootstrap config for a cluster into an output directory:
-#   scripts/render-flux.sh bet1 ../homelab-manifests/clusters/bet1/flux-system
-# Everything, including the Flux version for gotk-components.yaml, is defined in
-# clusters/environments/<cluster>; libraries are shared via clusters/jsonnetfile.json.
-cluster="${1:?usage: render-flux.sh <cluster> <out-dir>}"
-out="${2:?usage: render-flux.sh <cluster> <out-dir>}"
+# Render everything Flux needs for a cluster into the layout of homelab-manifests:
+#   scripts/render-flux.sh bet1 ../homelab-manifests
+#     clusters/<cluster>/flux-system/   Flux itself, from clusters/environments/<cluster>
+#     clusters/<cluster>/apps/          one Flux Kustomization per app unit
+#     apps/<cluster>/<unit>/            the units' manifests
+# Apps come from apps/*/environments/<cluster>/main.jsonnet. The Flux version for
+# gotk-components.yaml is defined in the cluster environment, not by the CLI.
+cluster="${1:?usage: render-flux.sh <cluster> <out-root>}"
+out="${2:?usage: render-flux.sh <cluster> <out-root>}"
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 env_dir="$root/clusters/environments/$cluster"
+flux_out="$out/clusters/$cluster/flux-system"
 
-mkdir -p "$out"
 (cd "$root/clusters" && jb install >/dev/null)
+(cd "$root/apps" && jb install >/dev/null)
+
+# --- Flux itself ---
+mkdir -p "$flux_out"
 version="$(jsonnet -J "$root/clusters/vendor" -S -e "(import '$env_dir/main.jsonnet').version")"
-
-jsonnet -J "$root/clusters/vendor" -S -m "$out" "$env_dir/main.jsonnet" >/dev/null
+jsonnet -J "$root/clusters/vendor" -S -m "$flux_out" "$env_dir/main.jsonnet" >/dev/null
 # jsonnet -S adds a trailing newline only in some versions; normalize to one.
-for f in "$out"/kustomization.yaml; do printf '%s\n' "$(cat "$f")" > "$f"; done
+printf '%s\n' "$(cat "$flux_out/kustomization.yaml")" > "$flux_out/kustomization.yaml"
 # jsonnet quotes every string; flux does not.
-yq -i -P '.' "$out/gotk-sync.yaml"
+yq -i -P '.' "$flux_out/gotk-sync.yaml"
+flux install --export --version="$version" > "$flux_out/gotk-components.yaml"
 
-flux install --export --version="$version" > "$out/gotk-components.yaml"
+# --- Apps ---
+# This render owns these two directories entirely.
+rm -rf "$out/clusters/$cluster/apps" "$out/apps/$cluster"
+for main in "$root"/apps/*/environments/"$cluster"/main.jsonnet; do
+  [[ -e "$main" ]] || continue
+  json="$(jsonnet -J "$root/apps/vendor" "$main")"
+  # jsonnet -m can't create subdirectories, so write the path => content map by hand.
+  jq -r 'keys[]' <<<"$json" | while IFS= read -r path; do
+    mkdir -p "$out/$(dirname "$path")"
+    jq -r --arg p "$path" '.[$p]' <<<"$json" > "$out/$path"
+    yq -i -P '.' "$out/$path"
+  done
+done
