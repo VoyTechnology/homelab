@@ -42,7 +42,6 @@ for env in "$root"/apps/*/environments/"$cluster"; do
 
   (cd "$root/apps" && tk export "$app_out" "${env#"$root/apps/"}" \
     --format '{{.kind | lower}}-{{.metadata.name}}' --extension yaml >/dev/null)
-  rm -f "$app_out/manifest.json"
   for f in "$app_out"/*.yaml; do
     # Tanka-only metadata has no place in the cluster.
     yq -i -P 'del(.metadata.annotations."tanka.dev/namespaced") | del(.metadata.annotations | select(length == 0))' "$f"

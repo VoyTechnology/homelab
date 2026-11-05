@@ -137,6 +137,10 @@ Rules:
   `ExternalSecret` objects against the `cluster-secrets` `ClusterSecretStore`.
 - Deleting an app from `apps/` removes it from the cluster once rendered, because
   the `Kustomization` is pruned. Check the CI diff comment before merging.
+- Tanka's `manifest.json` (file => environment map written by `tk export`) is kept
+  in each rendered `apps/<cluster>/<app>/`; Flux ignores non-YAML files.
+- The PR diff comment is built by `scripts/diff-flux.sh`: grouped by app, one
+  collapsed section per file.
 
 Render and compare locally:
 

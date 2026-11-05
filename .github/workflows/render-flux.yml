@@ -82,23 +82,11 @@ jobs:
         run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} head
 
       - name: Diff against homelab-manifests
+        # Collapsed per-file diffs grouped by app: a size-capped one for the PR
+        # comment and the full one for the job summary.
         run: |
-          {
-            echo "### Flux \`${{ matrix.cluster }}\`: diff against homelab-manifests"
-            changed=false
-            for p in $OUT_PATHS; do
-              mkdir -p "base/$p" "head/$p"
-              # Large files (gotk-components.yaml) are capped to keep the comment readable.
-              if diff=$(diff -ruN "base/$p" "head/$p"); then continue; fi
-              changed=true
-              echo "#### \`$p\`"
-              echo '```diff'
-              echo "$diff" | head -c 30000
-              echo '```'
-            done
-            $changed || echo "No changes."
-          } > comment.md
-          cat comment.md >> "$GITHUB_STEP_SUMMARY"
+          homelab/scripts/diff-flux.sh base head ${{ matrix.cluster }} > comment.md
+          homelab/scripts/diff-flux.sh base head ${{ matrix.cluster }} 900000 >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment on PR
         # Fork PRs get a read-only token and no secrets.

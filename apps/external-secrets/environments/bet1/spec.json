@@ -2,10 +2,5 @@
   "apiVersion": "tanka.dev/v1alpha1",
   "kind": "Environment",
   "metadata": { "name": "external-secrets/bet1" },
-  "spec": {
-    "apiServer": "https://kubernetes.default.svc",
-    "namespace": "kube-system",
-    "resourceDefaults": {},
-    "expectVersions": {}
-  }
+  "spec": { "namespace": "kube-system" }
 }
