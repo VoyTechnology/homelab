@@ -8,6 +8,6 @@
     apiTokenProperty: 'external_gateway_cloudflare_token',
     accountIdProperty: 'cloudflare_account_id',
     // The shared Gateway apps attach their HTTPRoutes to (parentRefs: this name in `namespace`).
-    gatewayName: 'external',
+    gatewayName: 'external-cloudflare',
   },
 }
