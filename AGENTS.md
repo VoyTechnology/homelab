@@ -121,6 +121,13 @@ Rules:
   `k8s-libsonnet`, ...) and with app libraries from `home-libsonnet`; do not add
   wrapper layers. Fall back to plain objects when a library lacks
   the type. Use `_config+::` (not `_config::`) so defaults are kept.
+- Customise with idiomatic Jsonnet mixins, not a values.yaml-style `_config`. `_config`
+  is for a few real knobs (namespace, version, replica counts). Anything else extends the
+  object itself: libraries expose hidden fields (`controller_container::`, a Deployment,
+  ...) and the app adds to them, for example
+  `controller_container+:: { args+: ['--feature-gates=...'] }`. Never add a config key
+  that only forwards a list or object into one place (like `extraArgs`); if a library
+  lacks the hidden field to mix into, add it to the library in `home-libsonnet`.
 - Ship CRDs in the same app as the objects that use them. Flux applies CRDs and
   namespaces first, so no extra ordering is needed inside an app.
 - Order between apps with one label per dependency in `spec.json`, for example

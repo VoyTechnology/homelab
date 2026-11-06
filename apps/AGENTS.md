@@ -12,3 +12,5 @@ Read the "Flux Apps" section in the root `AGENTS.md` first. Short version:
   gitignored; `jb install` fills it.
 - Never put secret values here; use `ExternalSecret` against `cluster-secrets`.
 - Do not manage `kube-system` or other pre-existing namespaces.
+- Customise by mixing into the library's hidden fields (`controller_container+:: { args+: [...] }`),
+  not by growing `_config` into a values dump; see the root `AGENTS.md`.
