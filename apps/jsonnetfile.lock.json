@@ -8,8 +8,8 @@
           "subdir": "cert-manager"
         }
       },
-      "version": "6cd594eebedd5047bab57f8ecc7de2227205d77a",
-      "sum": "yVWtmLo5KRD8YcpPT0lLPva4pTOkqwd9U6P1VRoI8xk="
+      "version": "4dfacc5b80682cb12e81e4b90818a4e5b46a660e",
+      "sum": "3G+b37SRFgCcbklLPZ6Ul40acMY+xbcpqhoX/Yd7J2o="
     },
     {
       "source": {
@@ -18,7 +18,7 @@
           "subdir": "external-secrets"
         }
       },
-      "version": "664f84df44773c2e70094dec466d9c556d5da7be",
+      "version": "4dfacc5b80682cb12e81e4b90818a4e5b46a660e",
       "sum": "NbnBXQFosxN6bhXgjVqmeWyYeAycr5L/wolXI8gczf4="
     },
     {

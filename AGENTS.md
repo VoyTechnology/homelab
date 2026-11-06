@@ -105,7 +105,8 @@ Layout in this repo (every app is a Tanka application):
 apps/
   jsonnetfile.json          shared deps (external-secrets, k8s and home-libsonnet)
   <app>/
-    main.libsonnet          app definition, shared by all clusters
+    main.libsonnet          merges the app's mixin files, shared by all clusters
+    <concern>.libsonnet     one responsibility each (see below)
     environments/<cluster>/
       main.jsonnet          extends ../../main.libsonnet with per-cluster `_config+::`
       spec.json             Tanka Environment (committed, unlike the Argo apps')
@@ -128,6 +129,13 @@ Rules:
   `controller_container+:: { args+: ['--feature-gates=...'] }`. Never add a config key
   that only forwards a list or object into one place (like `extraArgs`); if a library
   lacks the hidden field to mix into, add it to the library in `home-libsonnet`.
+- Split an app by responsibility, one `.libsonnet` file per concern, each a plain object
+  using `$._config` and hidden fields, merged with `+` in `main.libsonnet`. For
+  cert-manager: `certmanager.libsonnet` (the operator and its flags), `secrets.libsonnet`
+  (`ExternalSecret`s), `letsencrypt.libsonnet` (the `ClusterIssuer`).
+  Each file declares the `_config+::` defaults it uses and imports the libraries it needs;
+  files refer to each other through `$` (for example the issuer reads
+  `$.cloudflareSecret.metadata.name`). Do not put everything in one big `main.libsonnet`.
 - Ship CRDs in the same app as the objects that use them. Flux applies CRDs and
   namespaces first, so no extra ordering is needed inside an app.
 - Order between apps with one label per dependency in `spec.json`, for example
