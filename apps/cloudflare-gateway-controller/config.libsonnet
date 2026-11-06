@@ -7,7 +7,7 @@
     // credentials. The token needs Cloudflare Tunnel: Edit (account) and DNS: Edit (zone).
     apiTokenProperty: 'external_gateway_cloudflare_token',
     accountIdProperty: 'cloudflare_account_id',
-    // Namespaces whose Gateways may use the credentials above (a ReferenceGrant each).
-    gatewayNamespaces: ['pocketid'],
+    // The shared Gateway apps attach their HTTPRoutes to (parentRefs: this name in `namespace`).
+    gatewayName: 'external',
   },
 }
