@@ -48,8 +48,8 @@ for env in "$root"/apps/*/environments/"$cluster"; do
   done
 
   # Optional ordering: one label per dependency in spec.json, e.g.
-  #   "labels": { "depends-on.ext.fluxcd.io/external-secrets": "true" }
-  prefix="depends-on.ext.fluxcd.io/"
+  #   "labels": { "flux.bednarzak.com/depends-on.external-secrets": "true" }
+  prefix="flux.bednarzak.com/depends-on."
   depends="$(jq -r --arg p "$prefix" '[(.metadata.labels // {}) | keys[] | select(startswith($p)) | ltrimstr($p)] | join(",")' "$env/spec.json")"
   flux create kustomization "$app" --namespace=flux-system \
     --source=GitRepository/flux-system --path="./apps/$cluster/$app" \
