@@ -55,6 +55,16 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "gateway-api"
+        }
+      },
+      "version": "3e345c6ff6fb11704b0076e16160891870c075d2",
+      "sum": "Aofn6ql/qpNFiJuJmOr3QWVJbgccHX/+XwVeW0LYCT0="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "metallb"
         }
       },
