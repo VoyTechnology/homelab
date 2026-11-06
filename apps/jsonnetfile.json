@@ -72,6 +72,24 @@
         }
       },
       "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "metallb"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/metallb-libsonnet.git",
+          "subdir": "0.14"
+        }
+      },
+      "version": "main"
     }
   ],
   "legacyImports": true
