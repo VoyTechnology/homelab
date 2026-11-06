@@ -8,12 +8,10 @@ local clusterIssuer = cm.nogroup.v1.clusterIssuer;
     acmeEmail: '',
   },
 
-  local cfg = $._config,
-
   letsencrypt:
     clusterIssuer.new('letsencrypt')
     + clusterIssuer.spec.acme.withServer('https://acme-v02.api.letsencrypt.org/directory')
-    + (if cfg.acmeEmail != '' then clusterIssuer.spec.acme.withEmail(cfg.acmeEmail) else {})
+    + (if $._config.acmeEmail != '' then clusterIssuer.spec.acme.withEmail($._config.acmeEmail) else {})
     + clusterIssuer.spec.acme.privateKeySecretRef.withName('letsencrypt-prod')
     + clusterIssuer.spec.acme.withSolvers([{
       dns01: {
