@@ -5,11 +5,31 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "cert-manager"
+        }
+      },
+      "version": "6cd594eebedd5047bab57f8ecc7de2227205d77a",
+      "sum": "yVWtmLo5KRD8YcpPT0lLPva4pTOkqwd9U6P1VRoI8xk="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "external-secrets"
         }
       },
       "version": "664f84df44773c2e70094dec466d9c556d5da7be",
       "sum": "NbnBXQFosxN6bhXgjVqmeWyYeAycr5L/wolXI8gczf4="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/cert-manager-libsonnet.git",
+          "subdir": "1.19"
+        }
+      },
+      "version": "564e14d00bcbeb3ca797ff158fb96b09def8314d",
+      "sum": "PgUZyMDmXf6KwDtjWNT3YWKg1kLt/MkTSQZjf6Ni+G8="
     },
     {
       "source": {
