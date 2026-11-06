@@ -1,0 +1,33 @@
+name: Lint
+
+# Jsonnet in apps/ and clusters/ must be jsonnetfmt-clean. The legacy argo/ tree is
+# not checked, as it is being removed.
+on:
+  pull_request:
+    paths:
+      - "apps/**"
+      - "clusters/**"
+      - ".tool-versions"
+      - ".github/workflows/lint.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jsonnetfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install tools
+        uses: jdx/mise-action@v2
+        with:
+          install_args: go-jsonnet
+
+      - name: Check formatting
+        # Fix a failure locally with: jsonnetfmt -i <file>
+        run: |
+          git ls-files 'apps/**.jsonnet' 'apps/**.libsonnet' 'clusters/**.jsonnet' 'clusters/**.libsonnet' \
+            | grep -v '/vendor/' \
+            | xargs jsonnetfmt --test

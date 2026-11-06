@@ -70,7 +70,7 @@ go-jsonnet.
 - `playbooks/install_basic.yml` installs baseline host tooling.
 - `playbooks/install_k3s.yml` runs prerequisites, downloads k3s, installs the
   master and node roles, then installs base Kubernetes services.
-- Base k3s service tasks are split into namespaces, secrets, Flux, cert-manager,
+- Base k3s service tasks are split into namespaces, secrets, Flux,
   dex, ingress, Argo CD, and extra CRDs.
 - The Flux task (`tags: k8s_flux, never`) renders `clusters/environments/<cluster>`
   with `scripts/render-flux.sh` and applies Flux's components and sync config. It
@@ -105,7 +105,10 @@ Layout in this repo (every app is a Tanka application):
 apps/
   jsonnetfile.json          shared deps (external-secrets, k8s and home-libsonnet)
   <app>/
-    main.libsonnet          app definition, shared by all clusters
+    main.libsonnet          merges the app's mixin files, shared by all clusters
+    config.libsonnet        every `_config+::` default of the app
+    images.libsonnet        `_images+::` pins, bumped by Renovate
+    <concern>.libsonnet     one responsibility each (see below)
     environments/<cluster>/
       main.jsonnet          extends ../../main.libsonnet with per-cluster `_config+::`
       spec.json             Tanka Environment (committed, unlike the Argo apps')
@@ -121,6 +124,26 @@ Rules:
   `k8s-libsonnet`, ...) and with app libraries from `home-libsonnet`; do not add
   wrapper layers. Fall back to plain objects when a library lacks
   the type. Use `_config+::` (not `_config::`) so defaults are kept.
+- Customise with idiomatic Jsonnet mixins, not a values.yaml-style `_config`. `_config`
+  is for a few real knobs (namespace, version, replica counts). Anything else extends the
+  object itself: libraries expose hidden fields (`controller_container::`, a Deployment,
+  ...) and the app adds to them, for example
+  `controller_container+:: { args+: ['--feature-gates=...'] }`. Never add a config key
+  that only forwards a list or object into one place (like `extraArgs`); if a library
+  lacks the hidden field to mix into, add it to the library in `home-libsonnet`.
+- Split an app by responsibility, one `.libsonnet` file per concern, each a plain object
+  using `$._config` and hidden fields, merged with `+` in `main.libsonnet`. For
+  cert-manager: `certmanager.libsonnet` (the operator and its flags), `secrets.libsonnet`
+  (`ExternalSecret`s), `letsencrypt.libsonnet` (the `ClusterIssuer`).
+  Every app has a `config.libsonnet` holding all of its `_config+::` defaults (never
+  scattered across the concern files), merged right after the library it configures.
+  Container images are not config: every app has an `images.libsonnet` overriding the
+  library's `_images+::` with a `// renovate: datasource=docker depName=<image>` comment per
+  image, so Renovate bumps them here (the `renovate.json` manager matches `images.libsonnet`).
+  Libraries must define their images the same way, never in `_config`. The
+  concern files import the libraries they need and refer to each other through `$` (for
+  example the issuer reads `$.cloudflareSecret.metadata.name`). Do not put everything in
+  one big `main.libsonnet`.
 - Ship CRDs in the same app as the objects that use them. Flux applies CRDs and
   namespaces first, so no extra ordering is needed inside an app.
 - Order between apps with one label per dependency in `spec.json`, for example
@@ -148,6 +171,9 @@ Render and compare locally:
 ```sh
 scripts/render-flux.sh bet1 /tmp/out   # needs jsonnet, jb, tk, yq, flux, jq and network
 ```
+
+The `Lint` workflow runs `jsonnetfmt --test` on Jsonnet under `apps/` and `clusters/`; fix
+with `jsonnetfmt -i <file>`.
 
 ## Argo CD and Jsonnet Patterns (legacy)
 

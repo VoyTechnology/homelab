@@ -24,6 +24,16 @@
     },
     {
       "customType": "regex",
+      "description": "Update container images pinned in an app's images.libsonnet (_images)",
+      "managerFilePatterns": ["/(^|/)images\\.libsonnet$/"],
+      "matchStrings": [
+        "//\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\s*\\n\\s*\\w+:\\s*'[^']*:(?<currentValue>[^':']+)'"
+      ],
+      "datasourceTemplate": "{{datasource}}",
+      "depNameTemplate": "{{depName}}"
+    },
+    {
+      "customType": "regex",
       "description": "Update GitHub release file URLs with version in filename",
       "managerFilePatterns": ["/.*\\.(ya?ml)$/"],
       "matchStrings": [
