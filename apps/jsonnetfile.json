@@ -23,6 +23,15 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "pocket-id-operator"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "cert-manager"
         }
       },
