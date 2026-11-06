@@ -124,7 +124,7 @@ Rules:
 - Ship CRDs in the same app as the objects that use them. Flux applies CRDs and
   namespaces first, so no extra ordering is needed inside an app.
 - Order between apps with one label per dependency in `spec.json`, for example
-  `"labels": { "depends-on.homelab.bednarzak.com/external-secrets": "true" }`. Apps
+  `"labels": { "depends-on.ext.fluxcd.io/external-secrets": "true" }`. Apps
   that use `ExternalSecret` depend on `external-secrets`. The generated
   `Kustomization` waits (`wait: true`) for them.
 - Namespaces Flux creates are plain `k8s-libsonnet` namespaces annotated
