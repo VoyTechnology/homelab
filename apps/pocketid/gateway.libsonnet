@@ -1,5 +1,6 @@
 // Exposed through a Cloudflare tunnel; DNS is managed by the gateway controller.
-// No generated library for the Gateway API, so plain objects.
+// No generated library for the Gateway API, so plain objects. The controller rejects a listener
+// hostname; the route's hostnames select the host instead.
 {
   gateway: {
     apiVersion: 'gateway.networking.k8s.io/v1',
@@ -7,7 +8,7 @@
     metadata: { name: 'pocketid', namespace: $._config.namespace },
     spec: {
       gatewayClassName: 'external-cloudflare',
-      listeners: [{ name: 'https', protocol: 'HTTPS', port: 443, hostname: $._config.host }],
+      listeners: [{ name: 'https', protocol: 'HTTPS', port: 443 }],
     },
   },
 
