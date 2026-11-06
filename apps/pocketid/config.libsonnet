@@ -3,8 +3,6 @@
     // Also holds the operator, as before the move to Flux, so the instance and its PVC stay in place.
     namespace: 'pocketid',
     host: 'login.bednarzak.com',
-    // The shared Cloudflare Gateway the HTTPRoute attaches to.
-    gateway: { name: 'external-cloudflare', namespace: 'gateway-system' },
     // Name of the PocketIDInstance. The operator derives the Service and the PVC from it. Do not change.
     instanceName: 'pocket-id',
     // Property of the `shared-secrets` secret (the `cluster-secrets` store) holding the encryption key.

@@ -5,7 +5,7 @@
   gateway: {
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'Gateway',
-    metadata: { name: $._config.gatewayName, namespace: $._config.namespace },
+    metadata: { name: $.gatewayClass.metadata.name, namespace: $._config.namespace },
     spec: {
       gatewayClassName: $.gatewayClass.metadata.name,
       listeners: [{
