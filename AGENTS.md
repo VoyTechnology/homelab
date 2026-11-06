@@ -164,6 +164,9 @@ Render and compare locally:
 scripts/render-flux.sh bet1 /tmp/out   # needs jsonnet, jb, tk, yq, flux, jq and network
 ```
 
+The `Lint` workflow runs `jsonnetfmt --test` on Jsonnet under `apps/` and `clusters/`; fix
+with `jsonnetfmt -i <file>`.
+
 ## Argo CD and Jsonnet Patterns (legacy)
 
 These apply to apps still under `argo/`. Do not add new apps here; add them under
