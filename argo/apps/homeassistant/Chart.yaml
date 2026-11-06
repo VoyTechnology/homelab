@@ -6,4 +6,4 @@ dependencies:
   - name: home-assistant-matter-server
     alias: matter
     repository: https://charts.derwitt.dev
-    version: 4.3.0
+    version: 4.4.4
