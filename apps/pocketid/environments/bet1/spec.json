@@ -3,7 +3,10 @@
   "kind": "Environment",
   "metadata": {
     "name": "pocketid/bet1",
-    "labels": { "flux.bednarzak.com/depends-on.external-secrets": "true" }
+    "labels": {
+      "flux.bednarzak.com/depends-on.external-secrets": "true",
+      "flux.bednarzak.com/depends-on.cloudflare-gateway-controller": "true"
+    }
   },
   "spec": { "namespace": "pocketid" }
 }
