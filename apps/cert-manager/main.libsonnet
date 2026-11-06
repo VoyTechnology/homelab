@@ -8,15 +8,6 @@ certManager
 {
   _config+:: {
     namespace: 'cert-manager',
-    extraArgs+: {
-      controller: [
-        '--dns01-recursive-nameservers-only',
-        '--dns01-recursive-nameservers=1.1.1.1:53',
-        '--feature-gates=ExperimentalGatewayAPISupport=true',
-        '--default-issuer-name=letsencrypt',
-        '--default-issuer-kind=ClusterIssuer',
-      ],
-    },
     // Contact for Let's Encrypt expiry notices. Optional.
     acmeEmail: '',
     // Key in the `cluster-secrets` store holding the Cloudflare API token (property `token`).
@@ -24,6 +15,16 @@ certManager
   },
 
   local cfg = $._config,
+
+  controller_container+:: {
+    args+: [
+      '--dns01-recursive-nameservers-only',
+      '--dns01-recursive-nameservers=1.1.1.1:53',
+      '--feature-gates=ExperimentalGatewayAPISupport=true',
+      '--default-issuer-name=letsencrypt',
+      '--default-issuer-kind=ClusterIssuer',
+    ],
+  },
 
   // Flux never prunes the namespace, so removing the app keeps its secrets.
   namespace:
