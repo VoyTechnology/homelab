@@ -15,6 +15,16 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "cloudflare-gateway-controller"
+        }
+      },
+      "version": "8dbfdfef5769049d768d40d4a177b50723adface",
+      "sum": "MckWxsznDWJW/ydGKACFFVI1+HmL81ILKcSTJnYHsVo="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "external-dns"
         }
       },
