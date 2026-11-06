@@ -106,6 +106,7 @@ apps/
   jsonnetfile.json          shared deps (external-secrets, k8s and home-libsonnet)
   <app>/
     main.libsonnet          merges the app's mixin files, shared by all clusters
+    config.libsonnet        every `_config+::` default of the app
     <concern>.libsonnet     one responsibility each (see below)
     environments/<cluster>/
       main.jsonnet          extends ../../main.libsonnet with per-cluster `_config+::`
@@ -133,9 +134,11 @@ Rules:
   using `$._config` and hidden fields, merged with `+` in `main.libsonnet`. For
   cert-manager: `certmanager.libsonnet` (the operator and its flags), `secrets.libsonnet`
   (`ExternalSecret`s), `letsencrypt.libsonnet` (the `ClusterIssuer`).
-  Each file declares the `_config+::` defaults it uses and imports the libraries it needs;
-  files refer to each other through `$` (for example the issuer reads
-  `$.cloudflareSecret.metadata.name`). Do not put everything in one big `main.libsonnet`.
+  Every app has a `config.libsonnet` holding all of its `_config+::` defaults (never
+  scattered across the concern files), merged right after the library it configures. The
+  concern files import the libraries they need and refer to each other through `$` (for
+  example the issuer reads `$.cloudflareSecret.metadata.name`). Do not put everything in
+  one big `main.libsonnet`.
 - Ship CRDs in the same app as the objects that use them. Flux applies CRDs and
   namespaces first, so no extra ordering is needed inside an app.
 - Order between apps with one label per dependency in `spec.json`, for example

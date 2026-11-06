@@ -3,11 +3,6 @@ local externalSecret = es.nogroup.v1.externalSecret;
 
 // Secrets fanned out from the `cluster-secrets` store.
 {
-  _config+:: {
-    // Key in the store holding the Cloudflare API token (property `token`).
-    cloudflareTokenKey: 'cloudflare-cert-manager',
-  },
-
   // Cloudflare token for the DNS01 solver.
   cloudflareSecret:
     externalSecret.new('cloudflare-secret')

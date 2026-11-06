@@ -3,11 +3,6 @@ local clusterIssuer = cm.nogroup.v1.clusterIssuer;
 
 // The default issuer: Let's Encrypt with DNS01 through Cloudflare.
 {
-  _config+:: {
-    // Contact for Let's Encrypt expiry notices. Optional.
-    acmeEmail: '',
-  },
-
   letsencrypt:
     clusterIssuer.new('letsencrypt')
     + clusterIssuer.spec.acme.withServer('https://acme-v02.api.letsencrypt.org/directory')

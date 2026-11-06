@@ -3,10 +3,6 @@ local k = import 'github.com/jsonnet-libs/k8s-libsonnet/1.35/main.libsonnet';
 
 // The operator, with this homelab's flags and namespace.
 certManager {
-  _config+:: {
-    namespace: 'cert-manager',
-  },
-
   controller_container+:: {
     args+: [
       '--dns01-recursive-nameservers-only',
