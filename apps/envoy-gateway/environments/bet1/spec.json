@@ -1,0 +1,12 @@
+{
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": {
+    "name": "envoy-gateway/bet1",
+    "labels": {
+      "flux.bednarzak.com/depends-on.metallb": "true",
+      "flux.bednarzak.com/depends-on.cert-manager": "true"
+    }
+  },
+  "spec": { "namespace": "envoy-gateway-system" }
+}

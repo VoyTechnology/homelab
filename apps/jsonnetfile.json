@@ -90,6 +90,24 @@
         }
       },
       "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "envoy-gateway"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/envoy-gateway-libsonnet.git",
+          "subdir": "v1.7.1"
+        }
+      },
+      "version": "main"
     }
   ],
   "legacyImports": true

@@ -1,5 +1,0 @@
-config:
-  envoyGateway:
-    gatewayAPI:
-      enabled:
-        - XListenerSet
