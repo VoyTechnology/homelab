@@ -3,7 +3,10 @@
   "kind": "Environment",
   "metadata": {
     "name": "cloudflare-gateway-controller/bet1",
-    "labels": { "flux.bednarzak.com/depends-on.external-secrets": "true" }
+    "labels": {
+      "flux.bednarzak.com/depends-on.external-secrets": "true",
+      "flux.bednarzak.com/depends-on.gateway-api": "true"
+    }
   },
   "spec": { "namespace": "gateway-system" }
 }

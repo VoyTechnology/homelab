@@ -5,7 +5,8 @@
     "name": "envoy-gateway/bet1",
     "labels": {
       "flux.bednarzak.com/depends-on.metallb": "true",
-      "flux.bednarzak.com/depends-on.cert-manager": "true"
+      "flux.bednarzak.com/depends-on.cert-manager": "true",
+      "flux.bednarzak.com/depends-on.gateway-api": "true"
     }
   },
   "spec": { "namespace": "envoy-gateway-system" }
