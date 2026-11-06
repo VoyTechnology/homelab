@@ -5,4 +5,4 @@
 + (import 'secrets.libsonnet')
 + (import 'instance.libsonnet')
 + (import 'groups.libsonnet')
-+ (import 'gateway.libsonnet')
++ (import 'route.libsonnet')
