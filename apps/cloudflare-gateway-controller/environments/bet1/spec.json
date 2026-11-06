@@ -5,5 +5,5 @@
     "name": "cloudflare-gateway-controller/bet1",
     "labels": { "flux.bednarzak.com/depends-on.external-secrets": "true" }
   },
-  "spec": { "namespace": "cloudflare-gateway-system" }
+  "spec": { "namespace": "gateway-system" }
 }

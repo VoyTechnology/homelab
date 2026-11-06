@@ -45,6 +45,16 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "metallb"
+        }
+      },
+      "version": "14b156554905c49cc792f131652d162fabe4946f",
+      "sum": "2+k8KfZRYsMBVWaklveBBT4ujKepDdqdjqzUwKNfNBc="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "pocket-id-operator"
         }
       },
@@ -80,6 +90,16 @@
       },
       "version": "f66023fcddc92e89c3e81bd49c1f528a984505ef",
       "sum": "B+1kudlxnkbH6warwOHHh+gmADl2w5VFJQ5D0SxcO6M="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/metallb-libsonnet.git",
+          "subdir": "0.14"
+        }
+      },
+      "version": "b5f17d3c5a32918dc0f6f92e713580a506eb585f",
+      "sum": "mHFKwhTGQrGIl47npD59lhDnXq6GAdiOILgUq8F6ZPM="
     }
   ],
   "legacyImports": false

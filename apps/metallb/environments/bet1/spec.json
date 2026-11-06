@@ -1,0 +1,6 @@
+{
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": { "name": "metallb/bet1" },
+  "spec": { "namespace": "metallb-system" }
+}
