@@ -25,7 +25,7 @@
 - name: Flux | Install controllers and CRDs
   kubernetes.core.k8s:
     state: present
-    src: "{{ flux_render_dir.path }}/gotk-components.yaml"
+    src: "{{ flux_render_dir.path }}/clusters/{{ cluster_name }}/flux-system/gotk-components.yaml"
     server_side_apply:
       field_manager: ansible
       force_conflicts: true
@@ -43,7 +43,7 @@
 - name: Flux | Configure sync from homelab-manifests
   kubernetes.core.k8s:
     state: present
-    src: "{{ flux_render_dir.path }}/gotk-sync.yaml"
+    src: "{{ flux_render_dir.path }}/clusters/{{ cluster_name }}/flux-system/gotk-sync.yaml"
     server_side_apply:
       field_manager: ansible
       force_conflicts: true

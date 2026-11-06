@@ -1,6 +1,7 @@
 name: Render Flux
 
-# Renders the Flux bootstrap config (clusters/environments/<cluster>). On PRs
+# Renders Flux itself (clusters/environments/<cluster>) and every app
+# (apps/*/environments/<cluster>). On PRs
 # it comments the diff against homelab-manifests; on main it commits the result
 # straight to main there, which Flux then reconciles.
 on:
@@ -8,12 +9,14 @@ on:
     branches: [main]
     paths:
       - "clusters/**"
+      - "apps/**"
       - "scripts/render-flux.sh"
       - ".tool-versions"
       - ".github/workflows/render-flux.yml"
   pull_request:
     paths:
       - "clusters/**"
+      - "apps/**"
       - "scripts/render-flux.sh"
       - ".tool-versions"
       - ".github/workflows/render-flux.yml"
@@ -47,7 +50,11 @@ jobs:
       matrix:
         cluster: ${{ fromJSON(needs.clusters.outputs.clusters) }}
     env:
-      OUT_DIR: clusters/${{ matrix.cluster }}/flux-system
+      # The render owns exactly these paths in homelab-manifests.
+      OUT_PATHS: >-
+        clusters/${{ matrix.cluster }}/flux-system
+        clusters/${{ matrix.cluster }}/apps
+        apps/${{ matrix.cluster }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -65,29 +72,21 @@ jobs:
         uses: jdx/mise-action@v2
         with:
           working_directory: homelab
-          install_args: go-jsonnet jsonnet-bundler yq flux2
+          install_args: go-jsonnet jsonnet-bundler tanka yq flux2
 
       - name: Put tools on PATH
         working-directory: homelab
         run: mise bin-paths >> "$GITHUB_PATH"
 
       - name: Render
-        run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} "head/$OUT_DIR"
+        run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} head
 
       - name: Diff against homelab-manifests
+        # Collapsed per-file diffs grouped by app: a size-capped one for the PR
+        # comment and the full one for the job summary.
         run: |
-          {
-            echo "### Flux \`${{ matrix.cluster }}\`: diff against homelab-manifests"
-            if diff=$(diff -ru "base/$OUT_DIR" "head/$OUT_DIR"); then
-              echo "No changes."
-            else
-              echo '```diff'
-              # gotk-components.yaml can be huge; keep the comment readable.
-              echo "$diff" | head -c 60000
-              echo '```'
-            fi
-          } > comment.md
-          cat comment.md >> "$GITHUB_STEP_SUMMARY"
+          homelab/scripts/diff-flux.sh base head ${{ matrix.cluster }} > comment.md
+          homelab/scripts/diff-flux.sh base head ${{ matrix.cluster }} 900000 >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment on PR
         # Fork PRs get a read-only token and no secrets.
@@ -101,8 +100,11 @@ jobs:
         if: github.event_name != 'pull_request'
         working-directory: base
         run: |
-          rsync -a --delete "../head/$OUT_DIR/" "$OUT_DIR/"
-          git add -A "$OUT_DIR"
+          for p in $OUT_PATHS; do
+            mkdir -p "$p" "../head/$p"
+            rsync -a --delete "../head/$p/" "$p/"
+            git add -A "$p"
+          done
           if git diff --cached --quiet; then
             echo "No changes."
             exit 0

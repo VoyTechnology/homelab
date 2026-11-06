@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "external-secrets"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
+          "subdir": "1.3"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
+          "subdir": "1.35"
+        }
+      },
+      "version": "main"
+    }
+  ],
+  "legacyImports": true
+}

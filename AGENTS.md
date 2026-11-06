@@ -23,7 +23,13 @@ platform.
 - `ansible/` bootstraps machines and the k3s cluster.
 - `ansible/site.yml` imports the basic host setup and k3s install playbooks.
 - `ansible/inventory/<cluster>/` contains cluster inventory and group vars.
-- `argo/` contains Argo CD ApplicationSet definitions and app values.
+- `clusters/` defines Flux itself. `clusters/environments/<cluster>/main.jsonnet`
+  is a one-liner calling `clusters/lib/flux.libsonnet`, which also pins the Flux
+  version. Shared Jsonnet deps live in `clusters/jsonnetfile.json`.
+- `apps/` holds apps deployed by Flux (the way new apps are added). See
+  "Flux Apps" below.
+- `argo/` is the legacy Argo CD setup, being migrated to `apps/`. It contains
+  ApplicationSet definitions and app values.
 - `argo/clusters/*.yaml` describes clusters consumed by ApplicationSet git
   generators.
 - `argo/appsets/*.jsonnet` defines one ApplicationSet per app or app group.
@@ -36,7 +42,9 @@ platform.
 - `charts/extra-objects/` is a tiny helper chart for app-specific raw Kubernetes
   objects supplied through `extra.values.yaml`.
 - `charts/infra/` renders Argo CD `Application` resources from values.
-- `.github/workflows/` runs Renovate and Ansible workflows.
+- `scripts/render-flux.sh` renders Flux and all apps for a cluster into the
+  layout of the `homelab-manifests` repository.
+- `.github/workflows/` runs Renovate, Ansible, and Flux render workflows.
 
 The current cluster represented in the repo is `bet1`, with cluster metadata in
 `argo/clusters/bet1.yaml` and Ansible inventory in
@@ -62,8 +70,14 @@ go-jsonnet.
 - `playbooks/install_basic.yml` installs baseline host tooling.
 - `playbooks/install_k3s.yml` runs prerequisites, downloads k3s, installs the
   master and node roles, then installs base Kubernetes services.
-- Base k3s service tasks are split into namespaces, secrets, cert-manager, dex,
-  ingress, Argo CD, and extra CRDs.
+- Base k3s service tasks are split into namespaces, secrets, Flux, cert-manager,
+  dex, ingress, Argo CD, and extra CRDs.
+- The Flux task (`tags: k8s_flux, never`) renders `clusters/environments/<cluster>`
+  with `scripts/render-flux.sh` and applies Flux's components and sync config. It
+  only runs on request and needs `jsonnet`, `jb`, `yq`, and `flux` locally. The
+  `flux-system` git credentials come from `k8s_secrets` via the secrets task.
+- Ansible's long-term scope is hosts, k3s, and seeding Flux. Everything else moves
+  to Flux, and shared secrets are fanned out by External Secrets.
 - The inventory currently uses `root` over SSH and groups hosts into `master`,
   `node`, `k3s_cluster`, and `storage`.
 
@@ -78,7 +92,67 @@ Be careful with commands that contact real machines or the live cluster. Prefer
 dry validation and manifest rendering when possible, and call out any live
 operation explicitly.
 
-## Argo CD and Jsonnet Patterns
+## Flux Apps
+
+Flux is the target deployment system; Argo CD is legacy and will be removed.
+Flux reads rendered manifests from the separate `homelab-manifests` repository
+(`VoyTechnology/homelab-manifests`), which the `Render Flux` workflow writes on
+merge to `main`. Never edit that repository by hand.
+
+Layout in this repo (every app is a Tanka application):
+
+```text
+apps/
+  jsonnetfile.json          shared deps (external-secrets, k8s and home-libsonnet)
+  <app>/
+    main.libsonnet          app definition, shared by all clusters
+    environments/<cluster>/
+      main.jsonnet          extends ../../main.libsonnet with per-cluster `_config+::`
+      spec.json             Tanka Environment (committed, unlike the Argo apps')
+```
+
+Rules:
+
+- Each `environments/<cluster>` is a Tanka environment whose output is the app's
+  Kubernetes objects. `scripts/render-flux.sh` runs `tk export` on every one and
+  writes `apps/<cluster>/<app>/` in `homelab-manifests`, plus a Flux `Kustomization`
+  in `clusters/<cluster>/apps/<app>.yaml` that it generates (do not write one).
+- Build objects with the generated libraries directly (`external-secrets-libsonnet`,
+  `k8s-libsonnet`, ...) and with app libraries from `home-libsonnet`; do not add
+  wrapper layers. Fall back to plain objects when a library lacks
+  the type. Use `_config+::` (not `_config::`) so defaults are kept.
+- Ship CRDs in the same app as the objects that use them. Flux applies CRDs and
+  namespaces first, so no extra ordering is needed inside an app.
+- Order between apps with one label per dependency in `spec.json`, for example
+  `"labels": { "flux.bednarzak.com/depends-on.external-secrets": "true" }`. Apps
+  that use `ExternalSecret` depend on `external-secrets`. The generated
+  `Kustomization` waits (`wait: true`) for them.
+- Namespaces Flux creates are plain `k8s-libsonnet` namespaces annotated
+  `kustomize.toolkit.fluxcd.io/prune: disabled`, so removing an app never deletes
+  the namespace and its volumes. Never manage `kube-system` or other pre-existing
+  namespaces.
+- Deploy the app itself in this order of preference: (1) an existing open source
+  library; (2) if none exists, create one in `home-libsonnet` and use that. Do not
+  fall back to a Helm chart.
+- Secrets are never in these files. Reference them by name/key through
+  `ExternalSecret` objects against the `cluster-secrets` `ClusterSecretStore`.
+- Deleting an app from `apps/` removes it from the cluster once rendered, because
+  the `Kustomization` is pruned. Check the CI diff comment before merging.
+- Tanka's `manifest.json` (file => environment map written by `tk export`) is kept
+  in each rendered `apps/<cluster>/<app>/`; Flux ignores non-YAML files.
+- The PR diff comment is built by `scripts/diff-flux.sh`: grouped by app, one
+  collapsed section per file.
+
+Render and compare locally:
+
+```sh
+scripts/render-flux.sh bet1 /tmp/out   # needs jsonnet, jb, tk, yq, flux, jq and network
+```
+
+## Argo CD and Jsonnet Patterns (legacy)
+
+These apply to apps still under `argo/`. Do not add new apps here; add them under
+`apps/` instead.
 
 ApplicationSets generally follow this pattern:
 
@@ -154,7 +228,10 @@ local source = tanka.new('metrics', namespace='metrics-system',
 
 ## Adding or Updating Apps
 
-When adding an app:
+New apps are added under `apps/` as described in "Flux Apps". The steps below
+are for apps that still live in `argo/`.
+
+When adding an Argo app:
 
 1. Add or update `argo/appsets/<app>.jsonnet`.
 2. Put chart values in `argo/apps/<app>/values.yaml`,
@@ -176,6 +253,7 @@ needed object.
 Pick the lightest check that matches the change:
 
 ```sh
+scripts/render-flux.sh bet1 /tmp/out
 jsonnet argo/appsets/<app>.jsonnet
 TANKA_NAMESPACE=<ns> scripts/tk-show argo/apps/<app>
 helm lint charts/<chart>
@@ -201,8 +279,8 @@ was and was not checked.
 
 - Favor the current layout over introducing new tooling or abstractions.
 - Keep YAML and Jsonnet diffs focused; avoid reformatting unrelated manifests.
-- Preserve the distinction between Ansible bootstrap concerns and Argo-managed
-  application concerns.
+- Preserve the distinction between Ansible bootstrap concerns and application
+  concerns (Flux, or Argo while apps are being migrated).
 - This is a homelab: pragmatic experiments are welcome, but do not make
   irreversible live-infrastructure changes without clear user intent.
 - Do not remove commented future directions unless the user asks; they may be

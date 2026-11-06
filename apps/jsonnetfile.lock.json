@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "dependencies": [
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "external-secrets"
+        }
+      },
+      "version": "664f84df44773c2e70094dec466d9c556d5da7be",
+      "sum": "NbnBXQFosxN6bhXgjVqmeWyYeAycr5L/wolXI8gczf4="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
+          "subdir": "1.3"
+        }
+      },
+      "version": "446bfb10ac037ee94bdfd8e44c62fa9d736a9d9e",
+      "sum": "GStY5TH2/jnn2ASXI+y7YZHj8eWQs7AcoTOcc4PDZ6E="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
+          "subdir": "1.35"
+        }
+      },
+      "version": "f66023fcddc92e89c3e81bd49c1f528a984505ef",
+      "sum": "B+1kudlxnkbH6warwOHHh+gmADl2w5VFJQ5D0SxcO6M="
+    }
+  ],
+  "legacyImports": false
+}

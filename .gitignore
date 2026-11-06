@@ -6,6 +6,8 @@ out.txt
 # Ignore jsonnet files
 vendor/
 spec.json
+# Flux apps are real Tanka environments; their spec.json is committed.
+!apps/**/spec.json
 
 # Ignore downloaded Helm chart dependency archives (`helm dependency
 # update`/`build` populate argo/apps/*/charts/ with these; they're
