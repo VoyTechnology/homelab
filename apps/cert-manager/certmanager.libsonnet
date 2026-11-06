@@ -7,8 +7,6 @@ certManager {
     namespace: 'cert-manager',
   },
 
-  local cfg = $._config,
-
   controller_container+:: {
     args+: [
       '--dns01-recursive-nameservers-only',
@@ -21,6 +19,6 @@ certManager {
 
   // Flux never prunes the namespace, so removing the app keeps its secrets.
   namespace:
-    k.core.v1.namespace.new(cfg.namespace)
+    k.core.v1.namespace.new($._config.namespace)
     + k.core.v1.namespace.metadata.withAnnotations({ 'kustomize.toolkit.fluxcd.io/prune': 'disabled' }),
 }
