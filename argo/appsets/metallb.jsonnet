@@ -17,3 +17,7 @@ local extraObjects = helm.extraObjects('metallb', overrides={
 appset.new('metallb', 'metallb-system')
 + appset.addSource(source)
 + appset.addSource(extraObjects)
++ {
+  // Deleting the appset must leave MetalLB running (it moves to Flux).
+  spec+: { syncPolicy+: { preserveResourcesOnDeletion: true } },
+}
