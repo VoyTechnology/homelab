@@ -4,11 +4,11 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/grafana/jsonnet-libs.git",
-          "subdir": "tanka-util"
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "external-dns"
         }
       },
-      "version": "master"
+      "version": "external-dns-library"
     }
   ],
   "legacyImports": true

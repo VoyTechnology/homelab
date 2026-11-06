@@ -132,10 +132,6 @@ async function renderTanka(src, root) {
     fs.cpSync(path.join(root, src.path), app, { recursive: true });
     fs.rmSync(path.join(app, 'vendor'), { recursive: true, force: true });
     await run('jb', ['install'], { cwd: app });
-    // Helm charts used through Tanka's helm.template are vendored from chartfile.yaml.
-    if (fs.existsSync(path.join(app, 'chartfile.yaml'))) {
-      await run('tk', ['tool', 'charts', 'vendor'], { cwd: app });
-    }
     if (env.TANKA_ENV_DIR) {
       // Native layout: the committed environment is rendered as-is.
       return await run('tk', ['show', env.TANKA_ENV_DIR, '--dangerous-allow-redirect'], { cwd: app });

@@ -4,22 +4,12 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/grafana/jsonnet-libs.git",
-          "subdir": "tanka-util"
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "external-dns"
         }
       },
-      "version": "1abcc571e0882164a917e848ae2d9426188bf016",
-      "sum": "ShSIissXdvCy1izTCDZX6tY7qxCoepE5L+WJ52Hw7ZQ="
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/jsonnet-libs/docsonnet.git",
-          "subdir": "doc-util"
-        }
-      },
-      "version": "bf6f08ae02a51c48bdcec4629b1c1a5a62c6f803",
-      "sum": "BrAL/k23jq+xy9oA7TWIhUx07dsA/QLm3g7ktCwe//U="
+      "version": "a6e2c9df99fe2ac45a5715ce0944ea75f131a885",
+      "sum": "4b6JpIbGG6lpa18XKQZuVYJyQuRU7ir7zYOmQG3sNdI="
     }
   ],
   "legacyImports": false

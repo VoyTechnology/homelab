@@ -1,8 +1,0 @@
-directory: charts
-repositories:
-  - name: external-dns
-    url: https://kubernetes-sigs.github.io/external-dns/
-requires:
-  # renovate: datasource=helm depName=external-dns registryUrl=https://kubernetes-sigs.github.io/external-dns/
-  - chart: external-dns/external-dns
-    version: 1.23.0
