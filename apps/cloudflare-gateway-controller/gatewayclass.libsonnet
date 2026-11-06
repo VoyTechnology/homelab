@@ -5,7 +5,7 @@
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'GatewayClass',
     // Cluster-scoped, so keep Tanka from adding the environment's namespace.
-    metadata: { name: 'cloudflare', annotations: { 'tanka.dev/namespaced': 'false' } },
+    metadata: { name: 'external-cloudflare', annotations: { 'tanka.dev/namespaced': 'false' } },
     spec: {
       controllerName: 'cloudflare-gateway-controller.io/controller',
       parametersRef: {
