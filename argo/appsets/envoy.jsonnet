@@ -23,3 +23,7 @@ appset.new('envoy', 'envoy-gateway-system')
         ]
     }}}}
 }
++ {
+    // Deleting the appset must leave Envoy Gateway and the gateways running (they move to Flux).
+    spec+: { syncPolicy+: { preserveResourcesOnDeletion: true } },
+}
