@@ -11,7 +11,7 @@ local externalSecret = es.nogroup.v1.externalSecret;
     + externalSecret.spec.secretStoreRef.withName('cluster-secrets')
     + externalSecret.spec.withData([
       externalSecret.spec.data.withSecretKey('token')
-      + externalSecret.spec.data.remoteRef.withKey($._config.cloudflareTokenKey)
-      + externalSecret.spec.data.remoteRef.withProperty('token'),
+      + externalSecret.spec.data.remoteRef.withKey('shared-secrets')
+      + externalSecret.spec.data.remoteRef.withProperty($._config.cloudflareTokenProperty),
     ]),
 }
