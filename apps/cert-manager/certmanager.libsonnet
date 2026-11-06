@@ -2,8 +2,7 @@ local certManager = import 'github.com/VoyTechnology/home-libsonnet/cert-manager
 local k = import 'github.com/jsonnet-libs/k8s-libsonnet/1.35/main.libsonnet';
 
 // The operator, with this homelab's flags and namespace.
-certManager
-{
+certManager {
   _config+:: {
     namespace: 'cert-manager',
   },
