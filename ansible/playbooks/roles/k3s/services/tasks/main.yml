@@ -11,10 +11,6 @@
   import_tasks: flux.yml
   tags: [k8s_flux, never]
 
-- name: Setup Cert Manager
-  import_tasks: cert_manager.yml
-  tags: k8s_cert_manager
-
 - name: Setup dex
   import_tasks: dex.yml
   tags: k8s_dex

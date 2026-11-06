@@ -13,6 +13,24 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "cert-manager"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/cert-manager-libsonnet.git",
+          "subdir": "1.19"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/jsonnet-libs/external-secrets-libsonnet.git",
           "subdir": "1.3"
         }
