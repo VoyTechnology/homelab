@@ -107,6 +107,7 @@ apps/
   <app>/
     main.libsonnet          merges the app's mixin files, shared by all clusters
     config.libsonnet        every `_config+::` default of the app
+    images.libsonnet        `_images+::` pins, bumped by Renovate
     <concern>.libsonnet     one responsibility each (see below)
     environments/<cluster>/
       main.jsonnet          extends ../../main.libsonnet with per-cluster `_config+::`
@@ -135,7 +136,11 @@ Rules:
   cert-manager: `certmanager.libsonnet` (the operator and its flags), `secrets.libsonnet`
   (`ExternalSecret`s), `letsencrypt.libsonnet` (the `ClusterIssuer`).
   Every app has a `config.libsonnet` holding all of its `_config+::` defaults (never
-  scattered across the concern files), merged right after the library it configures. The
+  scattered across the concern files), merged right after the library it configures.
+  Container images are not config: every app has an `images.libsonnet` overriding the
+  library's `_images+::` with a `// renovate: datasource=docker depName=<image>` comment per
+  image, so Renovate bumps them here (the `renovate.json` manager matches `images.libsonnet`).
+  Libraries must define their images the same way, never in `_config`. The
   concern files import the libraries they need and refer to each other through `$` (for
   example the issuer reads `$.cloudflareSecret.metadata.name`). Do not put everything in
   one big `main.libsonnet`.
