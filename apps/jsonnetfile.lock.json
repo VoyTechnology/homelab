@@ -8,7 +8,7 @@
           "subdir": "cert-manager"
         }
       },
-      "version": "58e27c8d22bd3a17cc0231013e980cc83c05f993",
+      "version": "e23d949b13ff6356dd53d065ab997366737d268e",
       "sum": "q8JONL1m87NZYG2bnoVZwclzkb+agKkW5/886fpIqXo="
     },
     {
@@ -18,8 +18,18 @@
           "subdir": "cloudflare-gateway-controller"
         }
       },
-      "version": "8dbfdfef5769049d768d40d4a177b50723adface",
+      "version": "e23d949b13ff6356dd53d065ab997366737d268e",
       "sum": "MckWxsznDWJW/ydGKACFFVI1+HmL81ILKcSTJnYHsVo="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "envoy-gateway"
+        }
+      },
+      "version": "e23d949b13ff6356dd53d065ab997366737d268e",
+      "sum": "gvpTeJnq6bpeBdxDniV0pZNj/akc967MhTVTtaMldRQ="
     },
     {
       "source": {
@@ -28,7 +38,7 @@
           "subdir": "external-dns"
         }
       },
-      "version": "8a83f80b2241099b3e03435483085e1f5a792973",
+      "version": "e23d949b13ff6356dd53d065ab997366737d268e",
       "sum": "4b6JpIbGG6lpa18XKQZuVYJyQuRU7ir7zYOmQG3sNdI="
     },
     {
@@ -38,7 +48,7 @@
           "subdir": "external-secrets"
         }
       },
-      "version": "58e27c8d22bd3a17cc0231013e980cc83c05f993",
+      "version": "e23d949b13ff6356dd53d065ab997366737d268e",
       "sum": "dvMl+QKBmbeRmXboSfUfYM3Kyz0VRSz7nDi2bVvsiUM="
     },
     {
@@ -48,7 +58,7 @@
           "subdir": "metallb"
         }
       },
-      "version": "14b156554905c49cc792f131652d162fabe4946f",
+      "version": "e23d949b13ff6356dd53d065ab997366737d268e",
       "sum": "2+k8KfZRYsMBVWaklveBBT4ujKepDdqdjqzUwKNfNBc="
     },
     {
@@ -58,7 +68,7 @@
           "subdir": "pocket-id-operator"
         }
       },
-      "version": "22b88e1b119be8e79531c2ffbde3d752c36bb7f5",
+      "version": "e23d949b13ff6356dd53d065ab997366737d268e",
       "sum": "9plMx440K7A0iMxWPdXwS1e5IrzLPi5bMZFEc11tb3Y="
     },
     {
@@ -70,6 +80,16 @@
       },
       "version": "564e14d00bcbeb3ca797ff158fb96b09def8314d",
       "sum": "PgUZyMDmXf6KwDtjWNT3YWKg1kLt/MkTSQZjf6Ni+G8="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/envoy-gateway-libsonnet.git",
+          "subdir": "v1.7.1"
+        }
+      },
+      "version": "41e88ead9ed5418f59f3823d5b424932b0668d18",
+      "sum": "htd4YMM0I2F8+PwoCVEv5cD/heCecmFe5mUeYMn7cuQ="
     },
     {
       "source": {
