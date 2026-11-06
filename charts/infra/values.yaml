@@ -3,8 +3,4 @@ domain: dub1.bednarzak.com
 destination: https://kubernetes.default.svc
 repoURL: git@github.com:VoyTechnology/homelab.git
 project: infra
-apps:
-  external-dns:
-    namespace: external-dns-system
-    skipNamespaceCreation: true # Managed by Ansible
-    path: charts/external-dns
+apps: {}

@@ -15,6 +15,16 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "external-dns"
+        }
+      },
+      "version": "8a83f80b2241099b3e03435483085e1f5a792973",
+      "sum": "4b6JpIbGG6lpa18XKQZuVYJyQuRU7ir7zYOmQG3sNdI="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "external-secrets"
         }
       },

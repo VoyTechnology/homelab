@@ -1,0 +1,6 @@
+{
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": { "name": "external-dns/bet1" },
+  "spec": { "namespace": "external-dns-system" }
+}
