@@ -13,6 +13,8 @@ local gateway(cfg, name, address, annotations={}) = {
     envoyProxy.new('envoy-' + name)
     + envoyProxy.metadata.withNamespace(ns)
     + envoyProxy.spec.provider.withType('Kubernetes')
+    // Envoy's tcmalloc crashes at startup on the arm64 Raspberry Pi node, so keep the proxies on amd64.
+    + envoyProxy.spec.provider.kubernetes.envoyDeployment.pod.withNodeSelector({ 'kubernetes.io/arch': 'amd64' })
     + envoyProxy.spec.provider.kubernetes.envoyService.withType('LoadBalancer')
     + envoyProxy.spec.provider.kubernetes.envoyService.withAnnotations(
       { 'metallb.io/address-pool': cfg.addressPool }
