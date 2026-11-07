@@ -3,12 +3,11 @@ local envoy = import 'github.com/jsonnet-libs/envoy-gateway-libsonnet/v1.7.1/mai
 local certificate = cm.nogroup.v1.certificate;
 local envoyProxy = envoy.gateway.v1alpha1.envoyProxy;
 
-// Two gateways, each with its own Envoy proxy behind a MetalLB LoadBalancer and a wildcard certificate.
+// Two gateways, each with its own Envoy proxy behind a MetalLB LoadBalancer, sharing one wildcard certificate.
 // `exposed` is port-forwarded from the router, `internal` is only reachable on the local network.
 local gateway(cfg, name, address, annotations={}) = {
   local ns = cfg.namespace,
   local wildcard = '*.' + cfg.domain,
-  local tlsSecret = name + '-wildcard-tls',
 
   proxy:
     envoyProxy.new('envoy-' + name)
@@ -32,15 +31,6 @@ local gateway(cfg, name, address, annotations={}) = {
     },
   },
 
-  certificate:
-    certificate.new(tlsSecret)
-    + certificate.metadata.withNamespace(ns)
-    + certificate.spec.withCommonName(wildcard)
-    + certificate.spec.withDnsNames([wildcard])
-    + certificate.spec.withSecretName(tlsSecret)
-    + certificate.spec.issuerRef.withName('letsencrypt')
-    + certificate.spec.issuerRef.withKind('ClusterIssuer'),
-
   gateway: {
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'Gateway',
@@ -59,7 +49,7 @@ local gateway(cfg, name, address, annotations={}) = {
           protocol: 'HTTPS',
           hostname: wildcard,
           port: 443,
-          tls: { mode: 'Terminate', certificateRefs: [{ group: '', kind: 'Secret', name: tlsSecret }] },
+          tls: { mode: 'Terminate', certificateRefs: [{ group: '', kind: 'Secret', name: 'wildcard-tls' }] },
           allowedRoutes: { namespaces: { from: 'All' } },
         },
       ],
@@ -69,11 +59,10 @@ local gateway(cfg, name, address, annotations={}) = {
 
 {
   // Both gateways cover the same names, so they share one certificate: Let's Encrypt hands two parallel
-  // requests for identical names the same order, and one of them fails. Issued in the namespace the
-  // gateways are about to move to, ahead of the move.
+  // requests for identical names the same order, and one of them fails.
   wildcard:
     certificate.new('wildcard-tls')
-    + certificate.metadata.withNamespace($._config.gatewayNamespace)
+    + certificate.metadata.withNamespace($._config.namespace)
     + certificate.spec.withCommonName('*.' + $._config.domain)
     + certificate.spec.withDnsNames(['*.' + $._config.domain])
     + certificate.spec.withSecretName('wildcard-tls')
