@@ -41,12 +41,6 @@ local gateway(cfg, name, address, annotations={}) = {
     + certificate.spec.issuerRef.withName('letsencrypt')
     + certificate.spec.issuerRef.withKind('ClusterIssuer'),
 
-  // The same certificate in the namespace the gateways are about to move to, so it is issued before the move.
-  // Named differently: the render writes one file per kind and name, not per namespace.
-  certificateInGatewayNamespace: self.certificate {
-    metadata+: { name: name + '-wildcard', namespace: cfg.gatewayNamespace },
-  },
-
   gateway: {
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'Gateway',
@@ -74,6 +68,18 @@ local gateway(cfg, name, address, annotations={}) = {
 };
 
 {
+  // Both gateways cover the same names, so they share one certificate: Let's Encrypt hands two parallel
+  // requests for identical names the same order, and one of them fails. Issued in the namespace the
+  // gateways are about to move to, ahead of the move.
+  wildcard:
+    certificate.new('wildcard-tls')
+    + certificate.metadata.withNamespace($._config.gatewayNamespace)
+    + certificate.spec.withCommonName('*.' + $._config.domain)
+    + certificate.spec.withDnsNames(['*.' + $._config.domain])
+    + certificate.spec.withSecretName('wildcard-tls')
+    + certificate.spec.issuerRef.withName('letsencrypt')
+    + certificate.spec.issuerRef.withKind('ClusterIssuer'),
+
   exposed: gateway(
     $._config,
     'exposed',
