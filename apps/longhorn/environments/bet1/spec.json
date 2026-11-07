@@ -4,7 +4,7 @@
   "metadata": {
     "name": "longhorn/bet1",
     "labels": {
-      "flux.bednarzak.com/depends-on.gateways": "true",
+      "flux.bednarzak.com/depends-on.gateway": "true",
       "flux.bednarzak.com/depends-on.pocketid": "true"
     }
   },
