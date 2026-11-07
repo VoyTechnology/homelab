@@ -4,8 +4,8 @@
 // together. Merging them flatly (the previous shape here) meant
 // addMixinDashboards's `mixins[name].grafanaDashboards` lookup never matched
 // anything, so no dashboard ever made it into a ConfigMap.
-local envoyMixin = import 'github.com/grafana/jsonnet-libs/envoy-mixin/mixin.libsonnet';
 local argocdMixin = import 'github.com/grafana/jsonnet-libs/argocd-mixin/mixin.libsonnet';
+local envoyMixin = import 'github.com/grafana/jsonnet-libs/envoy-mixin/mixin.libsonnet';
 local kubernetesMixin = import 'github.com/kubernetes-monitoring/kubernetes-mixin/mixin.libsonnet';
 
 // envoy-mixin's dashboards.libsonnet hand-writes the "job" and "instance"

@@ -8,7 +8,6 @@
 // chart's default rendering (verified against chart version 1.11.1 via
 // `helm template`) so discovery.kubernetes and
 // prometheus.operator.servicemonitors keep working unchanged.
-local config = import 'config.libsonnet';
 local k = import 'k.libsonnet';
 
 local container = k.core.v1.container;
@@ -24,7 +23,7 @@ local clusterRoleBinding = k.rbac.v1.clusterRoleBinding;
 local subject = k.rbac.v1.subject;
 local deployment = k.apps.v1.deployment;
 
-config + {
+{
   local this = self,
 
   alloy_service_account: serviceAccount.new('alloy'),
@@ -55,18 +54,8 @@ config + {
     + clusterRoleBinding.withSubjects([
       subject.withKind('ServiceAccount')
       + subject.withName('alloy')
-      + subject.withNamespace(this.namespace),
+      + subject.withNamespace($._config.namespace),
     ]),
-
-  // Renovate's jsonnet custom manager only tracks `targetRevision = '...'`
-  // assignments, not image tags, so these aren't auto-bumped -- check
-  // https://github.com/grafana/alloy/releases and
-  // https://github.com/prometheus-operator/prometheus-operator/releases
-  // (config-reloader) occasionally and bump by hand.
-  _images:: {
-    alloy: 'docker.io/grafana/alloy:v1.18.1',
-    config_reloader: 'quay.io/prometheus-operator/prometheus-config-reloader:v0.91.0',
-  },
 
   alloy_config_map:
     configMap.new('alloy-config', { 'config.alloy': importstr 'alloy-config.alloy' }),
@@ -83,7 +72,7 @@ config + {
       '--stability.level=experimental',
     ])
     + container.withEnv([
-      { name: 'CLUSTER_NAME', value: this.cluster },
+      { name: 'CLUSTER_NAME', value: $._config.cluster },
       { name: 'GRAFANA_USER', valueFrom: { secretKeyRef: { name: 'grafana-cloud', key: 'user' } } },
       { name: 'LOKI_URL', valueFrom: { secretKeyRef: { name: 'grafana-cloud', key: 'logs-url' } } },
       { name: 'LOKI_USER', valueFrom: { secretKeyRef: { name: 'grafana-cloud', key: 'loki-user' } } },
@@ -106,7 +95,7 @@ config + {
   // change, so config edits (alloy-config.alloy) don't require a pod
   // restart -- same as the Helm chart's default configReloader.
   alloy_config_reloader_container::
-    container.new('config-reloader', this._images.config_reloader)
+    container.new('config-reloader', this._images.configReloader)
     + container.withArgs([
       '--watched-dir=/etc/alloy',
       '--reload-url=http://localhost:12345/-/reload',
@@ -139,38 +128,15 @@ config + {
       [servicePort.newNamed('http-metrics', 12345, 12345)],
     ),
 
-  // Alloy's UI, via the Gateway API "internal" Gateway (LAN-only, not
-  // internet-exposed) instead of the internal-login Ingress class. Note
-  // this is a real change, not just a mechanical port: internal-login
-  // fronted the UI with an oauth2-proxy login gate (see
-  // ansible/playbooks/roles/k3s/services/tasks/ingress/internal_login.yml);
-  // the "internal" Gateway has no equivalent auth gate wired up yet, so
-  // this trades "LAN + login" for "LAN only". Same pattern as
-  // grafana.libsonnet's httpRoute, which uses the "exposed" Gateway
-  // instead. The previous Helm values also punched an extra /faro path
-  // through to a port (12347) that no container or receiver in
-  // alloy-config.alloy ever exposed -- dropped as dead config rather than
-  // carried forward.
+  // Alloy's UI, on the internal gateway (LAN only). No generated library for the Gateway API, so a plain object.
   alloy_http_route: {
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'HTTPRoute',
-    metadata: {
-      name: 'alloy',
-      namespace: this.namespace,
-    },
+    metadata: { name: 'alloy', namespace: $._config.namespace },
     spec: {
-      // Also the namespace the gateways are moving to; the old one goes once they are there.
-      parentRefs: [
-        { kind: 'Gateway', namespace: ns, name: 'internal' }
-        for ns in ['envoy-gateway-system', 'gateway-system']
-      ],
-      hostnames: ['alloy.%s' % this.domain],
-      rules: [{
-        backendRefs: [{
-          name: 'alloy',
-          port: 12345,
-        }],
-      }],
+      parentRefs: [{ kind: 'Gateway', namespace: $._config.gateway.namespace, name: 'internal' }],
+      hostnames: ['alloy.%s' % $._config.domain],
+      rules: [{ backendRefs: [{ name: 'alloy', port: 12345 }] }],
     },
   },
 }

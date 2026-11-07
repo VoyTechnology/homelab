@@ -84,12 +84,102 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/grafonnet-lib.git",
+          "subdir": "grafonnet"
+        }
+      },
+      "version": "a1d61cce1da59c71409b99b5c7568511fec661ea",
+      "sum": "342u++/7rViR/zj2jeJOjshzglkZ1SY+hFNuyCBFMdc="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/grafonnet.git",
+          "subdir": "gen/grafonnet-latest"
+        }
+      },
+      "version": "8de2f3c83a38f68085c239df979f57d8dfdb7588",
+      "sum": "djejYCGNdtWsAd39+cHU1QNBIUKePhUyY4QNZt7XO4o="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/grafonnet.git",
+          "subdir": "gen/grafonnet-v13.0.0"
+        }
+      },
+      "version": "8de2f3c83a38f68085c239df979f57d8dfdb7588",
+      "sum": "hZfIVja9O6czp3Pg8fzqmN891FLz8nPvy2IJND5qlGw="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": ""
+        }
+      },
+      "version": "1abcc571e0882164a917e848ae2d9426188bf016",
+      "sum": "k86cmU6n+TUpsfYXteh5aRJHWbRkxxDd5aPWSXIoCcM="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "grafana-builder"
+        }
+      },
+      "version": "1abcc571e0882164a917e848ae2d9426188bf016",
+      "sum": "FqEJAICz9T90PMJLW8i4HXazyWQPNzi68A8UauXa7GQ="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "ksonnet-util"
+        }
+      },
+      "version": "1abcc571e0882164a917e848ae2d9426188bf016",
+      "sum": "0y3AFX9LQSpfWTxWKSwoLgbt0Wc9nnCwhMH2szKzHv0="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "mixin-utils"
+        }
+      },
+      "version": "1abcc571e0882164a917e848ae2d9426188bf016",
+      "sum": "pdZBifAdc1FjwhKRZIpSF/Hi2C9P9nsExGJxgxNHGRk="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/grafana/jsonnet-libs.git",
           "subdir": "tanka-util"
         }
       },
       "version": "1abcc571e0882164a917e848ae2d9426188bf016",
       "sum": "ShSIissXdvCy1izTCDZX6tY7qxCoepE5L+WJ52Hw7ZQ="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/mimir.git",
+          "subdir": "operations/mimir-mixin"
+        }
+      },
+      "version": "2f53a53aa9efd70cdc822f4742c3ae7b5ca55baa",
+      "sum": "//uYy6Pf6A9spl0LZ5rTHX/i62sHGB/j5sajYDdNVC0="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/rollout-operator.git",
+          "subdir": "operations/rollout-operator-mixin"
+        }
+      },
+      "version": "db8e32c7d6c58b4f97dfdebec37bcb1f618334e7",
+      "sum": "dOZ5qWlz5rOZE6rb1eTfz2rMQqpL+FHnbPYT5tuBIPY="
     },
     {
       "source": {
@@ -150,6 +240,26 @@
       },
       "version": "b5f17d3c5a32918dc0f6f92e713580a506eb585f",
       "sum": "mHFKwhTGQrGIl47npD59lhDnXq6GAdiOILgUq8F6ZPM="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/xtd.git",
+          "subdir": ""
+        }
+      },
+      "version": "4d7f8cb24d613430799f9d56809cc6964f35cea9",
+      "sum": "hOrwkOx34tOXqoDVnwuI/Uf/dr9HFFSPWpDPOvnEGrk="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/kubernetes-monitoring/kubernetes-mixin.git",
+          "subdir": ""
+        }
+      },
+      "version": "909cdb0f39b735c8da772f41e02c1be4317418f4",
+      "sum": "JOhiNzeqhGtNSdwKUqp1/h/V1DBdJZcyF7Ui6w3cPUg="
     }
   ],
   "legacyImports": false
