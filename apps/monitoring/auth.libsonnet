@@ -5,7 +5,7 @@ local container = k.core.v1.container;
 // Pocket ID is the only login. It goes through Grafana's Okta provider, which is plain OIDC with configurable endpoints.
 {
   local issuer = $._config.oidcIssuer,
-  local host = 'grafana.%s' % $._config.domain,
+  local host = $._config.grafanaHost,
 
   // The operator creates the client in Pocket ID and writes its credentials to the Secret below.
   oidcClient: {

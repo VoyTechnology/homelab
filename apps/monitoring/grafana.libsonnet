@@ -7,7 +7,7 @@ local volumeMount = k.core.v1.volumeMount;
 
 {
   grafana: grafana
-           + grafana.withRootUrl('https://grafana.%s/' % $._config.domain)
+           + grafana.withRootUrl('https://%s/' % $._config.grafanaHost)
            + grafana.withGrafanaIniConfig($.grafana.iniConfig)
            // Alloy scrapes every 1m; without this Grafana assumes 15s and computes too narrow a $__rate_interval.
            + grafana.addDatasource('metrics', grafana.datasource.new('Metrics', $._config.metricsUrl, type='prometheus', default=true) + grafana.datasource.withJsonData({ timeInterval: '1m' }))
