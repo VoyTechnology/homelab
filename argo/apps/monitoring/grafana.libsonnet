@@ -57,11 +57,11 @@ config + {
       namespace: $.namespace,
     },
     spec: {
-      parentRefs: [{
-        kind: 'Gateway',
-        namespace: 'envoy-gateway-system',
-        name: 'exposed',
-      }],
+      // Also the namespace the gateways are moving to; the old one goes once they are there.
+      parentRefs: [
+        { kind: 'Gateway', namespace: ns, name: 'exposed' }
+        for ns in ['envoy-gateway-system', 'gateway-system']
+      ],
       hostnames: ['grafana.%s' % $.domain],
       rules: [{
         backendRefs: [{

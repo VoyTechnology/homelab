@@ -41,6 +41,12 @@ local gateway(cfg, name, address, annotations={}) = {
     + certificate.spec.issuerRef.withName('letsencrypt')
     + certificate.spec.issuerRef.withKind('ClusterIssuer'),
 
+  // The same certificate in the namespace the gateways are about to move to, so it is issued before the move.
+  // Named differently: the render writes one file per kind and name, not per namespace.
+  certificateInGatewayNamespace: self.certificate {
+    metadata+: { name: name + '-wildcard', namespace: cfg.gatewayNamespace },
+  },
+
   gateway: {
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'Gateway',

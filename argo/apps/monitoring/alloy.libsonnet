@@ -159,11 +159,11 @@ config + {
       namespace: this.namespace,
     },
     spec: {
-      parentRefs: [{
-        kind: 'Gateway',
-        namespace: 'envoy-gateway-system',
-        name: 'internal',
-      }],
+      // Also the namespace the gateways are moving to; the old one goes once they are there.
+      parentRefs: [
+        { kind: 'Gateway', namespace: ns, name: 'internal' }
+        for ns in ['envoy-gateway-system', 'gateway-system']
+      ],
       hostnames: ['alloy.%s' % this.domain],
       rules: [{
         backendRefs: [{
