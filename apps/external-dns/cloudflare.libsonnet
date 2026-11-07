@@ -2,7 +2,11 @@
 // `cloudflare-secret` Secret in this namespace.
 {
   external_dns_container+:: {
-    args+: ['--annotation-filter=dns.kubernetes.io/exclude notin (true)'],
+    args+: [
+      '--annotation-filter=dns.kubernetes.io/exclude notin (true)',
+      // The Cloudflare gateway creates its own proxied CNAMEs; external-dns would overwrite them unproxied.
+      '--gateway-label-filter=dns.kubernetes.io/include=true',
+    ],
     env+: [
       { name: 'CF_API_TOKEN', valueFrom: { secretKeyRef: { name: 'cloudflare-secret', key: 'token' } } },
     ],
