@@ -41,6 +41,11 @@ local gateway(cfg, name, address, annotations={}) = {
     + certificate.spec.issuerRef.withName('letsencrypt')
     + certificate.spec.issuerRef.withKind('ClusterIssuer'),
 
+  // The same certificate in the namespace the gateways are about to move to, so it is issued before the move.
+  certificateInGatewayNamespace: self.certificate {
+    metadata+: { namespace: cfg.gatewayNamespace },
+  },
+
   gateway: {
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'Gateway',

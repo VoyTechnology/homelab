@@ -2,6 +2,8 @@
   _config+:: {
     // Created by Argo CD before the move to Flux, then kept by Flux (never pruned).
     namespace: 'envoy-gateway-system',
+    // Namespace the gateways move to, shared with the Cloudflare gateway (owned by cloudflare-gateway-controller).
+    gatewayNamespace: 'gateway-system',
     // The wildcard certificates and listeners cover `*.<domain>`. Set per cluster.
     domain: '',
     // MetalLB addresses of the gateways. Set per cluster: the external one is port-forwarded from the

@@ -6,7 +6,8 @@
     "labels": {
       "flux.bednarzak.com/depends-on.metallb": "true",
       "flux.bednarzak.com/depends-on.cert-manager": "true",
-      "flux.bednarzak.com/depends-on.gateway-api": "true"
+      "flux.bednarzak.com/depends-on.gateway-api": "true",
+      "flux.bednarzak.com/depends-on.cloudflare-gateway-controller": "true"
     }
   },
   "spec": { "namespace": "envoy-gateway-system" }
