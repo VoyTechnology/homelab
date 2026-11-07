@@ -2,13 +2,12 @@
   "apiVersion": "tanka.dev/v1alpha1",
   "kind": "Environment",
   "metadata": {
-    "name": "envoy-gateway/bet1",
+    "name": "gateway/bet1",
     "labels": {
       "flux.bednarzak.com/depends-on.metallb": "true",
       "flux.bednarzak.com/depends-on.cert-manager": "true",
-      "flux.bednarzak.com/depends-on.gateway-api": "true",
-      "flux.bednarzak.com/depends-on.cloudflare-gateway-controller": "true"
+      "flux.bednarzak.com/depends-on.external-secrets": "true"
     }
   },
-  "spec": { "namespace": "envoy-gateway-system" }
+  "spec": { "namespace": "gateway-system" }
 }
