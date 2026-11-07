@@ -9,5 +9,11 @@
     kubeletRootDir: '/var/lib/kubelet',
     // Host of the UI. Set per cluster.
     host: '',
+    // Gateway the UI is served from, and the Pocket ID that guards it.
+    gateway: { name: 'internal', namespace: 'envoy-gateway-system' },
+    oidcIssuer: 'https://login.bednarzak.com',
+    // Pocket ID user group (a PocketIDUserGroup in the pocketid namespace) allowed to open the UI.
+    // The UI can delete volumes, so only infra.
+    allowedGroup: 'infra',
   },
 }
