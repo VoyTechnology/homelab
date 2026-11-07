@@ -11,7 +11,6 @@
 // prometheus.scrape target for this Service, so keeping a ServiceMonitor
 // as well would double-scrape node_exporter (once via the static target,
 // once via prometheus.operator.servicemonitors discovery).
-local config = import 'config.libsonnet';
 local k = import 'k.libsonnet';
 
 local container = k.core.v1.container;
@@ -23,23 +22,15 @@ local servicePort = k.core.v1.servicePort;
 local serviceAccount = k.core.v1.serviceAccount;
 local daemonSet = k.apps.v1.daemonSet;
 
-config + {
+{
   local this = self,
 
   node_exporter_service_account:
     serviceAccount.new('node-exporter')
     + serviceAccount.withAutomountServiceAccountToken(false),
 
-  // Renovate's jsonnet custom manager only tracks `targetRevision = '...'`
-  // assignments, not image tags, so this isn't auto-bumped -- check
-  // https://github.com/prometheus/node_exporter/releases occasionally and
-  // bump by hand.
-  _images+:: {
-    node_exporter: 'quay.io/prometheus/node-exporter:v1.11.1',
-  },
-
   node_exporter_container::
-    container.new('node-exporter', this._images.node_exporter)
+    container.new('node-exporter', this._images.nodeExporter)
     + container.withArgs([
       '--path.procfs=/host/proc',
       '--path.sysfs=/host/sys',

@@ -13,9 +13,9 @@ local withSyncWave(wave) = {
 // The mimir-mixin's recording rules (the ones the mixin dashboards query,
 // e.g. cluster_namespace_job_route:cortex_request_duration_seconds:sum_rate)
 // are never evaluated unless something loads them into the ruler. Build them
-// here from the same base mixin config imported by argo/apps/monitoring (see
+// here from the same base mixin config imported by apps/monitoring (see
 // mixins.libsonnet there) so the recording rule names match exactly what the
-// dashboards query. argo/apps/monitoring layers a `dashboards_default_latency_mode:
+// dashboards query. apps/monitoring layers a `dashboards_default_latency_mode:
 // 'native'` override on top of this config, but that key only picks the
 // default value of a dashboard template variable -- it doesn't affect which
 // recording rules get generated (that's the separate record_native default,
@@ -30,7 +30,7 @@ local mimirMixinRecordingRules =
   + (import 'mimir-mixin/recording_rules.libsonnet');
 
 // Same problem, same fix, for the kubernetes-mixin dashboards added in
-// argo/apps/monitoring/mixins.libsonnet: those dashboards (Compute
+// apps/monitoring/mixins.libsonnet: those dashboards (Compute
 // Resources/*, Networking/*, Kubelet, ...) query recording rules like
 // node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate
 // and namespace_workload_pod:kube_pod_owner:relabel, not raw metrics --
@@ -38,7 +38,7 @@ local mimirMixinRecordingRules =
 // variables built from them, e.g. Workload's $workload_type) just come back
 // empty, even though the underlying cadvisor/kube-state-metrics data is
 // fine. kubeletSelector/cadvisorSelector overrides must match
-// argo/apps/monitoring/mixins.libsonnet's exactly, since the rules
+// apps/monitoring/mixins.libsonnet's exactly, since the rules
 // themselves are job-selector-sensitive (e.g. node_cpu_hourly_cost has
 // nothing to do with cadvisor, but node_namespace_pod_container:*
 // aggregates straight off container_cpu_usage_seconds_total{cadvisorSelector}).
@@ -69,7 +69,7 @@ local rulerRulesConfigMap =
 
 // withScrapeAnnotations adds prometheus.io/scrape annotations to a pod
 // template so Alloy's annotation-based pod discovery (see
-// argo/apps/monitoring/values.yaml) picks up the component's own /metrics
+// apps/monitoring/values.yaml) picks up the component's own /metrics
 // endpoint. Without this, none of Mimir's components are scraped by
 // anything, so Mimir never has its own cortex_*/mimir_* self-monitoring
 // metrics (what the mimir-mixin dashboards query) even though it happily
@@ -151,7 +151,7 @@ mimir {
     # `overrides.medium_small_user` breaks compactor rendering.
     #
     # We hit the 150k ceiling exactly once the kubelet/cadvisor scrape fix
-    # (see argo/apps/monitoring alloy-config.alloy history) started actually
+    # (see apps/monitoring alloy-config.alloy history) started actually
     # ingesting data for the first time -- the distributor then rejects any
     # push containing series it hasn't seen before, cluster-wide, which
     # silently blocks onboarding anything new (e.g. homeassistant's

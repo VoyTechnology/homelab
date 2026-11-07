@@ -5,22 +5,16 @@
 // running it as a DaemonSet would produce duplicate series for every
 // object on every node. Sharding (--shard/--total-shards) exists for
 // clusters with thousands of objects; this cluster doesn't need it.
-local config = import 'config.libsonnet';
 local ksm = import 'github.com/grafana/jsonnet-libs/kube-state-metrics/main.libsonnet';
 local k = import 'k.libsonnet';
 
 local service = k.core.v1.service;
 local servicePort = k.core.v1.servicePort;
 
-config + {
+{
   local this = ksm.new(
-    $.namespace,
-    // Vendored lib defaults to kube-state-metrics v2.1.0 (2021). Renovate's
-    // jsonnet custom manager only tracks `targetRevision = '...'`
-    // assignments, not image tags, so this isn't auto-bumped -- check
-    // https://github.com/kubernetes/kube-state-metrics/releases occasionally
-    // and bump by hand.
-    image='registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.15.0',
+    $._config.namespace,
+    image=$._images.kubeStateMetrics,
   ),
 
   kube_state_metrics_service_account: this.rbac.service_account,

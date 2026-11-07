@@ -1,0 +1,13 @@
+{
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": {
+    "name": "monitoring/bet1",
+    "labels": {
+      "flux.bednarzak.com/depends-on.external-secrets": "true",
+      "flux.bednarzak.com/depends-on.gateway": "true",
+      "flux.bednarzak.com/depends-on.pocketid": "true"
+    }
+  },
+  "spec": { "namespace": "monitoring" }
+}
