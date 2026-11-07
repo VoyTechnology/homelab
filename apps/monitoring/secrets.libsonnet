@@ -9,14 +9,11 @@ local properties = {
   'remote-config-url': 'grafana_cloud_remote_config_url',
   'metrics-url': 'grafana_cloud_metrics_url',
   'logs-url': 'grafana_cloud_logs_url',
-  // Client of the Dex login to Grafana.
-  'oauth-client-id': 'grafana_auth_client_id',
-  'oauth-client-secret': 'grafana_auth_client_secret',
 };
 
 // Secrets fanned out from the `cluster-secrets` store.
 {
-  // Grafana Cloud credentials for Alloy, and the Dex client of Grafana.
+  // Grafana Cloud credentials for Alloy.
   grafanaCloud:
     externalSecret.new('grafana-cloud')
     + externalSecret.metadata.withNamespace($._config.namespace)
