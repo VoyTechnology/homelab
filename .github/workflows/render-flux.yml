@@ -72,7 +72,7 @@ jobs:
         uses: jdx/mise-action@v2
         with:
           working_directory: homelab
-          install_args: go-jsonnet jsonnet-bundler tanka yq flux2
+          install_args: go-jsonnet jsonnet-bundler tanka yq flux2 helm
 
       - name: Put tools on PATH
         working-directory: homelab

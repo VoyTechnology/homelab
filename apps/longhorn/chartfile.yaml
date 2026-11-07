@@ -1,0 +1,8 @@
+directory: charts
+repositories:
+- name: longhorn
+  url: https://charts.longhorn.io
+requires:
+- chart: longhorn/longhorn
+  version: 1.13.0
+version: 1

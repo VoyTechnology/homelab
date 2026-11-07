@@ -34,6 +34,15 @@
     },
     {
       "customType": "regex",
+      "description": "Update Helm charts rendered by Tanka apps (apps/*/chartfile.yaml)",
+      "managerFilePatterns": ["/(^|/)chartfile\\.yaml$/"],
+      "matchStrings": [
+        "repositories:[\\s\\S]*?- name: (?<repo>\\S+)\\n\\s+url: (?<registryUrl>\\S+)[\\s\\S]*?- chart: \\k<repo>/(?<depName>\\S+)\\n\\s+version: (?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "helm"
+    },
+    {
+      "customType": "regex",
       "description": "Update GitHub release file URLs with version in filename",
       "managerFilePatterns": ["/.*\\.(ya?ml)$/"],
       "matchStrings": [
@@ -42,6 +51,13 @@
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "{{depName}}",
       "autoReplaceStringTemplate": "https://github.com/{{owner}}/{{repo}}/releases/download/v{{newValue}}/{{prefix}}{{newValue}}{{suffix}}"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Longhorn upgrades one minor version at a time and has its own procedure: review by hand",
+      "matchDepNames": ["longhorn"],
+      "automerge": false
     }
   ]
 }

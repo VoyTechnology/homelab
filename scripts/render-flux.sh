@@ -40,6 +40,8 @@ for env in "$root"/apps/*/environments/"$cluster"; do
   app_out="$out/apps/$cluster/$app"
   mkdir -p "$app_out" "$out/clusters/$cluster/apps"
 
+  # Apps rendering a Helm chart pin it in chartfile.yaml; the chart itself is not committed.
+  [[ -f "$root/apps/$app/chartfile.yaml" ]] && (cd "$root/apps/$app" && tk tool charts vendor >/dev/null)
   (cd "$root/apps" && tk export "$app_out" "${env#"$root/apps/"}" \
     --format '{{.kind | lower}}-{{.metadata.name}}' --extension yaml >/dev/null)
   for f in "$app_out"/*.yaml; do
