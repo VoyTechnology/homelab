@@ -40,7 +40,7 @@ local gateway(cfg, name, address, annotations={}) = {
       name: name,
       namespace: ns,
       // external-dns only publishes routes on gateways with this label; the Cloudflare gateway manages its own DNS.
-      labels: { 'external-dns': 'true' },
+      labels: { 'dns.kubernetes.io/include': 'true' },
       annotations: { 'cert-manager.io/cluster-issuer': 'letsencrypt' } + annotations,
     },
     spec: {
