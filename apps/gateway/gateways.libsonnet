@@ -39,6 +39,8 @@ local gateway(cfg, name, address, annotations={}) = {
     metadata: {
       name: name,
       namespace: ns,
+      // external-dns only publishes routes on gateways with this label; the Cloudflare gateway manages its own DNS.
+      labels: { 'external-dns': 'true' },
       annotations: { 'cert-manager.io/cluster-issuer': 'letsencrypt' } + annotations,
     },
     spec: {
