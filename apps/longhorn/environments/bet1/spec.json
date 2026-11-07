@@ -1,0 +1,9 @@
+{
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": {
+    "name": "longhorn/bet1",
+    "labels": { "flux.bednarzak.com/depends-on.cert-manager": "true" }
+  },
+  "spec": { "namespace": "longhorn-system" }
+}
