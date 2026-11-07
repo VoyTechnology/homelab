@@ -6,6 +6,6 @@
     // renovate: datasource=docker depName=quay.io/metallb/speaker
     speaker: 'quay.io/metallb/speaker:v0.15.2',
     // renovate: datasource=docker depName=quay.io/frrouting/frr
-    frr: 'quay.io/frrouting/frr:9.1.0',
+    frr: 'quay.io/frrouting/frr:9.1.3',
   },
 }
