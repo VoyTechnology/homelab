@@ -42,8 +42,9 @@ local gateway(cfg, name, address, annotations={}) = {
     + certificate.spec.issuerRef.withKind('ClusterIssuer'),
 
   // The same certificate in the namespace the gateways are about to move to, so it is issued before the move.
+  // Named differently: the render writes one file per kind and name, not per namespace.
   certificateInGatewayNamespace: self.certificate {
-    metadata+: { namespace: cfg.gatewayNamespace },
+    metadata+: { name: name + '-wildcard', namespace: cfg.gatewayNamespace },
   },
 
   gateway: {
