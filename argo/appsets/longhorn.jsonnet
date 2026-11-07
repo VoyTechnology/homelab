@@ -17,3 +17,7 @@ local source = helm.new(
 
 appset.new('longhorn', 'longhorn-system')
 + appset.addSource(source)
++ {
+  // Deleting the appset must leave Longhorn running (it moves to Flux).
+  spec+: { syncPolicy+: { preserveResourcesOnDeletion: true } },
+}
