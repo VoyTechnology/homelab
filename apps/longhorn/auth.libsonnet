@@ -1,5 +1,6 @@
 // Login through Pocket ID, enforced by the gateway. No generated libraries for either CRD, so plain objects.
 {
+  local pocketid = $._config.pocketid,
   local redirect = 'https://%s/oauth2/callback' % $._config.host,
 
   // The operator creates the client in Pocket ID and writes its credentials to the Secret below, under
@@ -29,7 +30,14 @@
     spec: {
       targetRefs: [{ group: 'gateway.networking.k8s.io', kind: 'HTTPRoute', name: $.route.metadata.name }],
       oidc: {
-        provider: { issuer: $._config.oidcIssuer },
+        provider: {
+          issuer: $._config.oidcIssuer,
+          // Envoy's upstream TLS stops at 1.2 and Cloudflare in front of Pocket ID requires 1.3, so the
+          // token call goes to the Service. Setting both endpoints also skips the issuer discovery.
+          authorizationEndpoint: '%s/authorize' % $._config.oidcIssuer,
+          tokenEndpoint: 'http://%s.%s.svc.cluster.local:%d/api/oidc/token' % [pocketid.service, pocketid.namespace, pocketid.port],
+          backendRefs: [{ name: pocketid.service, namespace: pocketid.namespace, port: pocketid.port }],
+        },
         clientIDRef: { name: $.oidcClient.spec.secret.name },
         clientSecret: { name: $.oidcClient.spec.secret.name },
         redirectURL: redirect,
