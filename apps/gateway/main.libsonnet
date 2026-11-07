@@ -6,6 +6,14 @@
 + (import 'github.com/VoyTechnology/home-libsonnet/cloudflare-gateway-controller/main.libsonnet')
 + (import 'config.libsonnet')
 + (import 'images.libsonnet')
+// The libraries share one `_images` and use generic keys, so point them at the descriptive ones.
++ {
+  _images+:: {
+    gateway: $._images.envoyGateway,
+    ratelimit: $._images.envoyRatelimit,
+    controller: $._images.cloudflareGateway,
+  },
+}
 + (import 'namespace.libsonnet')
 + (import 'secrets.libsonnet')
 + (import 'controlplane.libsonnet')
