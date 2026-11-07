@@ -6,3 +6,4 @@
 + (import 'instance.libsonnet')
 + (import 'groups.libsonnet')
 + (import 'route.libsonnet')
++ (import 'grants.libsonnet')
