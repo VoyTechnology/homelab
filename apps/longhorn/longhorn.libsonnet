@@ -23,15 +23,6 @@ local keepCrds(objs) = {
     values: {
       csi: { kubeletRootDir: $._config.kubeletRootDir },
       persistence: { defaultClassReplicaCount: $._config.defaultReplicaCount },
-      ingress: {
-        enabled: true,
-        ingressClassName: 'internal-login',
-        host: $._config.host,
-        tls: true,
-        tlsSecret: 'longhorn-tls',
-        secureBackends: true,
-        annotations: { 'cert-manager.io/cluster-issuer': 'letsencrypt' },
-      },
     },
   }))),
 }

@@ -3,7 +3,10 @@
   "kind": "Environment",
   "metadata": {
     "name": "longhorn/bet1",
-    "labels": { "flux.bednarzak.com/depends-on.cert-manager": "true" }
+    "labels": {
+      "flux.bednarzak.com/depends-on.envoy-gateway": "true",
+      "flux.bednarzak.com/depends-on.pocketid": "true"
+    }
   },
   "spec": { "namespace": "longhorn-system" }
 }
