@@ -2,11 +2,9 @@ local k = import 'k.libsonnet';
 
 local container = k.core.v1.container;
 
-// Two logins side by side: Dex (generic OAuth, as before) and Pocket ID. Grafana has a single generic OAuth
-// provider, so Pocket ID goes through the Okta one, which is plain OIDC with configurable endpoints.
+// Pocket ID is the only login. It goes through Grafana's Okta provider, which is plain OIDC with configurable endpoints.
 {
   local issuer = $._config.oidcIssuer,
-  local dex = 'https://login.%s' % $._config.domain,
   local host = 'grafana.%s' % $._config.domain,
 
   // The operator creates the client in Pocket ID and writes its credentials to the Secret below.
@@ -34,17 +32,6 @@ local container = k.core.v1.container;
         auth+: { disable_login_form: true },
         // The flag above only hides the form, basic auth would still work.
         'auth.basic'+: { enabled: false },
-        'auth.generic_oauth'+: {
-          enabled: true,
-          name: 'Dex',
-          scopes: 'openid email profile groups offline_access',
-          skip_org_role_sync: true,
-          allow_sign_up: false,
-          oauth_allow_insecure_email_lookup: true,
-          auth_url: '%s/auth' % dex,
-          token_url: '%s/token' % dex,
-          api_url: '%s/userinfo' % dex,
-        },
         'auth.okta'+: {
           enabled: true,
           name: 'Pocket ID',
@@ -61,8 +48,6 @@ local container = k.core.v1.container;
     },
 
     grafana_container+:: container.withEnvMixin([
-      { name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_ID', valueFrom: { secretKeyRef: { name: 'grafana-cloud', key: 'oauth-client-id' } } },
-      { name: 'GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET', valueFrom: { secretKeyRef: { name: 'grafana-cloud', key: 'oauth-client-secret' } } },
       { name: 'GF_AUTH_OKTA_CLIENT_ID', valueFrom: { secretKeyRef: { name: $.oidcClient.spec.secret.name, key: 'client-id' } } },
       { name: 'GF_AUTH_OKTA_CLIENT_SECRET', valueFrom: { secretKeyRef: { name: $.oidcClient.spec.secret.name, key: 'client-secret' } } },
     ]),
