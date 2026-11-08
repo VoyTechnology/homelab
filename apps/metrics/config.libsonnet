@@ -38,7 +38,7 @@
     store_gateway_allow_multiple_replicas_on_same_node: true,
 
     compactor_data_disk_class: null,
-    compactor_data_disk_size: '2Gi',
+    compactor_data_disk_size: '4Gi',
 
     // Enable the ruler so the mixin's recording rules (which the mixin
     // dashboards query) actually get evaluated. Rule groups are loaded from
