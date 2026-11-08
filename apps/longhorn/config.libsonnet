@@ -5,6 +5,9 @@
     release: 'longhorn',
     // Two replicas: there will not be more storage anytime soon.
     defaultReplicaCount: 2,
+    // Disks Flux applies to a node: { <node>: { <disk>: { path, reservedBytes, tags } } }. List the
+    // existing default disk too, with its live name and values, so it is kept. Paths must exist. Set per cluster.
+    disks: {},
     // Specific to k3s.
     kubeletRootDir: '/var/lib/kubelet',
     // Host of the UI. Set per cluster.
