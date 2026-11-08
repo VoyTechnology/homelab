@@ -5,6 +5,9 @@
     release: 'longhorn',
     // Two replicas: there will not be more storage anytime soon.
     defaultReplicaCount: 2,
+    // Disks added next to a node's default one: { <node>: { <disk>: { path, reservedBytes, tags } } }.
+    // The path must be an existing directory on the node. Set per cluster.
+    extraDisks: {},
     // Specific to k3s.
     kubeletRootDir: '/var/lib/kubelet',
     // Host of the UI. Set per cluster.
