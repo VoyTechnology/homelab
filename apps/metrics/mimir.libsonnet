@@ -31,7 +31,11 @@ local s3Credentials(secret) = {
 };
 
 {
-  compactor_statefulset+: statefulSet.mixin.spec.withReplicas(1) + withScrapeAnnotations,
+  // The volume claim templates are immutable, so growing the compactor's disk recreates the StatefulSet
+  // (Flux's force annotation); its PVC is kept and expanded by hand.
+  compactor_statefulset+: statefulSet.mixin.spec.withReplicas(1) + withScrapeAnnotations + {
+    metadata+: { annotations+: { 'kustomize.toolkit.fluxcd.io/force': 'enabled' } },
+  },
   distributor_deployment+: deployment.mixin.spec.withReplicas(1) + withScrapeAnnotations,
   ingester_statefulset+: statefulSet.mixin.spec.withReplicas(1) + withScrapeAnnotations,
   querier_deployment+: deployment.mixin.spec.withReplicas(1) + withScrapeAnnotations,
