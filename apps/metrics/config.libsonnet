@@ -8,7 +8,7 @@
 
     // Garage, the S3 store behind Mimir. Mimir reaches it at `<name>.<namespace>:3900`.
     buckets: ['mimir'],
-    storageClassName: 'longhorn',
+    storageClassName: 'longhorn-single',
     metaSize: '1Gi',
     dataSize: '20Gi',
     layoutCapacity: 20 * 1000 * 1000 * 1000,

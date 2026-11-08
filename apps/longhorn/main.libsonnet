@@ -1,5 +1,6 @@
 (import 'longhorn.libsonnet')
 + (import 'config.libsonnet')
 + (import 'namespace.libsonnet')
++ (import 'storageclass.libsonnet')
 + (import 'route.libsonnet')
 + (import 'auth.libsonnet')
