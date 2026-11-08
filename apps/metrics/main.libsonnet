@@ -1,0 +1,8 @@
+(import 'mimir/mimir.libsonnet')
++ (import 'garage/main.libsonnet')
++ (import 'config.libsonnet')
++ (import 'images.libsonnet')
++ (import 'namespace.libsonnet')
++ (import 'secrets.libsonnet')
++ (import 'mimir.libsonnet')
++ (import 'rules.libsonnet')

@@ -55,6 +55,16 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "garage"
+        }
+      },
+      "version": "db76a33e9f0af0c7ce47c8267181c834deb993c5",
+      "sum": "g5ndG9V8rTG/5vBkiKfVfBDRE3v4XcR+aOP1Qo+wxSw="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "gateway-api"
         }
       },
@@ -125,6 +135,16 @@
       "source": {
         "git": {
           "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "consul"
+        }
+      },
+      "version": "93ba4993e0e0741f107ef61e19a022a71588e324",
+      "sum": "Po3c1Ic96ngrJCtOazic/7OsLkoILOKZWXWyZWl+od8="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
           "subdir": "grafana-builder"
         }
       },
@@ -140,6 +160,16 @@
       },
       "version": "1abcc571e0882164a917e848ae2d9426188bf016",
       "sum": "0y3AFX9LQSpfWTxWKSwoLgbt0Wc9nnCwhMH2szKzHv0="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "memcached"
+        }
+      },
+      "version": "93ba4993e0e0741f107ef61e19a022a71588e324",
+      "sum": "zNTCDRaCqJUHjQSQRsxGR3jLrMP9tU7YNQb13dbm1bU="
     },
     {
       "source": {
@@ -165,11 +195,31 @@
       "source": {
         "git": {
           "remote": "https://github.com/grafana/mimir.git",
+          "subdir": "operations/mimir"
+        }
+      },
+      "version": "71aeb7ca0a0a33ba24225101d582b9149038c193",
+      "sum": "zKUldjMaIpT93QWhi8ZU/q2LP+KUzmoWh8BYzn0+F0A="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/mimir.git",
           "subdir": "operations/mimir-mixin"
         }
       },
       "version": "2f53a53aa9efd70cdc822f4742c3ae7b5ca55baa",
       "sum": "//uYy6Pf6A9spl0LZ5rTHX/i62sHGB/j5sajYDdNVC0="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/rollout-operator.git",
+          "subdir": "operations/rollout-operator"
+        }
+      },
+      "version": "0e952cd1cb19c8edb8d4173d350349d3c0901a27",
+      "sum": "4pYLZ+qmS226f9wDqjNLB8Uj5BtRUGr3I/xdKELIWkI="
     },
     {
       "source": {
@@ -230,6 +280,16 @@
       },
       "version": "f66023fcddc92e89c3e81bd49c1f528a984505ef",
       "sum": "B+1kudlxnkbH6warwOHHh+gmADl2w5VFJQ5D0SxcO6M="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/keda-libsonnet.git",
+          "subdir": "2.15"
+        }
+      },
+      "version": "dbc8cf1a9847f123d8325378111155fb135983ab",
+      "sum": "EVCNg9VpU9ghIYHZtbQffHbZs+EqKOD0cw+ZPilWR48="
     },
     {
       "source": {

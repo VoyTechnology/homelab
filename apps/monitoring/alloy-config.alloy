@@ -159,7 +159,7 @@ prometheus.scrape "kubelet" {
 // prefix) these accounted for ~90% of this job's ~71k series, none of
 // which any dashboard/recording rule here queries. Dropping them recovers
 // a large chunk of the per-tenant series budget (see max_global_series_per_user
-// in argo/apps/metrics/main.jsonnet) without losing anything currently used.
+// in apps/metrics/mimir.libsonnet) without losing anything currently used.
 // workqueue_*/rest_client_* are dropped for the same reason -- generic
 // client-go instrumentation, not kubelet-specific.
 prometheus.relabel "kubelet_filter" {
@@ -221,7 +221,7 @@ prometheus.scrape "pods" {
   targets    = discovery.relabel.pod_annotations.output
   job_name   = "pod-metrics"
   // See the kubelet scrape above for why these are set. This is the path
-  // Envoy and Mimir's own self-scrape (see argo/apps/metrics/main.jsonnet)
+  // Envoy and Mimir's own self-scrape (see apps/metrics/mimir.libsonnet)
   // go through, so this is what actually makes their histogram-backed
   // dashboard panels (latency quantiles, etc.) have data.
   convert_classic_histograms_to_nhcb = true
