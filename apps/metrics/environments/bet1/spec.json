@@ -4,8 +4,7 @@
   "metadata": {
     "name": "metrics/bet1",
     "labels": {
-      "flux.bednarzak.com/depends-on.external-secrets": "true",
-      "flux.bednarzak.com/depends-on.longhorn": "true"
+      "flux.bednarzak.com/depends-on.external-secrets": "true"
     }
   },
   "spec": { "namespace": "metrics-system" }
