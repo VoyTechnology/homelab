@@ -1,1 +1,0 @@
-# Tanka Experimental Directory
