@@ -2,9 +2,12 @@
 + {
   _config+:: {
     host: 'longhorn.bet1.bednarzak.com',
-    // The 229G NVMe on s1-bet1 (mounted at /nvme); 20Gi kept free for the filesystem.
-    extraDisks: {
-      's1-bet1': { nvme: { path: '/nvme/longhorn', reservedBytes: 21474836480 } },
+    // s1-bet1: the existing default disk (values as in the live Node) plus the 229G NVMe (20Gi kept free).
+    disks: {
+      's1-bet1': {
+        'default-disk-cad5dc980083830': { path: '/var/lib/longhorn/', reservedBytes: 73037756006 },
+        nvme: { path: '/nvme/longhorn', reservedBytes: 21474836480 },
+      },
     },
   },
 }

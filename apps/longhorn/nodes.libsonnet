@@ -13,17 +13,17 @@
       spec: {
         disks: {
           [disk]: {
-            path: $._config.extraDisks[node][disk].path,
+            path: $._config.disks[node][disk].path,
             diskType: 'filesystem',
             allowScheduling: true,
             evictionRequested: false,
-            storageReserved: $._config.extraDisks[node][disk].reservedBytes,
-            tags: std.get($._config.extraDisks[node][disk], 'tags', []),
+            storageReserved: $._config.disks[node][disk].reservedBytes,
+            tags: std.get($._config.disks[node][disk], 'tags', []),
           }
-          for disk in std.objectFields($._config.extraDisks[node])
+          for disk in std.objectFields($._config.disks[node])
         },
       },
     }
-    for node in std.objectFields($._config.extraDisks)
+    for node in std.objectFields($._config.disks)
   },
 }
