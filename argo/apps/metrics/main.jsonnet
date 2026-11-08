@@ -82,6 +82,10 @@ local withScrapeAnnotations = {
   } } } },
 };
 
+// resources sets CPU/memory requests and a memory limit (no CPU limit besides the ruler's).
+local resources(cpu, memory, memoryLimit) =
+  k.util.resourcesRequests(cpu, memory) + k.util.resourcesLimits(null, memoryLimit);
+
 mimir {
   _config+:: {
     namespace: $._namespace,
@@ -194,17 +198,26 @@ mimir {
         template+: { spec+: { affinity: null } } }
       },
 
-  compactor_container+: k.util.resourcesRequests('100m', '128Mi'),
-  distributor_container+: k.util.resourcesRequests('100m', '128Mi'),
-  ingester_container+: k.util.resourcesRequests('100m', '128Mi'),
-  querier_container+: k.util.resourcesRequests('100m', '128Mi'),
-  query_frontend_container+: k.util.resourcesRequests('100m', '128Mi'),
-  store_gateway_container+: k.util.resourcesRequests('100m', '128Mi'),
+  // The Mimir library defaults assume a production cluster (e.g. 25Gi ingester,
+  // 24Gi querier). The workers are Raspberry Pis with ~4GiB each, so cap everything.
+  compactor_container+: resources('100m', '256Mi', '1Gi'),
+  distributor_container+: resources('100m', '256Mi', '768Mi'),
+  ingester_container+: resources('100m', '512Mi', '1Gi'),
+  querier_container+: resources('100m', '128Mi', '768Mi'),
+  query_frontend_container+: resources('100m', '128Mi', '384Mi'),
+  query_scheduler_container+: resources('50m', '64Mi', '256Mi'),
+  store_gateway_container+: resources('100m', '256Mi', '768Mi'),
+
+  // Memcached sizes are derived from memory_limit_mb (the library defaults to 6GiB for chunks).
+  memcached_chunks+: { memory_limit_mb: 256 },
+  memcached_frontend+: { memory_limit_mb: 64 },
+  memcached_index_queries+: { memory_limit_mb: 64 },
+  memcached_metadata+: { memory_limit_mb: 32 },
 
   ruler_deployment+:
     deployment.mixin.spec.withReplicas(1)
     + k.util.configMapVolumeMount(rulerRulesConfigMap, rulerRulesDir + '/' + rulerRulesTenant),
-  ruler_container+: k.util.resourcesRequests('100m', '128Mi'),
+  ruler_container+: resources('100m', '128Mi', '512Mi') + k.util.resourcesLimits('1', '512Mi'),
 }
 # Let Alloy scrape each Mimir component's own /metrics via pod annotations,
 # so Mimir's self-monitoring metrics end up in Mimir (see withScrapeAnnotations above).
