@@ -22,5 +22,7 @@
     // credentials. The token needs Cloudflare Tunnel: Edit (account) and DNS: Edit (zone).
     apiTokenProperty: 'external_gateway_cloudflare_token',
     accountIdProperty: 'cloudflare_account_id',
+    // Node the Cloudflare tunnel connector runs on. Empty leaves it to the scheduler.
+    tunnelNode: '',
   },
 }
