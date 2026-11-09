@@ -157,29 +157,15 @@ local secretEnv(name, secret, key) = {
   service: svc.new('donetick', labels, [servicePort.newNamed('http', port, 'http')])
            + svc.metadata.withLabels(labels),
 
-  ingress: {
-    apiVersion: 'networking.k8s.io/v1',
-    kind: 'Ingress',
-    metadata: {
-      name: 'donetick',
-      labels: labels,
-      annotations: {
-        'cert-manager.io/cluster-issuer': 'letsencrypt',
-        // DNS is managed by the Cloudflare tunnel, not external-dns.
-        'dns.kubernetes.io/exclude': 'true',
-      },
-    },
+  // Exposed through the external-cloudflare Gateway; DNS is managed by the gateway controller.
+  route: {
+    apiVersion: 'gateway.networking.k8s.io/v1',
+    kind: 'HTTPRoute',
+    metadata: { name: 'donetick' },
     spec: {
-      ingressClassName: 'external',
-      tls: [{ hosts: [$._host], secretName: 'donetick-tls' }],
-      rules: [{
-        host: $._host,
-        http: { paths: [{
-          path: '/',
-          pathType: 'Prefix',
-          backend: { service: { name: 'donetick', port: { number: port } } },
-        }] },
-      }],
+      parentRefs: [{ name: 'external-cloudflare', namespace: 'gateway-system' }],
+      hostnames: [$._host],
+      rules: [{ backendRefs: [{ name: 'donetick', port: port }] }],
     },
   },
 }

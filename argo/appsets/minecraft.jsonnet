@@ -23,18 +23,6 @@ local mapPort = {
     type: 'ClusterIP',
     port: 8100,
   },
-  ingress: {
-    enabled: true,
-    ingressClassName: 'external',
-    hosts: [{
-      name: 'skynet-map.' + domain,
-      path: '/',
-    }],
-    tls: [{
-      secretName: 'skynet-map-' + domain,
-      hosts: ['skynet-map.' + domain],
-    }],
-  },
 };
 
 local source = helm.new(
@@ -57,5 +45,20 @@ local source = helm.new(
   }
 );
 
+// The map is exposed through the external-cloudflare Gateway; the chart cannot render an HTTPRoute.
+local extraObjects = helm.extraObjects('minecraft', overrides={
+  mapRoute: {
+    apiVersion: 'gateway.networking.k8s.io/v1',
+    kind: 'HTTPRoute',
+    metadata: { name: 'skynet-map', namespace: 'minecraft' },
+    spec: {
+      parentRefs: [{ name: 'external-cloudflare', namespace: 'gateway-system' }],
+      hostnames: ['skynet-map.' + domain],
+      rules: [{ backendRefs: [{ name: 'minecraft-map', port: 8100 }] }],
+    },
+  },
+});
+
 appset.new('minecraft', 'minecraft')
 + appset.addSource(source)
++ appset.addSource(extraObjects)

@@ -122,26 +122,15 @@ local secretEnv(name, secret, key) = {
 
   service: svc.new('paperless', labels, [servicePort.newNamed('http', port, port)]),
 
-  ingress: {
-    apiVersion: 'networking.k8s.io/v1',
-    kind: 'Ingress',
-    metadata: {
-      name: 'paperless',
-      annotations: {
-        // DNS is managed by the Cloudflare tunnel, not external-dns.
-        'dns.kubernetes.io/exclude': 'true',
-      },
-    },
+  // Exposed through the external-cloudflare Gateway; DNS is managed by the gateway controller.
+  route: {
+    apiVersion: 'gateway.networking.k8s.io/v1',
+    kind: 'HTTPRoute',
+    metadata: { name: 'paperless' },
     spec: {
-      ingressClassName: 'external',
-      rules: [{
-        host: $._host,
-        http: { paths: [{
-          path: '/',
-          pathType: 'Prefix',
-          backend: { service: { name: 'paperless', port: { number: port } } },
-        }] },
-      }],
+      parentRefs: [{ name: 'external-cloudflare', namespace: 'gateway-system' }],
+      hostnames: [$._host],
+      rules: [{ backendRefs: [{ name: 'paperless', port: port }] }],
     },
   },
 }

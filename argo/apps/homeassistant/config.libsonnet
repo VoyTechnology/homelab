@@ -5,7 +5,6 @@
         networkInterface: error 'networkInterface must be set in the config',
         nodeName: error 'nodeName must be set in the config',
         domain: error 'domain must be set in the config',
-        ingressClass: 'external',
         restPort: 8081,
         webPort: 8082,
 
