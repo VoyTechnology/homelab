@@ -94,6 +94,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/fluxcd/flux2-monitoring-example.git",
+          "subdir": "monitoring/configs/dashboards"
+        }
+      },
+      "version": "7ab65dc8b90f7a6751d88f18bbb4e1bee33bf334",
+      "sum": "oBcex8Ueqwe5Jyo0RkojBbpt3Yhi8JE7vJqdCG6nqUQ="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/grafana/grafonnet-lib.git",
           "subdir": "grafonnet"
         }
