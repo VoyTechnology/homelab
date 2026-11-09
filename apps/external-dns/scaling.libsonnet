@@ -1,3 +1,6 @@
 // Scaling: replica counts and CPU/memory requests and limits.
-// Nothing is tuned yet, the library defaults apply.
-{}
+{
+  external_dns_container+:: {
+    resources: { requests: { cpu: '10m', memory: '32Mi' }, limits: { memory: '128Mi' } },
+  },
+}
