@@ -21,7 +21,9 @@ local volumeMount = k.core.v1.volumeMount;
                  k.core.v1.containerPort.withName('grafana-metrics')
                  + k.core.v1.containerPort.withContainerPort(3000),
                )
-               + container.withVolumeMounts([volumeMount.new('grafana-data', '/var/lib/grafana', false)]),
+               + container.withVolumeMounts([volumeMount.new('grafana-data', '/var/lib/grafana', false)])
+               // Sits at ~280Mi; unlimited it can take the whole node.
+               + container.resources.withLimits({ memory: '512Mi' }),
 
              grafana_data_pvc:
                k.core.v1.persistentVolumeClaim.new('grafana-data')
