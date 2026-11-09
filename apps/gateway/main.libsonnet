@@ -6,6 +6,7 @@
 + (import 'github.com/VoyTechnology/home-libsonnet/cloudflare-gateway-controller/main.libsonnet')
 + (import 'config.libsonnet')
 + (import 'images.libsonnet')
++ (import 'scaling.libsonnet')
 // The libraries share one `_images` and use generic keys, so point them at the descriptive ones.
 + {
   _images+:: {
