@@ -32,8 +32,8 @@ ha + config + images + ingress + otbr + reload {
       http: {
         use_x_forwarded_for: true,
         // The Cloudflare tunnel connector reaches Home Assistant from its node's Tailscale
-        // address (s3-bet1, s1-bet1).
-        trusted_proxies: ['10.0.0.0/8', '100.75.214.118/32', '100.122.232.149/32'],
+        // address, so trust the whole Tailscale range to cover node moves and new nodes.
+        trusted_proxies: ['10.0.0.0/8', '100.64.0.0/10'],
       },
       frontend: { themes: ha.includeDir('merge_named', 'themes') },
       template: std.flattenArrays(hidden(home.haTemplates)),
