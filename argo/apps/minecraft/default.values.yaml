@@ -52,8 +52,9 @@ mcbackup:
         #!/bin/bash
         set -euo pipefail
         # This script is run after each backup, so we can do some extra stuff
-        # like copying the backup to an NFS share.
-        echo "Copying backup to NFS share"
+        # like copying the backup out of the pod, to the storage disk of the node.
+        # /backups is an emptyDir, so without this copy the backups die with the pod.
+        echo "Copying backup to /storage/backups/minecraft/daily"
         rsync -a --delete /backups/*.tgz /nfs/
 
 extraVolumes:
@@ -71,10 +72,12 @@ extraVolumes:
         configMap:
           name: extra-config
       - name: nfs
-        # Should be configurable, but YAML and Helm sucks so we can't extend
-        nfs:
-          server: s1-bet1
-          path: /nvme/minecraft/backups
+        # The pod is pinned to s1-bet1, so use its /storage disk directly instead of mounting it back
+        # over NFS (that mount went stale when the data moved off /nvme). The directory must be owned
+        # by 1000:2000, the user of the backup container. `--delete` above only touches this directory.
+        hostPath:
+          path: /storage/backups/minecraft/daily
+          type: DirectoryOrCreate
 
 extraDeploy:
   - |
