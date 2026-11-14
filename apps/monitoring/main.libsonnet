@@ -4,6 +4,7 @@
 + (import 'grafana.libsonnet')
 + (import 'alloy.libsonnet')
 + (import 'kube-state-metrics.libsonnet')
++ (import 'flux.libsonnet')
 + (import 'node-exporter.libsonnet')
 + (import 'images.libsonnet')
 + (import 'route.libsonnet')

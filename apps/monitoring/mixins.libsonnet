@@ -49,6 +49,22 @@ local fixDatasourceVarDefault(dashboard) =
     },
   };
 
+// Flux publishes its dashboards as plain JSON, not a mixin. They pick the datasource with a variable named
+// DS_PROMETHEUS that defaults to "Prometheus", and a few panels name a datasource directly. None of those exist
+// here (only "Metrics", the default), so point the variable at the default and every reference at the variable.
+local fixFluxDatasources(node) =
+  if std.isObject(node) then
+    {
+      [f]:
+        if f == 'datasource' && std.isObject(node[f]) && std.get(node[f], 'type') == 'prometheus' then { type: 'prometheus', uid: '${DS_PROMETHEUS}' }
+        else if f == 'datasource' && node[f] == '${DS_PROMETHEUS}' then { type: 'prometheus', uid: '${DS_PROMETHEUS}' }
+        else if f == 'current' && std.get(node, 'name') == 'DS_PROMETHEUS' then { selected: false, text: 'default', value: 'default' }
+        else fixFluxDatasources(node[f])
+      for f in std.objectFields(node)
+    }
+  else if std.isArray(node) then [fixFluxDatasources(x) for x in node]
+  else node;
+
 {
   argocd: argocdMixin {
     grafanaDashboards+:: {
@@ -71,6 +87,15 @@ local fixDatasourceVarDefault(dashboard) =
   // their own jobs (k3s embeds them in the kubelet process and that
   // traffic is filtered out, see kubelet_filter), so those dashboards
   // will stay empty.
+  // Needs gotk_resource_info from kube-state-metrics (see flux.libsonnet) and the Flux controllers' own metrics.
+  // The upstream logs dashboard is left out, there is no Loki datasource.
+  flux: {
+    grafanaDashboardFolder: 'Flux',
+    grafanaDashboards+:: {
+      'flux-cluster.json': fixFluxDatasources(import 'github.com/fluxcd/flux2-monitoring-example/monitoring/configs/dashboards/cluster.json'),
+      'flux-control-plane.json': fixFluxDatasources(import 'github.com/fluxcd/flux2-monitoring-example/monitoring/configs/dashboards/control-plane.json'),
+    },
+  },
   kubernetes: kubernetesMixin {
     grafanaDashboardFolder: 'Kubernetes',
     _config+:: {
