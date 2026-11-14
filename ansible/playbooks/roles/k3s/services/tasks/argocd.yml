@@ -117,7 +117,7 @@
         extraContainers:
           - name: tanka
             command: [/var/run/argocd/argocd-cmp-server]
-            image: grafana/tanka:0.39.5
+            image: grafana/tanka:0.40.1
             imagePullPolicy: IfNotPresent
             resources:
               limits:
