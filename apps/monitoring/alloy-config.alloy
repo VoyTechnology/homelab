@@ -185,7 +185,18 @@ prometheus.scrape "cadvisor" {
   // See the kubelet scrape above for why these are set.
   convert_classic_histograms_to_nhcb = true
   scrape_classic_histograms = true
-  forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
+  forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.relabel.cadvisor_filter.receiver]
+}
+
+// Drop cadvisor families no dashboard or rule here queries (about a third of
+// the job's series); the CPU, memory, network and fs series the mixins use stay.
+prometheus.relabel "cadvisor_filter" {
+  forward_to = [prometheus.remote_write.mimir.receiver]
+  rule {
+    source_labels = ["__name__"]
+    action = "drop"
+    regex = "container_(tasks_state|memory_failures_total|blkio_.*|cpu_load_average_10s|cpu_load_d_average_10s|file_descriptors|sockets|threads|threads_max|processes|last_seen|ulimits_soft|memory_numa_pages|memory_migrate|referenced_bytes)"
+  }
 }
 
 // Scrape node exporter
@@ -213,7 +224,18 @@ prometheus.scrape "kube_state_metrics" {
   // See the kubelet scrape above for why these are set.
   convert_classic_histograms_to_nhcb = true
   scrape_classic_histograms = true
-  forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.remote_write.mimir.receiver]
+  forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.relabel.ksm_filter.receiver]
+}
+
+// Drop kube-state-metrics families nothing here uses: creation timestamps,
+// annotations, ConfigMap/Secret objects, tolerations and QoS class.
+prometheus.relabel "ksm_filter" {
+  forward_to = [prometheus.remote_write.mimir.receiver]
+  rule {
+    source_labels = ["__name__"]
+    action = "drop"
+    regex = "kube_.*_(created|annotations)|kube_(configmap|secret)_.*|kube_pod_tolerations|kube_pod_status_qos_class"
+  }
 }
 
 // Scrape pods with prometheus.io annotations
@@ -234,7 +256,24 @@ prometheus.scrape "pods" {
 // already emit native histograms natively, which none of ours do), so
 // ArgoCD's metrics stay classic-histogram-only here.
 prometheus.operator.servicemonitors "services" {
+  forward_to = [prometheus.relabel.servicemonitor_filter.receiver]
+}
+
+// Argo CD is being removed, so stop storing its metrics. Home Assistant's
+// per-entity timestamp and state-change counters are the bulk of its series and
+// are not graphed.
+prometheus.relabel "servicemonitor_filter" {
   forward_to = [prometheus.remote_write.mimir.receiver]
+  rule {
+    source_labels = ["job"]
+    action = "drop"
+    regex = "integrations/argocd/.*"
+  }
+  rule {
+    source_labels = ["__name__"]
+    action = "drop"
+    regex = "homeassistant_(last_updated_time_seconds|state_change_total|state_change_created)"
+  }
 }
 
 // Filter metrics before sending to Grafana Cloud
