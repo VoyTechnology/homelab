@@ -46,18 +46,18 @@ minecraftServer:
 mcbackup:
   enabled: true
   destDir: /backups
+  # A map of name to value in this chart; a list is silently ignored.
   extraEnv:
-    - name: POST_BACKUP_SCRIPT
-      value: |
-        #!/bin/sh
-        set -eu
-        # This script is run after each backup. /backups is an emptyDir, so without a copy out of the pod
-        # the backups die with it. The image has neither bash nor rsync, so stick to POSIX sh and busybox.
-        latest=$(ls -t /backups/world-*.tgz | head -n 1)
-        echo "Copying $latest to /storage/backups/minecraft/daily"
-        cp "$latest" /nfs/
-        # The copies are not pruned by mc-backup, which only prunes /backups.
-        find /nfs -maxdepth 1 -name 'world-*.tgz' -mtime +14 -delete
+    POST_BACKUP_SCRIPT: |
+      #!/bin/sh
+      set -eu
+      # This script is run after each backup. /backups is an emptyDir, so without a copy out of the pod
+      # the backups die with it. The image has neither bash nor rsync, so stick to POSIX sh and busybox.
+      latest=$(ls -t /backups/world-*.tgz | head -n 1)
+      echo "Copying $latest to /storage/backups/minecraft/daily"
+      cp "$latest" /nfs/
+      # The copies are not pruned by mc-backup, which only prunes /backups.
+      find /nfs -maxdepth 1 -name 'world-*.tgz' -mtime +14 -delete
 
 extraVolumes:
   - volumeMounts:
