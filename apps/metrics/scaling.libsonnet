@@ -34,7 +34,7 @@ local resources(cpu, memory, memoryLimit) =
   // 24Gi querier). The workers are Raspberry Pis with ~4GiB each, so cap everything.
   compactor_container+: resources('100m', '256Mi', '1Gi'),
   // 768Mi was OOMKilled at startup.
-  distributor_container+: resources('100m', '512Mi', '1536Mi'),
+  distributor_container+: resources('100m', '1Gi', '1Gi'),
   ingester_container+: resources('100m', '512Mi', '1Gi'),
   querier_container+: resources('100m', '128Mi', '768Mi'),
   query_frontend_container+: resources('100m', '128Mi', '384Mi'),
