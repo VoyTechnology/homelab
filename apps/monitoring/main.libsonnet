@@ -7,5 +7,6 @@
 + (import 'flux.libsonnet')
 + (import 'node-exporter.libsonnet')
 + (import 'images.libsonnet')
++ (import 'scaling.libsonnet')
 + (import 'route.libsonnet')
 + (import 'auth.libsonnet')

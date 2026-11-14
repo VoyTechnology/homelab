@@ -2,6 +2,7 @@
 + (import 'garage/main.libsonnet')
 + (import 'config.libsonnet')
 + (import 'images.libsonnet')
++ (import 'scaling.libsonnet')
 + (import 'namespace.libsonnet')
 + (import 'secrets.libsonnet')
 + (import 'mimir.libsonnet')

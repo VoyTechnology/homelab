@@ -1,5 +1,6 @@
 (import 'longhorn.libsonnet')
 + (import 'config.libsonnet')
++ (import 'scaling.libsonnet')
 + (import 'namespace.libsonnet')
 + (import 'nodes.libsonnet')
 + (import 'settings.libsonnet')

@@ -2,5 +2,6 @@
 (import 'certmanager.libsonnet')
 + (import 'config.libsonnet')
 + (import 'images.libsonnet')
++ (import 'scaling.libsonnet')
 + (import 'secrets.libsonnet')
 + (import 'letsencrypt.libsonnet')

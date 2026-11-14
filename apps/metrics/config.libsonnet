@@ -12,7 +12,6 @@
     metaSize: '1Gi',
     dataSize: '20Gi',
     layoutCapacity: 20 * 1000 * 1000 * 1000,
-    resources: { requests: { cpu: '50m', memory: '128Mi' }, limits: { memory: '512Mi' } },
 
     aws_region: self.region,  // unused, the endpoint below is set explicitly
     storage_backend: 's3',
@@ -46,13 +45,6 @@
     // the S3 backend, so there's no need for a mimirtool/CI job to push them.
     ruler_enabled: true,
     ruler_storage_backend: 'local',
-
-    // Scale down to 1 replica for the homelab setup.
-    memcached_frontend_replicas: 1,
-    memcached_index_queries_replicas: 1,
-    memcached_chunks_replicas: 1,
-    memcached_metadata_replicas: 1,
-    memcached_range_vector_splitting_replicas: 1,
 
     // Garage runs in the cluster, so there is no TLS on the S3 endpoint, and it only does path-style buckets.
     storageConfig+:: {

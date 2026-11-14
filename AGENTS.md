@@ -137,7 +137,9 @@ Rules:
   (`ExternalSecret`s), `letsencrypt.libsonnet` (the `ClusterIssuer`).
   Every app has a `config.libsonnet` holding all of its `_config+::` defaults (never
   scattered across the concern files), merged right after the library it configures.
-  Container images are not config: every app has an `images.libsonnet` overriding the
+  Every app also has a `scaling.libsonnet` for replica counts and CPU/memory requests and limits
+  (including the scaling-related `_config+::` keys), merged after `images.libsonnet`; an app with nothing
+  tuned keeps an empty one. Container images are not config: every app has an `images.libsonnet` overriding the
   library's `_images+::` with a `// renovate: datasource=docker depName=<image>` comment per
   image, so Renovate bumps them here (the `renovate.json` manager matches `images.libsonnet`).
   Libraries must define their images the same way, never in `_config`. The
