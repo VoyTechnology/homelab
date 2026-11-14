@@ -77,6 +77,9 @@
     limits: $._config.overrides.extra_small_user {
       max_global_series_per_user: 300000,
       max_global_metadata_per_user: std.ceil(self.max_global_series_per_user * 0.2),
+      // extra_small_user's 10k samples/s is below what Alloy pushes; take the medium_small_user tier's rate.
+      ingestion_rate: 30000,
+      ingestion_burst_size: 300000,
       // Blocks older than this are deleted, which also bounds the 20Gi Garage volume.
       compactor_blocks_retention_period: '7d',
     },

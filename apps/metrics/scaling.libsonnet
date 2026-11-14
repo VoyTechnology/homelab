@@ -33,7 +33,8 @@ local resources(cpu, memory, memoryLimit) =
   // The Mimir library defaults assume a production cluster (e.g. 25Gi ingester,
   // 24Gi querier). The workers are Raspberry Pis with ~4GiB each, so cap everything.
   compactor_container+: resources('100m', '256Mi', '1Gi'),
-  distributor_container+: resources('100m', '256Mi', '768Mi'),
+  // 768Mi was OOMKilled at startup.
+  distributor_container+: resources('100m', '1Gi', '1Gi'),
   ingester_container+: resources('100m', '512Mi', '1Gi'),
   querier_container+: resources('100m', '128Mi', '768Mi'),
   query_frontend_container+: resources('100m', '128Mi', '384Mi'),
