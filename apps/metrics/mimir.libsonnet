@@ -78,6 +78,19 @@ local s3Credentials(secret) = {
   store_gateway_container+: resources('100m', '256Mi', '768Mi') + s3Credentials($._config.s3KeySecretName),
   ruler_container+: resources('100m', '128Mi', '512Mi') + k.util.resourcesLimits('1', '512Mi') + s3Credentials($._config.s3KeySecretName),
 
+  // The ingester's disk is 1Gi, so drop shipped blocks after 3h (default 13h) and have queries use the bucket from 2h30m.
+  ingester_args+:: {
+    'blocks-storage.tsdb.retention-period': '3h',
+  },
+  querier_args+:: {
+    'querier.query-store-after': '2h30m',
+    'querier.query-ingesters-within': '3h',
+  },
+  ruler_args+:: {
+    'querier.query-store-after': '2h30m',
+    'querier.query-ingesters-within': '3h',
+  },
+
   // Memcached sizes are derived from memory_limit_mb (the library defaults to 6GiB for chunks).
   memcached_chunks+: { memory_limit_mb: 256 },
   memcached_frontend+: { memory_limit_mb: 64 },
