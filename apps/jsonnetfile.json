@@ -184,6 +184,15 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/fluxcd/flux2-monitoring-example.git",
+          "subdir": "monitoring/configs/dashboards"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/grafana/mimir.git",
           "subdir": "operations/mimir"
         }
