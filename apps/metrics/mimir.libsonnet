@@ -38,11 +38,15 @@ local s3Credentials(secret) = {
   store_gateway_statefulset+: withScrapeAnnotations,
   ruler_deployment+: withScrapeAnnotations,
 
-  // The compactor refreshes the bucket index every 15m and the queriers read it as soon as it changes, while the
-  // store-gateway only synced every 15m too, so it usually lagged ("bucket index version is older than requested")
-  // and the queriers' consistency check failed any query older than the ingesters' data. With the bucket index a sync
-  // is a single small read, so do it every minute. The compactor's deletion delay is derived from this value.
+  // The queriers read the bucket from 2h30m (see above), but the store-gateway skips blocks younger than 10h by default
+  // (-blocks-storage.bucket-store.ignore-blocks-within), so every block between 2h30m and 10h old was expected by the
+  // queriers and never loaded: their consistency check failed any query reaching past the ingesters' 3h
+  // (err-mimir-store-consistency-check-failed). Keep it below the query-store-after.
+  //
+  // A sync is a single small read of the bucket index, so also do it every minute to keep the store-gateway close behind
+  // the compactor's index updates (every 15m). The compactor's deletion delay is derived from this value.
   store_gateway_args+:: {
+    'blocks-storage.bucket-store.ignore-blocks-within': '2h',
     'blocks-storage.bucket-store.sync-interval': '1m',
   },
 
