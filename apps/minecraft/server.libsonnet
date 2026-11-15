@@ -17,6 +17,12 @@
     map: { port: 8100, protocol: 'TCP', serviceType: 'ClusterIP' },
   },
 
+  // Keep the addresses the router and DNS point at.
+  minecraftServices+: {
+    minecraft+: { metadata+: { annotations+: { 'metallb.io/loadBalancerIPs': '192.168.3.8' } } },
+    bedrock+: { metadata+: { annotations+: { 'metallb.io/loadBalancerIPs': '192.168.3.12' } } },
+  },
+
   pod_spec+:: { nodeSelector: { 'kubernetes.io/hostname': 's1-bet1' } },
 
   // Plugin configuration, mounted as single files so the rest of the plugin directories stay on the volume.
