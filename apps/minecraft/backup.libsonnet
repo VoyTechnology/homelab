@@ -6,11 +6,11 @@
       set -eu
       # /backups is an emptyDir, so without a copy out of the pod the archives die with it.
       # The image has neither bash nor rsync: POSIX sh and busybox only.
-      latest=$(ls -t /backups/world-*.tgz | head -n 1)
+      latest=$(ls -t /backups/world-*.tar.gz | head -n 1)
       echo "Copying $latest to %(path)s"
       cp "$latest" /nfs/
       # mc-backup only prunes /backups, so prune the copies here.
-      find /nfs -maxdepth 1 -name 'world-*.tgz' -mtime +%(days)d -delete
+      find /nfs -maxdepth 1 -name 'world-*.tar.gz' -mtime +%(days)d -delete
     ||| % { path: $._config.backupHostPath, days: $._config.backupRetentionDays },
   },
 
