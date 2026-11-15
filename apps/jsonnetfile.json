@@ -252,6 +252,15 @@
         }
       },
       "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "minecraft"
+        }
+      },
+      "version": "main"
     }
   ],
   "legacyImports": true
