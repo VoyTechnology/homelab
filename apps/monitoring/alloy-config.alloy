@@ -87,6 +87,18 @@ discovery.relabel "pod_annotations" {
     regex = "(.+)"
     replacement = "$1"
   }
+  // Dashboards (e.g. the Mimir mixin) select on pod and container, which
+  // discovery.kubernetes only exposes as __meta_ labels.
+  rule {
+    source_labels = ["__meta_kubernetes_pod_name"]
+    action = "replace"
+    target_label = "pod"
+  }
+  rule {
+    source_labels = ["__meta_kubernetes_pod_container_name"]
+    action = "replace"
+    target_label = "container"
+  }
   rule {
     action       = "replace"
     target_label = "cluster"
