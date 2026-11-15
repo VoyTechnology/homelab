@@ -78,6 +78,14 @@ jobs:
         working-directory: homelab
         run: mise bin-paths >> "$GITHUB_PATH"
 
+      - name: Cache jsonnet dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            homelab/apps/vendor
+            homelab/clusters/vendor
+          key: jb-${{ hashFiles('homelab/apps/jsonnetfile.lock.json', 'homelab/clusters/jsonnetfile.lock.json') }}
+
       - name: Render
         run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} head
 
