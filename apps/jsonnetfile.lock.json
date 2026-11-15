@@ -85,6 +85,16 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "minecraft"
+        }
+      },
+      "version": "d88b23f96c8279d75c06dd9441ca5695140e2ad4",
+      "sum": "Y0Tj3hn/9INm9Tb00XfLZhfqI+6ft+8cJnI7bLOPytU="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "pocket-id-operator"
         }
       },
