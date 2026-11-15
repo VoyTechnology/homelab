@@ -38,6 +38,14 @@ local s3Credentials(secret) = {
   store_gateway_statefulset+: withScrapeAnnotations,
   ruler_deployment+: withScrapeAnnotations,
 
+  // The compactor refreshes the bucket index every 15m and the queriers read it as soon as it changes, while the
+  // store-gateway only synced every 15m too, so it usually lagged ("bucket index version is older than requested")
+  // and the queriers' consistency check failed any query older than the ingesters' data. With the bucket index a sync
+  // is a single small read, so do it every minute. The compactor's deletion delay is derived from this value.
+  store_gateway_args+:: {
+    'blocks-storage.bucket-store.sync-interval': '1m',
+  },
+
   // query-scheduler.libsonnet unconditionally sets a hard podAntiAffinity
   // (unlike ingester/store-gateway, which respect the
   // *_allow_multiple_replicas_on_same_node config above) combined with
