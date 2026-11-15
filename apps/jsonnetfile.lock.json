@@ -4,6 +4,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/VoyTechnology/ha-data.git",
+          "subdir": ""
+        }
+      },
+      "version": "2b204018b69f9ce65e48b2ccf179736c1757c733",
+      "sum": "olcJRq417VMX7xqo5eYJKt0IGB0jAUHdeBXMutmYFrU="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "cert-manager"
         }
@@ -85,6 +95,36 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "homeassistant"
+        }
+      },
+      "version": "918e32d0003ba787f62344667c4b03423f79d4b4",
+      "sum": "AZwuOg+HrKrsjOw3lb0F5ZUMwP4+CCeDl5pfheyM+u8="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "matter-server"
+        }
+      },
+      "version": "918e32d0003ba787f62344667c4b03423f79d4b4",
+      "sum": "kJZ4tkOMVQU0N+iI3NdrL4IBcasxFoFJ5szvIQ0QylA="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "matterhub"
+        }
+      },
+      "version": "918e32d0003ba787f62344667c4b03423f79d4b4",
+      "sum": "FKnnT1zyIiPVaV28cFS2I69yUMhHDnK3V8Hx6prk3ig="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "metallb"
         }
       },
@@ -100,6 +140,16 @@
       },
       "version": "d88b23f96c8279d75c06dd9441ca5695140e2ad4",
       "sum": "Y0Tj3hn/9INm9Tb00XfLZhfqI+6ft+8cJnI7bLOPytU="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "otbr"
+        }
+      },
+      "version": "918e32d0003ba787f62344667c4b03423f79d4b4",
+      "sum": "AbCRnJVyJF8/hSm4ZAfNAIwiRPZD5qRKCsnOOZa/9kk="
     },
     {
       "source": {
