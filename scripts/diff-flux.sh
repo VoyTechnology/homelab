@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Markdown diff of a rendered cluster against homelab-manifests, grouped by what
-# changed (Flux itself, then one section per app) with every file collapsed, small
-# files first so the size budget goes to the diffs that are quick to review:
+# Markdown diff of a rendered cluster against homelab-manifests, in the same shape as
+# the Argo manifest diff: a summary table, then one collapsed diff per group (Flux
+# itself, then each app):
 #   scripts/diff-flux.sh <base-root> <head-root> <cluster> [total-chars]
 base="${1:?usage: diff-flux.sh <base-root> <head-root> <cluster> [total-chars]}"
 head="${2:?}"
@@ -28,46 +28,57 @@ files="$(for root in "$base" "$head"; do
   for p in "${paths[@]}"; do (cd "$root" && find "$p" -type f 2>/dev/null); done
 done | sort -u)"
 
-changed="$(while IFS= read -r f; do
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+
+# One combined diff per group plus added/changed/removed counts, groups sorted by name.
+groups=()
+while IFS= read -r f; do
   [[ -z "$f" ]] && continue
-  if ! cmp -s "$base/$f" "$head/$f" 2>/dev/null; then
-    size="$(cat "$base/$f" "$head/$f" 2>/dev/null | wc -c)"
-    printf '%s\t%012d\t%s\n' "$(group "$f")" "$size" "$f"
-  fi
-done <<<"$files" | sort -t$'\t' -k1,1 -k2,2n -k3,3 | cut -f1,3)"
+  cmp -s "$base/$f" "$head/$f" 2>/dev/null && continue
+  g="$(group "$f")"
+  a="$base/$f"; b="$head/$f"
+  if [[ ! -e "$a" ]]; then k=added; a=/dev/null; la=/dev/null; lb="head/$f"
+  elif [[ ! -e "$b" ]]; then k=removed; b=/dev/null; la="base/$f"; lb=/dev/null
+  else k=changed; la="base/$f"; lb="head/$f"; fi
+  [[ -e "$tmp/$g.diff" ]] || groups+=("$g")
+  echo "$k" >>"$tmp/$g.kinds"
+  diff -u --label "$la" --label "$lb" "$a" "$b" >>"$tmp/$g.diff" || true
+done <<<"$files"
 
 echo "### Flux \`$cluster\`: diff against homelab-manifests"
-if [[ -z "$changed" ]]; then
+if (( ${#groups[@]} == 0 )); then
   echo
   echo "No changes."
   exit 0
 fi
 
-current=""
-while IFS=$'\t' read -r g f; do
-  if [[ "$g" != "$current" ]]; then
-    current="$g"
-    echo
-    echo "#### $g"
-    echo
+mapfile -t groups < <(printf '%s\n' "${groups[@]}" | sort)
+
+echo
+echo "What Flux would apply, rendered from the head commit against homelab-manifests (files added / changed / removed)."
+echo
+echo "| Application | Added | Changed | Removed |"
+echo "|---|---|---|---|"
+for g in "${groups[@]}"; do
+  n() { grep -cx "$1" "$tmp/$g.kinds" || true; }
+  echo "| \`$g\` | +$(n added) | ~$(n changed) | -$(n removed) |"
+done
+echo
+
+for g in "${groups[@]}"; do
+  size="$(wc -c <"$tmp/$g.diff")"
+  if (( used + size > budget )); then
+    echo "_\`$g\` and later diffs omitted: comment size limit. See the workflow summary for the full diff._"
+    break
   fi
-  a="$base/$f"; b="$head/$f"
-  if [[ ! -e "$a" ]]; then status="added"; a=/dev/null
-  elif [[ ! -e "$b" ]]; then status="removed"; b=/dev/null
-  else status="modified"; fi
-  body="$(diff -u --label "base/$f" --label "head/$f" "$a" "$b" || true)"
-  plus="$(grep -c '^+[^+]' <<<"$body" || true)"
-  minus="$(grep -c '^-[^-]' <<<"$body" || true)"
-  echo "<details><summary><code>${f##*/}</code>: $status (+$plus −$minus)</summary>"
+  used=$((used + size))
+  echo "<details><summary><code>$g</code></summary>"
   echo
-  if (( used + ${#body} > budget )); then
-    echo "Diff omitted (over the size limit), see the workflow summary."
-  else
-    used=$((used + ${#body}))
-    echo '```diff'
-    echo "$body"
-    echo '```'
-  fi
+  echo '```diff'
+  cat "$tmp/$g.diff"
+  echo '```'
   echo
   echo "</details>"
-done <<<"$changed"
+  echo
+done
