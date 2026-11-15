@@ -25,6 +25,16 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "donetick"
+        }
+      },
+      "version": "dbcb46e5016c1d942810ec4a58b51110f2c1c1d1",
+      "sum": "B/t2FqYICd8Hhff/MZmjk6/P4W1TH39ZF9AEE6zewII="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "envoy-gateway"
         }
       },
