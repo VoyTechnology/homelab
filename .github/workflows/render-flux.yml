@@ -82,7 +82,7 @@ jobs:
         run: homelab/scripts/render-flux.sh ${{ matrix.cluster }} head
 
       - name: Diff against homelab-manifests
-        # Collapsed per-file diffs grouped by app: a size-capped one for the PR
+        # A summary table plus one collapsed diff per app: a size-capped one for the PR
         # comment and the full one for the job summary.
         run: |
           homelab/scripts/diff-flux.sh base head ${{ matrix.cluster }} > comment.md
