@@ -261,6 +261,15 @@
         }
       },
       "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "paperless"
+        }
+      },
+      "version": "main"
     }
   ],
   "legacyImports": true

@@ -95,6 +95,16 @@
       "source": {
         "git": {
           "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
+          "subdir": "paperless"
+        }
+      },
+      "version": "54b935be75862137e18b6e65158d87e0942d5e0b",
+      "sum": "tRxGmovhmin1LWGUmPSCF4/2o+k9sBgUw7vqKzKgUdA="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/VoyTechnology/home-libsonnet.git",
           "subdir": "pocket-id-operator"
         }
       },
