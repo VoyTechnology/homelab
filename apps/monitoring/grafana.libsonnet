@@ -10,7 +10,9 @@ local volumeMount = k.core.v1.volumeMount;
            + grafana.withRootUrl('https://%s/' % $._config.grafanaHost)
            + grafana.withGrafanaIniConfig($.grafana.iniConfig)
            // Alloy scrapes every 1m; without this Grafana assumes 15s and computes too narrow a $__rate_interval.
-           + grafana.addDatasource('metrics', grafana.datasource.new('Metrics', $._config.metricsUrl, type='prometheus', default=true) + grafana.datasource.withJsonData({ timeInterval: '1m' }))
+           // Grafana only updates an already provisioned datasource when this version is higher than the stored
+           // one (the library's default of 1 is below it), so bump it whenever the datasource changes.
+           + grafana.addDatasource('metrics', grafana.datasource.new('Metrics', $._config.metricsUrl, type='prometheus', default=true) + grafana.datasource.withJsonData({ timeInterval: '1m' }) + { version: 3 })
            + grafana.addMixinDashboards(import 'mixins.libsonnet')
            + {
              _config+:: { configmap_binpack: true },
