@@ -167,6 +167,9 @@ Rules:
   in each rendered `apps/<cluster>/<app>/`; Flux ignores non-YAML files.
 - The PR diff comment is built by `scripts/diff-flux.sh`: grouped by app, one
   collapsed section per file.
+  The comment is public, so `scripts/flux-redactions.yaml` lists yq paths (per document
+  selector) replaced by a hash before diffing, e.g. Secret values and the private `ha-data`
+  ConfigMaps and their mounts. Add an entry for anything else that must not be posted.
 
 Render and compare locally:
 

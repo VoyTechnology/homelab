@@ -1,0 +1,21 @@
+# Redactions applied by scripts/diff-flux.sh to the rendered manifests before they are diffed, because the
+# diff is posted to a public PR and its job summary. The files in homelab-manifests are not touched.
+#
+# A list of entries:
+#   when   a yq expression that is `true` for the documents the entry applies to. Guard fields that may be
+#          missing, e.g. `(.metadata.name // "")`.
+#   paths  yq paths in such a document. Each one's value is replaced with `<redacted sha256-...>`, a short hash
+#          of the value, so a change still shows up in the diff without its content.
+- # Secret values.
+  when: .kind == "Secret"
+  paths:
+    - .data
+    - .stringData
+- # The private ha-data repository, rendered into ConfigMaps (automations, dashboards, configuration.yaml)...
+  when: .kind == "ConfigMap" and ((.metadata.name // "") | test("^ha-mixins-"))
+  paths:
+    - .data
+- # ...and the file names they are mounted as in the Home Assistant pod.
+  when: .kind == "StatefulSet" and .metadata.name == "homeassistant"
+  paths:
+    - .spec.template.spec.volumes[].projected.sources[] | select(.configMap.name | test("^ha-mixins-")) | .configMap.items
