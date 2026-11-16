@@ -11,7 +11,6 @@ monitoring_namespace: "monitoring"
 infra_namespaces:
   - flux-system
   - "{{ internal_ingress_namespace }}"
-  - "{{ argocd_k8s_namespace }}"
   - "{{ cert_manager_namespace }}"
   - "{{ cloudflare_external_dns_namespace }}"
   - "{{ monitoring_namespace }}"

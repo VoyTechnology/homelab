@@ -5,12 +5,7 @@
 renovate.json @VoyTechnology
 .github/ @VoyTechnology
 ansible/ @VoyTechnology
-argo/ @VoyTechnology
 
 # Helm charts
 charts/ @VoyTechnology
 home-services/ @VoyTechnology
-
-# ArgoCD applications
-argo/apps/ @VoyTechnology
-argo/appsets/ @VoyTechnology

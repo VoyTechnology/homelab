@@ -4,7 +4,6 @@
 // together. Merging them flatly (the previous shape here) meant
 // addMixinDashboards's `mixins[name].grafanaDashboards` lookup never matched
 // anything, so no dashboard ever made it into a ConfigMap.
-local argocdMixin = import 'github.com/grafana/jsonnet-libs/argocd-mixin/mixin.libsonnet';
 local envoyMixin = import 'github.com/grafana/jsonnet-libs/envoy-mixin/mixin.libsonnet';
 local kubernetesMixin = import 'github.com/kubernetes-monitoring/kubernetes-mixin/mixin.libsonnet';
 
@@ -28,27 +27,6 @@ local fixEmptyVarDefault(dashboard) =
     },
   };
 
-// argocd-mixin's dashboard hand-codes the "datasource" template variable's
-// current value as "grafanacloud-k8sintegrations-prom" -- a leftover from
-// the Grafana Cloud onboarding flow this dashboard was authored for. That
-// name doesn't match any datasource provisioned here (only "Metrics",
-// added via grafana.addDatasource in grafana.libsonnet), so every panel's
-// `${datasource}` reference fails to resolve and comes back empty,
-// regardless of whether the underlying metrics exist in Mimir. Point it at
-// "default" instead, like the Envoy and Mimir dashboards already do, so it
-// picks up whichever datasource is marked default=true.
-local fixDatasourceVarDefault(dashboard) =
-  dashboard {
-    templating+: {
-      list: [
-        if v.type == 'datasource' && v.name == 'datasource'
-        then v { current: { selected: false, text: 'default', value: 'default' } }
-        else v
-        for v in dashboard.templating.list
-      ],
-    },
-  };
-
 // Flux publishes its dashboards as plain JSON, not a mixin. They pick the datasource with a variable named
 // DS_PROMETHEUS that defaults to "Prometheus", and a few panels name a datasource directly. None of those exist
 // here (only "Metrics", the default), so point the variable at the default and every reference at the variable.
@@ -66,12 +44,6 @@ local fixFluxDatasources(node) =
   else node;
 
 {
-  argocd: argocdMixin {
-    grafanaDashboards+:: {
-      [name]: fixDatasourceVarDefault(argocdMixin.grafanaDashboards[name])
-      for name in std.objectFields(argocdMixin.grafanaDashboards)
-    },
-  },
   envoy: envoyMixin {
     grafanaDashboards+:: {
       [name]: fixEmptyVarDefault(envoyMixin.grafanaDashboards[name])

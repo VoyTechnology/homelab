@@ -19,10 +19,6 @@
   import_tasks: ingress/main.yml
   tags: k8s_ingress
 
-- name: Setup Argo
-  import_tasks: argocd.yml
-  tags: k8s_argo
-
 - name: Setup Extra CRDs
   import_tasks: crds.yml
   tags: k8s_crds
