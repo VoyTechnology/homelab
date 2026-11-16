@@ -3,6 +3,7 @@
 + (import 'secrets.libsonnet')
 + (import 'grafana.libsonnet')
 + (import 'alloy.libsonnet')
++ (import 'alerts.libsonnet')
 + (import 'kube-state-metrics.libsonnet')
 + (import 'flux.libsonnet')
 + (import 'node-exporter.libsonnet')

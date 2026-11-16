@@ -197,7 +197,7 @@ prometheus.scrape "cadvisor" {
   // See the kubelet scrape above for why these are set.
   convert_classic_histograms_to_nhcb = true
   scrape_classic_histograms = true
-  forward_to = [prometheus.relabel.cloud_filter.receiver, prometheus.relabel.cadvisor_filter.receiver]
+  forward_to = [prometheus.relabel.cadvisor_filter.receiver]
 }
 
 // Drop cadvisor families no dashboard or rule here queries (about a third of
@@ -282,20 +282,45 @@ prometheus.relabel "servicemonitor_filter" {
   }
 }
 
-// Filter metrics before sending to Grafana Cloud
+// Filter metrics before sending to Grafana Cloud.
+//
+// Everything goes to the local Mimir; Cloud only gets the few series that alerts are built on,
+// to stay inside the free tier (10k active series). Alerts there must still fire when the
+// cluster, and so Mimir, is down. Add a name here only when an alert needs it, and check the
+// active series count in Cloud afterwards.
 prometheus.relabel "cloud_filter" {
   forward_to = [prometheus.remote_write.cloud.receiver]
 
-  // Keep only PVC fullness metrics for Cloud
   rule {
     source_labels = ["__name__"]
-    action = "keep"
-    regex = "kubelet_volume_stats_available_bytes|kubelet_volume_stats_capacity_bytes|kubelet_volume_stats_used_bytes"
+    action        = "keep"
+    regex = string.join([
+      // Scrape health of every target, including Mimir and Alloy themselves.
+      "up",
+      // PVC fullness.
+      "kubelet_volume_stats_(available|capacity|used)_bytes",
+      // Node disk, memory and CPU.
+      "node_filesystem_(avail|size)_bytes",
+      "node_memory_(MemAvailable|MemTotal)_bytes",
+      "node_cpu_seconds_total",
+      // Node, pod and workload health.
+      "kube_node_status_condition",
+      "kube_pod_status_phase",
+      "kube_pod_container_status_restarts_total",
+      "kube_pod_container_status_waiting_reason",
+      "kube_deployment_(spec_replicas|status_replicas_available)",
+      "kube_statefulset_(replicas|status_replicas_ready)",
+      "kube_daemonset_status_(desired_number_scheduled|number_ready)",
+    ], "|")
   }
 }
 
 // Remote write to Grafana Cloud
 prometheus.remote_write "cloud" {
+  // Same as for Mimir below: ServiceMonitor targets and `up` carry no cluster label otherwise.
+  external_labels = {
+    cluster = sys.env("CLUSTER_NAME"),
+  }
   endpoint {
     url = sys.env("PROMETHEUS_URL")
     basic_auth {

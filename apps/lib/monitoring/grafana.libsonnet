@@ -13,7 +13,7 @@ local volumeMount = k.core.v1.volumeMount;
   metricsDatasource::
     grafana.datasource.new('Metrics', $._config.metricsUrl, type='prometheus', default=true)
     + grafana.datasource.withJsonData({ timeInterval: '1m' })
-    + { version: 3 },
+    + { uid: $._config.metricsDatasourceUid, version: 4 },
 
   grafana: grafana
            + grafana.withRootUrl('https://%s/' % $._config.grafanaHost)
