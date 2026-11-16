@@ -11,6 +11,8 @@ on:
       - "clusters/**"
       - "apps/**"
       - "scripts/render-flux.sh"
+      - "scripts/diff-flux.sh"
+      - "scripts/flux-redactions.yaml"
       - ".tool-versions"
       - ".github/workflows/render-flux.yml"
   pull_request:
@@ -18,6 +20,8 @@ on:
       - "clusters/**"
       - "apps/**"
       - "scripts/render-flux.sh"
+      - "scripts/diff-flux.sh"
+      - "scripts/flux-redactions.yaml"
       - ".tool-versions"
       - ".github/workflows/render-flux.yml"
   workflow_dispatch:
@@ -74,6 +78,16 @@ jobs:
           working_directory: homelab
           install_args: go-jsonnet jsonnet-bundler tanka yq flux2 helm
 
+      - name: Allow jb to clone the private ha-data repo
+        # Read-only deploy key on VoyTechnology/ha-data; only that repo is
+        # rewritten to ssh, other dependencies stay on https.
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.HA_DATA_DEPLOY_KEY }}
+
+      - name: Rewrite ha-data to ssh
+        run: git config --global url."git@github.com:VoyTechnology/ha-data".insteadOf "https://github.com/VoyTechnology/ha-data"
+
       - name: Put tools on PATH
         working-directory: homelab
         run: mise bin-paths >> "$GITHUB_PATH"
@@ -91,7 +105,8 @@ jobs:
 
       - name: Diff against homelab-manifests
         # A summary table plus one collapsed diff per app: a size-capped one for the PR
-        # comment and the full one for the job summary.
+        # comment and the full one for the job summary. Both are public, so the values listed in
+        # scripts/flux-redactions.yaml (Secrets, ha-data) are redacted.
         run: |
           homelab/scripts/diff-flux.sh base head ${{ matrix.cluster }} > comment.md
           homelab/scripts/diff-flux.sh base head ${{ matrix.cluster }} 900000 >> "$GITHUB_STEP_SUMMARY"

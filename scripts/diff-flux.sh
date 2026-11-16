@@ -12,6 +12,8 @@ cluster="${3:?}"
 # comments are limited to 65536 characters).
 budget="${4:-50000}"
 used=0
+# Redactions applied before diffing (see the file); the rendered files themselves are left alone.
+redactions="${FLUX_REDACTIONS:-$(dirname "${BASH_SOURCE[0]}")/flux-redactions.yaml}"
 
 paths=("clusters/$cluster/flux-system" "clusters/$cluster/apps" "apps/$cluster")
 
@@ -31,6 +33,22 @@ done | sort -u)"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
+# redact <file> <out>: copy a file with every path of the matching redactions replaced by a hash of its value.
+redact() {
+  cp "$1" "$2"
+  local n i when p h
+  n="$(yq 'length' "$redactions")"
+  for ((i = 0; i < n; i++)); do
+    when="$(yq ".[$i].when" "$redactions")"
+    [[ "$(yq "$when" "$2")" == "true" ]] || continue
+    while IFS= read -r p; do
+      [[ "$(yq "[$p] | length" "$2")" != "0" ]] || continue
+      h="$(yq -o=json "[$p]" "$2" | sha256sum | cut -c1-12)"
+      yq -i "($p) = \"<redacted sha256-$h>\"" "$2"
+    done < <(yq ".[$i].paths[]" "$redactions")
+  done
+}
+
 # One combined diff per group plus added/changed/removed counts, groups sorted by name.
 groups=()
 while IFS= read -r f; do
@@ -43,6 +61,8 @@ while IFS= read -r f; do
   else k=changed; la="base/$f"; lb="head/$f"; fi
   [[ -e "$tmp/$g.diff" ]] || groups+=("$g")
   echo "$k" >>"$tmp/$g.kinds"
+  [[ "$a" == /dev/null ]] || { redact "$a" "$tmp/a.yaml"; a="$tmp/a.yaml"; }
+  [[ "$b" == /dev/null ]] || { redact "$b" "$tmp/b.yaml"; b="$tmp/b.yaml"; }
   diff -u --label "$la" --label "$lb" "$a" "$b" >>"$tmp/$g.diff" || true
 done <<<"$files"
 
