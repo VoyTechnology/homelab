@@ -130,5 +130,11 @@ local deployment = k.apps.v1.deployment;
     ),
 
   // Alloy's UI, on the internal gateway (LAN only).
-  alloy_http_route: utils.routes.httpRoute('alloy', 'alloy.%s' % $._config.domain, 'alloy', 12345, utils.routes.gateways.internal),
+  alloy_http_route: utils.routes.httpRoute(
+    'alloy',
+    'alloy.%s' % $._config.domain,
+    'alloy',
+    12345,
+    utils.routes.gateways.internal,
+  ),
 }
