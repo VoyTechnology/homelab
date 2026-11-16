@@ -1,9 +1,9 @@
-local home = import 'home/main.libsonnet';
+local utils = import 'utils/main.libsonnet';
 
 // Secrets fanned out from the `cluster-secrets` store.
 {
   // Cloudflare token for the DNS01 solver.
-  cloudflareSecret: home.secrets.fromShared($._config.namespace, 'cloudflare-secret', {
+  cloudflareSecret: utils.secrets.fromShared($._config.namespace, 'cloudflare-secret', {
     token: $._config.cloudflareTokenProperty,
   }),
 }

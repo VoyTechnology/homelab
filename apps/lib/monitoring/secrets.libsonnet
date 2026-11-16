@@ -1,9 +1,9 @@
-local home = import 'home/main.libsonnet';
+local utils = import 'utils/main.libsonnet';
 
 // Secrets fanned out from the `cluster-secrets` store.
 {
   // Grafana Cloud credentials for Alloy.
-  grafanaCloud: home.secrets.fromShared($._config.namespace, 'grafana-cloud', {
+  grafanaCloud: utils.secrets.fromShared($._config.namespace, 'grafana-cloud', {
     token: 'grafana_cloud_token',
     user: 'grafana_cloud_user',
     'loki-user': 'grafana_cloud_loki_user',
