@@ -2,11 +2,11 @@
 
 Read the "Flux Apps" section in the root `AGENTS.md` first. Short version:
 
-- Every app is a Tanka application: a `main.libsonnet` that merges one `<concern>.libsonnet`
+- Every app is a Tanka application: `lib/<app>/main.libsonnet` that merges one `<concern>.libsonnet`
   mixin file per responsibility (`certmanager`, `secrets`, `letsencrypt`, ...), a
   `config.libsonnet` with all `_config+::` defaults, an `images.libsonnet` with the `_images+::` pins
   Renovate bumps, a `scaling.libsonnet` with replica counts and CPU/memory requests and limits, plus
-  `environments/<cluster>/{main.jsonnet,spec.json}`. `spec.json` is committed here.
+  `environments/<app>/<cluster>/{main.jsonnet,spec.json}`. `spec.json` is committed here.
 - Use the generated libsonnet libraries and `home-libsonnet` directly, no wrapper
   helpers. Do not write Flux `Kustomization`s; `scripts/render-flux.sh` generates one
   per environment. Order apps with `flux.bednarzak.com/depends-on.<app>: "true"` labels in `spec.json`.

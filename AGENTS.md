@@ -89,19 +89,19 @@ Layout in this repo (every app is a Tanka application):
 ```text
 apps/
   jsonnetfile.json          shared deps (external-secrets, k8s and home-libsonnet)
-  <app>/
+  lib/<app>/
     main.libsonnet          merges the app's mixin files, shared by all clusters
     config.libsonnet        every `_config+::` default of the app
     images.libsonnet        `_images+::` pins, bumped by Renovate
     <concern>.libsonnet     one responsibility each (see below)
-    environments/<cluster>/
-      main.jsonnet          extends ../../main.libsonnet with per-cluster `_config+::`
-      spec.json             Tanka Environment (committed)
+  environments/<app>/<cluster>/
+    main.jsonnet            extends `import '<app>/main.libsonnet'` with per-cluster `_config+::`
+    spec.json               Tanka Environment (committed)
 ```
 
 Rules:
 
-- Each `environments/<cluster>` is a Tanka environment whose output is the app's
+- Each `environments/<app>/<cluster>` is a Tanka environment whose output is the app's
   Kubernetes objects. `scripts/render-flux.sh` runs `tk export` on every one and
   writes `apps/<cluster>/<app>/` in `homelab-manifests`, plus a Flux `Kustomization`
   in `clusters/<cluster>/apps/<app>.yaml` that it generates (do not write one).
