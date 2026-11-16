@@ -21,9 +21,3 @@
 - name: Ingress | Setup internal ingress
   import_tasks: internal.yml
   tags: k8s_ingress_internal
-
-- name: Ingress | Setup internal login ingress
-  import_tasks: internal_login.yml
-  tags: k8s_ingress_internal_login
-
-
