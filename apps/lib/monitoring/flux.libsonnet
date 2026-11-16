@@ -63,10 +63,18 @@ local stateMetric(r) = {
     },
 
   kube_state_metrics_cluster_role+: {
-    rules+: [{
-      apiGroups: std.set([r.group for r in resources]),
-      resources: [r.plural for r in resources],
-      verbs: ['list', 'watch'],
-    }],
+    rules+: [
+      {
+        apiGroups: std.set([r.group for r in resources]),
+        resources: [r.plural for r in resources],
+        verbs: ['list', 'watch'],
+      },
+      // The custom resource state collectors are only started once kube-state-metrics sees the CRDs.
+      {
+        apiGroups: ['apiextensions.k8s.io'],
+        resources: ['customresourcedefinitions'],
+        verbs: ['list', 'watch'],
+      },
+    ],
   },
 }
