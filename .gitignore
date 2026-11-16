@@ -15,4 +15,4 @@ spec.json
 charts/*.tgz
 
 # Helm charts vendored for Flux apps by `tk tool charts vendor` (pinned in chartfile.yaml)
-apps/*/charts/
+apps/lib/*/charts/

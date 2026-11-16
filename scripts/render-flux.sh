@@ -6,7 +6,7 @@ set -euo pipefail
 #     clusters/<cluster>/flux-system/   Flux itself, from clusters/environments/<cluster>
 #     clusters/<cluster>/apps/          one Flux Kustomization per app unit
 #     apps/<cluster>/<unit>/            the units' manifests
-# Apps are Tanka environments: apps/*/environments/<cluster> (see apps/AGENTS.md). The Flux version for
+# Apps are Tanka environments: apps/environments/<app>/<cluster> (see apps/AGENTS.md). The Flux version for
 # gotk-components.yaml is defined in the cluster environment, not by the CLI.
 cluster="${1:?usage: render-flux.sh <cluster> <out-root>}"
 out="${2:?usage: render-flux.sh <cluster> <out-root>}"
@@ -30,18 +30,18 @@ yq -i -P '.' "$flux_out/gotk-sync.yaml"
 flux install --export --version="$version" > "$flux_out/gotk-components.yaml"
 
 # --- Apps ---
-# Every apps/<app>/environments/<cluster> is a Tanka environment. Each is exported to
+# Every apps/environments/<app>/<cluster> is a Tanka environment. Each is exported to
 # apps/<cluster>/<app>/ and gets a Flux Kustomization in clusters/<cluster>/apps/.
 # This render owns these two directories entirely.
 rm -rf "$out/clusters/$cluster/apps" "$out/apps/$cluster"
-for env in "$root"/apps/*/environments/"$cluster"; do
+for env in "$root"/apps/environments/*/"$cluster"; do
   [[ -d "$env" ]] || continue
-  app="$(basename "$(dirname "$(dirname "$env")")")"
+  app="$(basename "$(dirname "$env")")"
   app_out="$out/apps/$cluster/$app"
   mkdir -p "$app_out" "$out/clusters/$cluster/apps"
 
   # Apps rendering a Helm chart pin it in chartfile.yaml; the chart itself is not committed.
-  [[ -f "$root/apps/$app/chartfile.yaml" ]] && (cd "$root/apps/$app" && tk tool charts vendor >/dev/null)
+  [[ -f "$root/apps/lib/$app/chartfile.yaml" ]] && (cd "$root/apps/lib/$app" && tk tool charts vendor >/dev/null)
   (cd "$root/apps" && tk export "$app_out" "${env#"$root/apps/"}" \
     --format '{{.kind | lower}}-{{.metadata.name}}' --extension yaml >/dev/null)
   for f in "$app_out"/*.yaml; do

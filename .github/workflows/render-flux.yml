@@ -1,7 +1,7 @@
 name: Render Flux
 
 # Renders Flux itself (clusters/environments/<cluster>) and every app
-# (apps/*/environments/<cluster>). On PRs
+# (apps/environments/<app>/<cluster>). On PRs
 # it comments the diff against homelab-manifests; on main it commits the result
 # straight to main there, which Flux then reconciles.
 on:
