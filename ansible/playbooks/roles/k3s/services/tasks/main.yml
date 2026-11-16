@@ -11,10 +11,6 @@
   import_tasks: flux.yml
   tags: [k8s_flux, never]
 
-- name: Setup internal ingresses
-  import_tasks: ingress/main.yml
-  tags: k8s_ingress
-
 - name: Setup Extra CRDs
   import_tasks: crds.yml
   tags: k8s_crds

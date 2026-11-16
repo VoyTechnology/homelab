@@ -56,7 +56,7 @@ go-jsonnet.
 - `playbooks/install_k3s.yml` runs prerequisites, downloads k3s, installs the
   master and node roles, then installs base Kubernetes services.
 - Base k3s service tasks are split into namespaces, secrets, Flux,
-  ingress, and extra CRDs.
+  and extra CRDs.
 - The Flux task (`tags: k8s_flux, never`) renders `clusters/environments/<cluster>`
   with `scripts/render-flux.sh` and applies Flux's components and sync config. It
   only runs on request and needs `jsonnet`, `jb`, `yq`, and `flux` locally. The
