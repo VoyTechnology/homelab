@@ -16,6 +16,5 @@
 + (import 'matter-server.libsonnet')
 + (import 'matterhub.libsonnet')
 + (import 'secrets.libsonnet')
-+ (import 'ingress.libsonnet')
 + (import 'route.libsonnet')
 + (import 'reload.libsonnet')
