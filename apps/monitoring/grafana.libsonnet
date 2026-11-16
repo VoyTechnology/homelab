@@ -1,5 +1,6 @@
 local grafana = import 'github.com/grafana/jsonnet-libs/grafana/grafana.libsonnet';
 local k = import 'k.libsonnet';
+local util = import 'ksonnet-util/util.libsonnet';
 
 local container = k.core.v1.container;
 local volume = k.core.v1.volume;
@@ -29,6 +30,16 @@ local volumeMount = k.core.v1.volumeMount;
                  + k.core.v1.containerPort.withContainerPort(3000),
                )
                + container.withVolumeMounts([volumeMount.new('grafana-data', '/var/lib/grafana', false)]),
+
+             // The mixins own the dashboard list: the library's disableDeletion keeps a dashboard in Grafana's
+             // database after its file disappears, so a removed mixin dashboard would linger forever.
+             dashboard_provisioning_config_map+: {
+               data+: {
+                 'dashboards.yml':
+                   local providers = std.parseYaml(super['dashboards.yml']);
+                   util.manifestYaml(providers { providers: [p { disableDeletion: false } for p in providers.providers] }),
+               },
+             },
 
              grafana_data_pvc:
                k.core.v1.persistentVolumeClaim.new('grafana-data')
