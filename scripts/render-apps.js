@@ -301,7 +301,9 @@ async function render(rootArg, outArg) {
 
   const apps = [];
   const appsetDir = path.join(root, 'argo/appsets');
-  for (const f of fs.readdirSync(appsetDir).filter((f) => f.endsWith('.jsonnet')).sort()) {
+  // The directory disappears with the last app migrated to Flux.
+  const appsetFiles = fs.existsSync(appsetDir) ? fs.readdirSync(appsetDir) : [];
+  for (const f of appsetFiles.filter((f) => f.endsWith('.jsonnet')).sort()) {
     const appset = JSON.parse(await run('jsonnet', [path.join(appsetDir, f)], { cwd: root }));
     if (appset.kind !== 'ApplicationSet') continue;
     for (const params of clusters) apps.push(subst(appset.spec.template, params));
