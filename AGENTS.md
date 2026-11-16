@@ -182,6 +182,9 @@ was and was not checked.
 
 - Favor the current layout over introducing new tooling or abstractions.
 - Keep YAML and Jsonnet diffs focused; avoid reformatting unrelated manifests.
+- Keep Jsonnet readable: aim for lines under about 100 characters. Put each argument of a call with
+  more than two or three on its own line, with a trailing comma, rather than one long line. Wrap long
+  comments too. Run `jsonnetfmt -i` afterwards; it keeps those line breaks.
 - Preserve the distinction between Ansible bootstrap concerns and application
   concerns (Flux).
 - This is a homelab: pragmatic experiments are welcome, but do not make

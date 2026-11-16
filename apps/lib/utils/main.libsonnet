@@ -2,4 +2,5 @@
 // so an app can still extend the result with `+ { spec+: ... }`.
 {
   secrets: import 'secrets.libsonnet',
+  routes: import 'routes.libsonnet',
 }

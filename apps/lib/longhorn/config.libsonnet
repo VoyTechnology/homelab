@@ -10,8 +10,6 @@
     kubeletRootDir: '/var/lib/kubelet',
     // Host of the UI. Set per cluster.
     host: '',
-    // Gateway the UI is served from, and the Pocket ID that guards it.
-    gateway: { name: 'internal', namespace: 'gateway-system' },
     // In-cluster Service of Pocket ID (the PocketIDInstance's), used for the token call.
     pocketid: { service: 'pocket-id', namespace: 'pocketid', port: 1411 },
     oidcIssuer: 'https://login.bednarzak.com',

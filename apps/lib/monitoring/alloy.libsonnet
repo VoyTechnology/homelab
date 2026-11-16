@@ -9,6 +9,7 @@
 // `helm template`) so discovery.kubernetes and
 // prometheus.operator.servicemonitors keep working unchanged.
 local k = import 'k.libsonnet';
+local utils = import 'utils/main.libsonnet';
 
 local container = k.core.v1.container;
 local containerPort = k.core.v1.containerPort;
@@ -128,15 +129,12 @@ local deployment = k.apps.v1.deployment;
       [servicePort.newNamed('http-metrics', 12345, 12345)],
     ),
 
-  // Alloy's UI, on the internal gateway (LAN only). No generated library for the Gateway API, so a plain object.
-  alloy_http_route: {
-    apiVersion: 'gateway.networking.k8s.io/v1',
-    kind: 'HTTPRoute',
-    metadata: { name: 'alloy', namespace: $._config.namespace },
-    spec: {
-      parentRefs: [{ kind: 'Gateway', namespace: $._config.gateway.namespace, name: 'internal' }],
-      hostnames: ['alloy.%s' % $._config.domain],
-      rules: [{ backendRefs: [{ name: 'alloy', port: 12345 }] }],
-    },
-  },
+  // Alloy's UI, on the internal gateway (LAN only).
+  alloy_http_route: utils.routes.httpRoute(
+    'alloy',
+    'alloy.%s' % $._config.domain,
+    'alloy',
+    12345,
+    utils.routes.gateways.internal,
+  ),
 }

@@ -1,14 +1,12 @@
-// Exposed through a Cloudflare Gateway (a tunnel); DNS is managed by the gateway controller. The
-// environment adds the `parentRefs` of the Gateway to attach to.
-// No generated library for the Gateway API, so a plain object.
+local utils = import 'utils/main.libsonnet';
+
+// Exposed through the Cloudflare Gateway (a tunnel).
 {
-  route: {
-    apiVersion: 'gateway.networking.k8s.io/v1',
-    kind: 'HTTPRoute',
-    metadata: { name: 'paperless', namespace: $._config.namespace },
-    spec: {
-      hostnames: [$._config.host],
-      rules: [{ backendRefs: [{ name: $.paperlessService.metadata.name, port: $.port }] }],
-    },
-  },
+  route: utils.routes.httpRoute(
+    'paperless',
+    $._config.host,
+    $.paperlessService.metadata.name,
+    $.port,
+    utils.routes.gateways.cloudflare,
+  ),
 }

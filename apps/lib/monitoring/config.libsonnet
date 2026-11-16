@@ -8,8 +8,6 @@
     domain: '',
     // Host of Grafana, which does not follow the cluster domain. Set per cluster.
     grafanaHost: '',
-    // Gateway Grafana attaches to: the Cloudflare tunnel. Alloy is on the internal one.
-    gateway: { name: 'external-cloudflare', namespace: 'gateway-system' },
     // Mimir's query frontend, the default Grafana datasource.
     metricsUrl: 'http://query-frontend.metrics-system.svc.cluster.local:8080/prometheus',
     // Pocket ID, the login to Grafana.
