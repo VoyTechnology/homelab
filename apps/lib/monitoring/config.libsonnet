@@ -10,6 +10,10 @@
     grafanaHost: '',
     // Mimir's query frontend, the default Grafana datasource.
     metricsUrl: 'http://query-frontend.metrics-system.svc.cluster.local:8080/prometheus',
+    // UID of Grafana's Metrics datasource (Mimir), which the local alert rules query.
+    metricsDatasourceUid: 'metrics',
+    // UID of Grafana Cloud's hosted metrics datasource, which the Cloud alert rules query.
+    cloudDatasourceUid: 'grafanacloud-prom',
     // Pocket ID, the login to Grafana.
     oidcIssuer: 'https://login.bednarzak.com',
     // Pocket ID user group (a PocketIDUserGroup in the pocketid namespace) allowed to log in to Grafana.

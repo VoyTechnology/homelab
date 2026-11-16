@@ -1,0 +1,45 @@
+name: Grafana Cloud alerts
+
+# Pushes the alert rules from apps/lib/monitoring/alerts.libsonnet to Grafana Cloud. Needs the repository
+# secrets GRAFANA_SERVER (stack URL) and GRAFANA_TOKEN (service account that can write folders and alert rules).
+on:
+  pull_request:
+    paths:
+      - "apps/lib/monitoring/alerts.libsonnet"
+      - "scripts/push-grafana-alerts.sh"
+      - ".github/workflows/grafana-alerts.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/lib/monitoring/alerts.libsonnet"
+      - "scripts/push-grafana-alerts.sh"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: grafana-alerts
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install tools
+        uses: jdx/mise-action@v2
+        with:
+          install_args: tanka jsonnet-bundler go-jsonnet
+
+      - name: Render only
+        if: github.event_name == 'pull_request'
+        run: scripts/push-grafana-alerts.sh bet1 --dry-run
+
+      - name: Push
+        if: github.event_name != 'pull_request'
+        env:
+          GRAFANA_SERVER: ${{ secrets.GRAFANA_SERVER }}
+          GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
+        run: scripts/push-grafana-alerts.sh bet1
