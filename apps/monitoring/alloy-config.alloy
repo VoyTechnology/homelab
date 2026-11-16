@@ -266,21 +266,15 @@ prometheus.scrape "pods" {
 // Scrape ServiceMonitor targets. No classic->native conversion knob exists
 // for this component (only scrape_native_histograms, for targets that
 // already emit native histograms natively, which none of ours do), so
-// ArgoCD's metrics stay classic-histogram-only here.
+// scraped histograms stay classic-histogram-only here.
 prometheus.operator.servicemonitors "services" {
   forward_to = [prometheus.relabel.servicemonitor_filter.receiver]
 }
 
-// Argo CD is being removed, so stop storing its metrics. Home Assistant's
-// per-entity timestamp and state-change counters are the bulk of its series and
-// are not graphed.
+// Drop Home Assistant's per-entity timestamp and state-change counters, the bulk of its series;
+// they are not graphed.
 prometheus.relabel "servicemonitor_filter" {
   forward_to = [prometheus.remote_write.mimir.receiver]
-  rule {
-    source_labels = ["job"]
-    action = "drop"
-    regex = "integrations/argocd/.*"
-  }
   rule {
     source_labels = ["__name__"]
     action = "drop"

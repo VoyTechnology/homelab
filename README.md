@@ -52,8 +52,6 @@ To add an app:
 To add a cluster, create `clusters/environments/<cluster>/main.jsonnet`. Apps
 that should run there get their own environment directory.
 
-The legacy Argo CD apps under `argo/` are being moved to this layout.
-
 ---
 
 ## Running a single playbook on the cluster

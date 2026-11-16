@@ -1,7 +1,6 @@
 name: Lint
 
-# Jsonnet in apps/ and clusters/ must be jsonnetfmt-clean. The legacy argo/ tree is
-# not checked, as it is being removed.
+# Jsonnet in apps/ and clusters/ must be jsonnetfmt-clean.
 on:
   pull_request:
     paths:

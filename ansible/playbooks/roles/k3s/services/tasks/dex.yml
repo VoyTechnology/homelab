@@ -47,14 +47,6 @@
               # groups:
               # - "{{ dex_google_group }}"
         staticClients:
-          - id: "{{ dex_argo_client_id }}"
-            name: ArgoCD
-            redirectURIs:
-              - "https://argocd.{{ cluster_domain }}/auth/callback"
-              - "https://argocd.{{ cluster_domain }}/auth/login"
-              - "http://127.0.0.1:8085/auth/callback" # CLI
-              - "http://localhost:8085/auth/callback" # CLI
-            secret: "{{ dex_argo_client_secret }}"
           - id: "{{ dex_oauth2_proxy_client_id }}"
             name: oauth2-proxy
             redirectURIs:

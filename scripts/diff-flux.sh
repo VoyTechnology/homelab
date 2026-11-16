@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Markdown diff of a rendered cluster against homelab-manifests, in the same shape as
-# the Argo manifest diff: a summary table, then one collapsed diff per group (Flux
+# Markdown diff of a rendered cluster against homelab-manifests, as a summary table, then one collapsed diff per group (Flux
 # itself, then each app):
 #   scripts/diff-flux.sh <base-root> <head-root> <cluster> [total-chars]
 base="${1:?usage: diff-flux.sh <base-root> <head-root> <cluster> [total-chars]}"
