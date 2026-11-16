@@ -1,12 +1,15 @@
-// Home Assistant's route, and Matter Hub's. Exposed through a Cloudflare Gateway (a tunnel); DNS is managed by the gateway
-// controller. The environment adds the `parentRefs` of the Gateway to attach to.
-// No generated library for the Gateway API, so a plain object.
+// Both routes attach to the internal gateway (LAN only, wildcard certificate). The environment moves Home
+// Assistant to the external Cloudflare gateway (a tunnel, DNS managed by the gateway controller) with
+// `route+: { spec+: { parentRefs: [...] } }`. No generated library for the Gateway API, so plain objects.
 {
+  local internal = [{ name: 'internal', namespace: 'gateway-system' }],
+
   route: {
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'HTTPRoute',
     metadata: { name: 'homeassistant', namespace: $._config.namespace },
     spec: {
+      parentRefs: internal,
       hostnames: [$._config.domain],
       rules: [{ backendRefs: [{
         name: $.homeassistant.haService.metadata.name,
@@ -14,14 +17,13 @@
       }] }],
     },
   },
-  // Matter Hub's web UI is only for the local network: the internal gateway, whose wildcard certificate
-  // covers the host.
+
   matterhubRoute: {
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'HTTPRoute',
     metadata: { name: $.matterhub.matterhubService.metadata.name, namespace: $._config.namespace },
     spec: {
-      parentRefs: [{ name: 'internal', namespace: 'gateway-system' }],
+      parentRefs: internal,
       hostnames: [$._config.matterHost],
       rules: [{ backendRefs: [{
         name: $.matterhub.matterhubService.metadata.name,
