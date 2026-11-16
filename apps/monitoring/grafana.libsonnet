@@ -29,7 +29,10 @@ local volumeMount = k.core.v1.volumeMount;
                  k.core.v1.containerPort.withName('grafana-metrics')
                  + k.core.v1.containerPort.withContainerPort(3000),
                )
-               + container.withVolumeMounts([volumeMount.new('grafana-data', '/var/lib/grafana', false)]),
+               + container.withVolumeMounts([
+                 volumeMount.new('grafana-data', '/var/lib/grafana', false),
+                 volumeMount.new('empty-dashboards', '/grafana/dashboards', true),
+               ]),
 
              // The mixins own the dashboard list: the library's disableDeletion keeps a dashboard in Grafana's
              // database after its file disappears, so a removed mixin dashboard would linger forever.
@@ -51,6 +54,9 @@ local volumeMount = k.core.v1.volumeMount;
              grafana_deployment+:
                k.apps.v1.deployment.mixin.spec.template.spec.withVolumesMixin([
                  volume.fromPersistentVolumeClaim('grafana-data', 'grafana-data'),
+                 // The library always provisions a root-folder provider at /grafana/dashboards. With no mixin there
+                 // the directory is missing and Grafana cannot clean up dashboards that were once provisioned from it.
+                 volume.fromEmptyDir('empty-dashboards'),
                ])
                + k.apps.v1.deployment.mixin.spec.template.spec.securityContext.withFsGroup(472)
                + k.apps.v1.deployment.mixin.spec.strategy.withType('Recreate')
