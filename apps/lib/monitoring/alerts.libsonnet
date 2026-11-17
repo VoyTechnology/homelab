@@ -12,48 +12,85 @@ local rule(alert, expr, duration, summary, severity='warning') = {
   alert: alert,
   expr: expr,
   duration: duration,
-  summary: summary,
-  severity: severity,
+  labels: { severity: severity },
+  annotations: { summary: summary },
 };
 
-// A Grafana-managed rule: query A, then a threshold. Every expr here already filters to the
-// failing series, so `* 0 + 1` turns each returned series into 1 and the threshold fires on it.
-local grafanaRule(group, r, datasourceUid) = {
-  uid: std.asciiLower(r.alert),
-  title: r.alert,
-  ruleGroup: group,
-  folderUID: folder.uid,
-  orgID: 1,
-  condition: 'B',
-  data: [
-    {
-      refId: 'A',
-      relativeTimeRange: { from: 600, to: 0 },
-      datasourceUid: datasourceUid,
-      model: {
-        refId: 'A',
-        expr: '(%s) * 0 + 1' % r.expr,
-        instant: true,
-        range: false,
-      },
-    },
-    {
-      refId: 'B',
-      datasourceUid: '__expr__',
-      model: {
-        refId: 'B',
-        type: 'threshold',
-        expression: 'A',
-        conditions: [{ evaluator: { type: 'gt', params: [0] } }],
-      },
-    },
-  ],
-  'for': r.duration,
-  noDataState: 'OK',
-  execErrState: 'Error',
-  labels: { severity: r.severity },
-  annotations: { summary: r.summary },
+// Prometheus alerts from a mixin, in the same shape. Grafana templates expose the query value as
+// $values.A.Value rather than $value.
+local fromMixin(r) = {
+  alert: r.alert,
+  expr: std.stripChars(r.expr, '\n'),
+  duration: r['for'],
+  labels: r.labels,
+  annotations: {
+    [name]: std.strReplace(r.annotations[name], '$value', '$values.A.Value')
+    for name in std.objectFields(r.annotations)
+  },
 };
+
+// The kubernetes-mixin alerts that only need raw kube-state-metrics or kubelet series, which
+// cloud_filter ships. The rest query recording rules that exist only in the local Mimir, or
+// control-plane components that are not scraped on k3s.
+local mixinAlerts = [
+  'KubePodCrashLooping',
+  'KubeDeploymentReplicasMismatch',
+  'KubeStatefulSetReplicasMismatch',
+  'KubeDaemonSetRolloutStuck',
+  'KubeContainerWaiting',
+  'KubePersistentVolumeFillingUp',
+  'KubePersistentVolumeErrors',
+  'KubeNodeNotReady',
+  'KubeNodePressure',
+];
+
+local mixinGroups = [
+  {
+    name: g.name,
+    rules: [fromMixin(r) for r in g.rules if std.member(mixinAlerts, r.alert)],
+  }
+  for g in (import 'mixins.libsonnet').kubernetes.prometheusAlerts.groups
+  if std.length([r for r in g.rules if std.member(mixinAlerts, r.alert)]) > 0
+];
+
+// A Grafana-managed rule: the query as A, then a threshold on it. Every expr already filters to the
+// failing series, so any returned series is firing; the threshold is below any value, which keeps
+// the real value available to the templates as $values.A.Value.
+// A group can hold the same alert twice with different severities (the mixin does), so those
+// get the severity in the title.
+local grafanaRule(group, r, datasourceUid, duplicate) =
+  local title = if duplicate then '%s (%s)' % [r.alert, r.labels.severity] else r.alert;
+  {
+    uid: std.strReplace(std.strReplace(std.asciiLower(title), ' (', '-'), ')', ''),
+    title: title,
+    ruleGroup: group,
+    folderUID: folder.uid,
+    orgID: 1,
+    condition: 'B',
+    data: [
+      {
+        refId: 'A',
+        relativeTimeRange: { from: 600, to: 0 },
+        datasourceUid: datasourceUid,
+        model: { refId: 'A', expr: r.expr, instant: true, range: false },
+      },
+      {
+        refId: 'B',
+        datasourceUid: '__expr__',
+        model: {
+          refId: 'B',
+          type: 'threshold',
+          expression: 'A',
+          conditions: [{ evaluator: { type: 'gt', params: [-1e300] } }],
+        },
+      },
+    ],
+    'for': r.duration,
+    noDataState: 'OK',
+    execErrState: 'Error',
+    labels: r.labels,
+    annotations: r.annotations,
+  };
 
 {
   grafanaGroups(datasourceUid)::
@@ -62,12 +99,20 @@ local grafanaRule(group, r, datasourceUid) = {
         name: g.name,
         folderUid: folder.uid,
         interval: intervalSeconds,
-        rules: [grafanaRule(g.name, r, datasourceUid) for r in g.rules],
+        rules: [
+          grafanaRule(
+            g.name,
+            r,
+            datasourceUid,
+            std.length([o for o in g.rules if o.alert == r.alert]) > 1,
+          )
+          for r in g.rules
+        ],
       }
       for g in $.alertGroups
     ],
 
-  alertGroups:: [
+  alertGroups:: mixinGroups + [
     {
       name: 'homelab.availability',
       rules: [
@@ -79,54 +124,16 @@ local grafanaRule(group, r, datasourceUid) = {
           'critical',
         ),
         rule(
-          'NodeNotReady',
-          'kube_node_status_condition{condition="Ready",status="true"} == 0',
-          '5m',
-          'Node {{ $labels.node }} is not ready',
-          'critical',
-        ),
-        rule(
-          'PodCrashLooping',
-          'increase(kube_pod_container_status_restarts_total[30m]) > 3',
-          '5m',
-          '{{ $labels.namespace }}/{{ $labels.pod }} is restarting repeatedly',
-        ),
-        rule(
           'PodNotRunning',
           'sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Failed|Unknown"}) > 0',
           '15m',
           '{{ $labels.namespace }}/{{ $labels.pod }} has not been running for 15m',
-        ),
-        rule(
-          'DeploymentUnavailable',
-          'kube_deployment_status_replicas_available < kube_deployment_spec_replicas',
-          '15m',
-          'Deployment {{ $labels.namespace }}/{{ $labels.deployment }} is missing replicas',
-        ),
-        rule(
-          'StatefulSetNotReady',
-          'kube_statefulset_status_replicas_ready < kube_statefulset_replicas',
-          '15m',
-          'StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }} is missing replicas',
         ),
       ],
     },
     {
       name: 'homelab.capacity',
       rules: [
-        rule(
-          'PersistentVolumeFillingUp',
-          'kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes < 0.15',
-          '15m',
-          'Volume {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} is over 85% full',
-        ),
-        rule(
-          'PersistentVolumeAlmostFull',
-          'kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes < 0.05',
-          '5m',
-          'Volume {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} is over 95% full',
-          'critical',
-        ),
         rule(
           'NodeDiskFillingUp',
           |||
