@@ -38,15 +38,15 @@ local s3Credentials(secret) = {
   store_gateway_statefulset+: withScrapeAnnotations,
   ruler_deployment+: withScrapeAnnotations,
 
-  // The queriers read the bucket from 2h30m (see above), but the store-gateway skips blocks younger than 10h by default
-  // (-blocks-storage.bucket-store.ignore-blocks-within), so every block between 2h30m and 10h old was expected by the
-  // queriers and never loaded: their consistency check failed any query reaching past the ingesters' 3h
+  // The queriers read the bucket from 2h (see below), but the store-gateway skips blocks younger than 10h by default
+  // (-blocks-storage.bucket-store.ignore-blocks-within), so every block between 2h and 10h old was expected by the
+  // queriers and never loaded: their consistency check failed any query reaching past the ingesters' 2h30m
   // (err-mimir-store-consistency-check-failed). Keep it below the query-store-after.
   //
   // A sync is a single small read of the bucket index, so also do it every minute to keep the store-gateway close behind
   // the compactor's index updates (every 15m). The compactor's deletion delay is derived from this value.
   store_gateway_args+:: {
-    'blocks-storage.bucket-store.ignore-blocks-within': '2h',
+    'blocks-storage.bucket-store.ignore-blocks-within': '1h30m',
     'blocks-storage.bucket-store.sync-interval': '1m',
   },
 
@@ -80,17 +80,19 @@ local s3Credentials(secret) = {
   store_gateway_container+: s3Credentials($._config.s3KeySecretName),
   ruler_container+: s3Credentials($._config.s3KeySecretName),
 
-  // The ingester's disk is 1Gi, so drop shipped blocks after 3h (default 13h) and have queries use the bucket from 2h30m.
+  // The ingester's disk is 1Gi. Cut 1h blocks (default 2h) so the head and its WAL stay small, and drop shipped
+  // blocks after 2h30m (default 13h). Queries use the bucket from 2h, above the store-gateway's ignore-blocks-within.
   ingester_args+:: {
-    'blocks-storage.tsdb.retention-period': '3h',
+    'blocks-storage.tsdb.block-ranges-period': '1h',
+    'blocks-storage.tsdb.retention-period': '2h30m',
   },
   querier_args+:: {
-    'querier.query-store-after': '2h30m',
-    'querier.query-ingesters-within': '3h',
+    'querier.query-store-after': '2h',
+    'querier.query-ingesters-within': '2h30m',
   },
   ruler_args+:: {
-    'querier.query-store-after': '2h30m',
-    'querier.query-ingesters-within': '3h',
+    'querier.query-store-after': '2h',
+    'querier.query-ingesters-within': '2h30m',
   },
 
   // With the tiny setup in the homelab, podDisruptionBudget is causing issues with syncing.
