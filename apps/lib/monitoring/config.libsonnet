@@ -16,7 +16,5 @@
     cloudDatasourceUid: 'grafanacloud-prom',
     // Pocket ID, the login to Grafana.
     oidcIssuer: 'https://login.bednarzak.com',
-    // Pocket ID user group (a PocketIDUserGroup in the pocketid namespace) allowed to log in to Grafana.
-    allowedGroup: 'infra',
   },
 }
