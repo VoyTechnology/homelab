@@ -18,7 +18,7 @@ local container = k.core.v1.container;
       callbackUrls: ['https://%s/login/okta' % host],
       isPublic: false,
       pkceEnabled: true,
-      allowedUserGroups: [{ name: $._config.allowedGroup, namespace: 'pocketid' }],
+      // No allowedUserGroups: every Pocket ID user may sign in.
       secret: {
         name: 'grafana-pocketid',
         keys: { clientID: 'client-id', clientSecret: 'client-secret' },
@@ -36,7 +36,9 @@ local container = k.core.v1.container;
           enabled: true,
           name: 'Pocket ID',
           scopes: 'openid email profile groups',
-          skip_org_role_sync: true,
+          // Members of the Pocket ID infra group are Admins, everyone else a Viewer.
+          skip_org_role_sync: false,
+          role_attribute_path: "contains(groups[*], 'infra') && 'Admin' || 'Viewer'",
           allow_sign_up: false,
           oauth_allow_insecure_email_lookup: true,
           use_pkce: true,
