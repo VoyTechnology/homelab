@@ -2,6 +2,7 @@
 + (import 'config.libsonnet')
 + (import 'scaling.libsonnet')
 + (import 'namespace.libsonnet')
++ (import 'networkpolicy.libsonnet')
 + (import 'nodes.libsonnet')
 + (import 'settings.libsonnet')
 + (import 'route.libsonnet')
