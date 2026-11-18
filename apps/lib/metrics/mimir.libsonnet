@@ -80,7 +80,7 @@ local s3Credentials(secret) = {
   store_gateway_container+: s3Credentials($._config.s3KeySecretName),
   ruler_container+: s3Credentials($._config.s3KeySecretName),
 
-  // The ingester's disk is 1Gi, so drop shipped blocks after 3h (default 13h) and have queries use the bucket from 2h30m.
+  // The ingester's disk is small (5Gi), so drop shipped blocks after 3h (default 13h) and have queries use the bucket from 2h30m.
   ingester_args+:: {
     'blocks-storage.tsdb.retention-period': '3h',
   },
