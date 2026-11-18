@@ -23,6 +23,8 @@ local keepCrds(objs) = {
     values: {
       csi: { kubeletRootDir: $._config.kubeletRootDir },
       persistence: { defaultClassReplicaCount: $._config.defaultReplicaCount },
+      // Alloy picks the ServiceMonitor up (prometheus.operator.servicemonitors) for longhorn_volume_* metrics.
+      metrics: { serviceMonitor: { enabled: true } },
     },
   }))),
 }
