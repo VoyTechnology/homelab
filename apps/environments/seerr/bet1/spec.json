@@ -1,0 +1,11 @@
+{
+  "apiVersion": "tanka.dev/v1alpha1",
+  "kind": "Environment",
+  "metadata": {
+    "name": "seerr/bet1",
+    "labels": {
+      "flux.bednarzak.com/depends-on.pocketid": "true"
+    }
+  },
+  "spec": { "namespace": "media" }
+}
