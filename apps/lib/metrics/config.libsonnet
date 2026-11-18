@@ -31,7 +31,7 @@
     alertmanager_data_disk_size: '1Gi',
 
     ingester_data_disk_class: null,
-    ingester_data_disk_size: '1Gi',
+    ingester_data_disk_size: '5Gi',
     ingester_allow_multiple_replicas_on_same_node: true,
 
     store_gateway_data_disk_class: null,
