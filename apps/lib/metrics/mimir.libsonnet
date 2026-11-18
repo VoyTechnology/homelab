@@ -80,7 +80,7 @@ local s3Credentials(secret) = {
   store_gateway_container+: s3Credentials($._config.s3KeySecretName),
   ruler_container+: s3Credentials($._config.s3KeySecretName),
 
-  // The ingester's disk is small (5Gi). Cut 1h blocks (default 2h) so the head and its WAL stay small, and drop shipped
+  // The ingester's disk is small (4Gi). Cut 1h blocks (default 2h) so the head and its WAL stay small, and drop shipped
   // blocks after 2h30m (default 13h). Queries use the bucket from 2h, above the store-gateway's ignore-blocks-within.
   ingester_args+:: {
     'blocks-storage.tsdb.block-ranges-period': '1h',
