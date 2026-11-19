@@ -2,7 +2,7 @@
 {
   _images+:: {
     // renovate: datasource=docker depName=grafana/mimir
-    mimir: 'grafana/mimir:3.1.4',
+    mimir: 'grafana/mimir:3.2.6',
     // renovate: datasource=docker depName=memcached
     memcached: 'memcached:1.6.42-alpine@sha256:43a2e7f74aebfff0c9921f4d367299ced9eacaeaccdc8bb4bc122a4fba2cd909',
     // renovate: datasource=docker depName=prom/memcached-exporter
