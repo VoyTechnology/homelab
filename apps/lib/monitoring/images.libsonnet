@@ -15,7 +15,7 @@
   grafana+: {
     _images+:: {
       // renovate: datasource=docker depName=grafana/grafana
-      grafana: 'grafana/grafana:13.1.3',
+      grafana: 'grafana/grafana:13.3.1',
     },
   },
 }
