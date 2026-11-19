@@ -326,7 +326,8 @@ prometheus.remote_write "cloud" {
     cluster = sys.env("CLUSTER_NAME"),
   }
   endpoint {
-    url = sys.env("PROMETHEUS_URL")
+    // grafana-cloud/metrics-url holds only the host; the push path is appended here.
+    url = string.join([sys.env("PROMETHEUS_URL"), "/api/prom/push"], "")
     basic_auth {
       username = sys.env("GRAFANA_USER")
       password = sys.env("TOKEN")
