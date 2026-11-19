@@ -2,7 +2,7 @@
 {
   homeassistant+: {
     _images+:: {
-      // renovate: datasource=docker depName=ghcr.io/home-assistant/home-assistant
+      // renovate: datasource=docker depName=ghcr.io/home-assistant/home-assistant automerge=false
       homeassistant: 'ghcr.io/home-assistant/home-assistant:2026.11.2',
     },
   },

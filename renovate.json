@@ -18,47 +18,51 @@
       "description": "Update dependencies in jsonnet files",
       "managerFilePatterns": ["/.*\\.(jsonnet|libsonnet)$/"],
       "matchStrings": [
-        "//\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+registryUrl=(?<registryUrl>\\S+))?[\\s\\S]*?targetRevision\\s*=\\s*['\"](?<currentValue>[^'\"]+)['\"]"
+        "//\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+registryUrl=(?<registryUrl>\\S+))?(?:\\s+automerge=(?<automerge>\\S+))?[\\s\\S]*?targetRevision\\s*=\\s*['\"](?<currentValue>[^'\"]+)['\"]"
       ],
       "datasourceTemplate": "{{datasource}}",
       "depNameTemplate": "{{depName}}",
-      "registryUrlTemplate": "{{registryUrl}}"
+      "registryUrlTemplate": "{{registryUrl}}",
+      "depTypeTemplate": "automerge-{{{automerge}}}"
     },
     {
       "customType": "regex",
       "description": "Update container images pinned in an app's images.libsonnet (_images)",
       "managerFilePatterns": ["/(^|/)images\\.libsonnet$/"],
       "matchStrings": [
-        "//\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\s*\\n\\s*\\w+:\\s*'[^']*:(?<currentValue>[^':']+)'"
+        "//\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+automerge=(?<automerge>\\S+))?\\s*\\n\\s*\\w+:\\s*'[^']*:(?<currentValue>[^':']+)'"
       ],
       "datasourceTemplate": "{{datasource}}",
-      "depNameTemplate": "{{depName}}"
+      "depNameTemplate": "{{depName}}",
+      "depTypeTemplate": "automerge-{{{automerge}}}"
     },
     {
       "customType": "regex",
       "description": "Update Helm charts rendered by Tanka apps (apps/lib/*/chartfile.yaml)",
       "managerFilePatterns": ["/(^|/)chartfile\\.yaml$/"],
       "matchStrings": [
-        "repositories:[\\s\\S]*?- name: (?<repo>\\S+)\\n\\s+url: (?<registryUrl>\\S+)[\\s\\S]*?- chart: [^/\\s]+/(?<depName>\\S+)\\n\\s+version: (?<currentValue>\\S+)"
+        "repositories:[\\s\\S]*?- name: (?<repo>\\S+)\\n\\s+url: (?<registryUrl>\\S+)[\\s\\S]*?(?:#\\s*renovate:\\s*automerge=(?<automerge>\\S+)\\s*\\n\\s*)?- chart: [^/\\s]+/(?<depName>\\S+)\\n\\s+version: (?<currentValue>\\S+)"
       ],
-      "datasourceTemplate": "helm"
+      "datasourceTemplate": "helm",
+      "depTypeTemplate": "automerge-{{{automerge}}}"
     },
     {
       "customType": "regex",
       "description": "Update GitHub release file URLs with version in filename",
       "managerFilePatterns": ["/.*\\.(ya?ml|libsonnet)$/"],
       "matchStrings": [
-        "(?:#|//) renovate: datasource=github-releases(?:-files)? depName=(?<depName>[^\\s]+)\\s*\\n\\s*(?:- )?['\"]?https://github\\.com/(?<owner>[^/]+)/(?<repo>[^/]+)/releases/download/v?(?<currentValue>[0-9]+(?:\\.[0-9]+)*)/(?<prefix>[^-]*-)(?<fileVersion>[0-9]+(?:\\.[0-9]+)*)(?<suffix>.*)"
+        "(?:#|//) renovate: datasource=github-releases(?:-files)? depName=(?<depName>[^\\s]+)(?:\\s+automerge=(?<automerge>\\S+))?\\s*\\n\\s*(?:- )?['\"]?https://github\\.com/(?<owner>[^/]+)/(?<repo>[^/]+)/releases/download/v?(?<currentValue>[0-9]+(?:\\.[0-9]+)*)/(?<prefix>[^-]*-)(?<fileVersion>[0-9]+(?:\\.[0-9]+)*)(?<suffix>.*)"
       ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "{{depName}}",
+      "depTypeTemplate": "automerge-{{{automerge}}}",
       "autoReplaceStringTemplate": "https://github.com/{{owner}}/{{repo}}/releases/download/v{{newValue}}/{{prefix}}{{newValue}}{{suffix}}"
     }
   ],
   "packageRules": [
     {
-      "description": "Longhorn upgrades one minor version at a time and has its own procedure: review by hand",
-      "matchDepNames": ["longhorn"],
+      "description": "Opt out of automerge with `automerge=false` in the `# renovate:` comment",
+      "matchDepTypes": ["automerge-false"],
       "automerge": false
     }
   ]
