@@ -93,7 +93,7 @@ jobs:
         run: mise bin-paths >> "$GITHUB_PATH"
 
       - name: Cache jsonnet dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             homelab/apps/vendor
