@@ -41,7 +41,7 @@ jobs:
     outputs:
       clusters: ${{ steps.list.outputs.clusters }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - id: list
         # One cluster per clusters/environments/<name> directory.
         run: echo "clusters=$(ls clusters/environments | jq -R . | jq -sc .)" >> "$GITHUB_OUTPUT"
@@ -61,12 +61,12 @@ jobs:
         apps/${{ matrix.cluster }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: homelab
 
       - name: Checkout homelab-manifests
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: VoyTechnology/homelab-manifests
           token: ${{ secrets.MANIFESTS_REPO_TOKEN }}

@@ -27,7 +27,7 @@ jobs:
           tags: tag:ci
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Decrypt git-crypt
         uses: amplium/git-crypt-action@master
