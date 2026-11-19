@@ -2,7 +2,7 @@
 {
   _images+:: {
     // renovate: datasource=docker depName=docker.io/grafana/alloy
-    alloy: 'docker.io/grafana/alloy:v1.18.1',
+    alloy: 'docker.io/grafana/alloy:v1.22.0',
     // renovate: datasource=docker depName=quay.io/prometheus-operator/prometheus-config-reloader
     configReloader: 'quay.io/prometheus-operator/prometheus-config-reloader:v0.91.0',
     // renovate: datasource=docker depName=registry.k8s.io/kube-state-metrics/kube-state-metrics
