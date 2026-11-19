@@ -30,11 +30,4 @@
     // sorts the variables by name and OIDC_ comes before PAPERLESS_.
     PAPERLESS_SOCIALACCOUNT_PROVIDERS: std.toString($.oidcProviders),
   },
-
-  // Django rejects the pod IP as a Host, so the probe sends the public host.
-  paperless_container+:: {
-    readinessProbe+: {
-      httpGet+: { httpHeaders: [{ name: 'Host', value: $._config.host }] },
-    },
-  },
 }
