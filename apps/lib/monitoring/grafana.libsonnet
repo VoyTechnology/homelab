@@ -23,6 +23,18 @@ local volumeMount = k.core.v1.volumeMount;
            + {
              _config+:: { configmap_binpack: true },
 
+             // Grafana 13 installs the Prometheus datasource into the data volume instead of
+             // shipping it. By default that happens in the background after plugins are loaded,
+             // so an update replaces the running plugin and the datasource fails with "Unable to
+             // find datasource plugin" until the next restart. Install it before startup instead.
+             iniConfig+:: {
+               sections+: {
+                 plugins+: {
+                   preinstall_sync: 'prometheus,grafana-metricsdrilldown-app',
+                 },
+               },
+             },
+
              // Use withEnvMixin (not withEnv) elsewhere: withEnv drops GF_PATHS_CONFIG and the config is then ignored.
              grafana_container+::
                container.withPorts(
