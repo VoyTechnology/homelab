@@ -37,7 +37,7 @@
       "description": "Update Helm charts rendered by Tanka apps (apps/lib/*/chartfile.yaml)",
       "managerFilePatterns": ["/(^|/)chartfile\\.yaml$/"],
       "matchStrings": [
-        "repositories:[\\s\\S]*?- name: (?<repo>\\S+)\\n\\s+url: (?<registryUrl>\\S+)[\\s\\S]*?- chart: \\k<repo>/(?<depName>\\S+)\\n\\s+version: (?<currentValue>\\S+)"
+        "repositories:[\\s\\S]*?- name: (?<repo>\\S+)\\n\\s+url: (?<registryUrl>\\S+)[\\s\\S]*?- chart: [^/\\s]+/(?<depName>\\S+)\\n\\s+version: (?<currentValue>\\S+)"
       ],
       "datasourceTemplate": "helm"
     },
