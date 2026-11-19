@@ -132,6 +132,26 @@ local grafanaRule(group, r, datasourceUid, duplicate) =
       ],
     },
     {
+      name: 'homelab.flux',
+      rules: [
+        // Suspended objects are left out on purpose, they are not meant to reconcile.
+        rule(
+          'FluxResourceNotReady',
+          'gotk_resource_info{ready=~"False|Unknown", suspended!="true"} == 1',
+          '2h',
+          'Flux {{ $labels.name }} has not been Ready for 2h',
+        ),
+        // Reconciles run every 1-10m, so 3h without one means the controller or the object is stuck.
+        rule(
+          'FluxReconcileStalled',
+          'increase(gotk_reconcile_duration_seconds_count{kind=~"Kustomization|HelmRelease|GitRepository"}[3h]) == 0',
+          '5m',
+          'Flux {{ $labels.name }} has not reconciled for 3h',
+          'critical',
+        ),
+      ],
+    },
+    {
       name: 'homelab.capacity',
       rules: [
         rule(
