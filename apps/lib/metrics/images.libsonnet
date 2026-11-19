@@ -1,8 +1,10 @@
 // Pinned here, not in the libraries, so Renovate can bump them.
 {
   _images+:: {
-    // renovate: datasource=docker depName=grafana/mimir
-    mimir: 'grafana/mimir:3.2.6',
+    // Mimir's image comes from the vendored jsonnet library, which is wired for that version
+    // (the image alone is not safe to bump, 3.2.x needs the query-frontend in the querier ring).
+    // Not tracked by Renovate; to override, uncomment and bump by hand.
+    // mimir: 'grafana/mimir:3.2.6',
     // renovate: datasource=docker depName=memcached
     memcached: 'memcached:1.6.42-alpine@sha256:43a2e7f74aebfff0c9921f4d367299ced9eacaeaccdc8bb4bc122a4fba2cd909',
     // renovate: datasource=docker depName=prom/memcached-exporter
