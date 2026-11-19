@@ -27,7 +27,7 @@ local container = k.core.v1.container;
   },
 
   grafana+: {
-    iniConfig:: {
+    iniConfig+:: {
       sections+: {
         auth+: { disable_login_form: true },
         // The flag above only hides the form, basic auth would still work.
