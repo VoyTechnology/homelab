@@ -41,9 +41,10 @@
       "description": "Update Helm charts rendered by Tanka apps (apps/lib/*/chartfile.yaml)",
       "managerFilePatterns": ["/(^|/)chartfile\\.yaml$/"],
       "matchStrings": [
-        "repositories:[\\s\\S]*?- name: (?<repo>\\S+)\\n\\s+url: (?<registryUrl>\\S+)[\\s\\S]*?- chart: [^/\\s]+/(?<depName>\\S+)\\n\\s+version: (?<currentValue>\\S+)"
+        "repositories:[\\s\\S]*?- name: (?<repo>\\S+)\\n\\s+url: (?<registryUrl>\\S+)[\\s\\S]*?(?:#\\s*renovate:\\s*automerge=(?<automerge>\\S+)\\s*\\n\\s*)?- chart: [^/\\s]+/(?<depName>\\S+)\\n\\s+version: (?<currentValue>\\S+)"
       ],
-      "datasourceTemplate": "helm"
+      "datasourceTemplate": "helm",
+      "depTypeTemplate": "automerge-{{{automerge}}}"
     },
     {
       "customType": "regex",
@@ -62,11 +63,6 @@
     {
       "description": "Opt out of automerge with `automerge=false` in the `# renovate:` comment",
       "matchDepTypes": ["automerge-false"],
-      "automerge": false
-    },
-    {
-      "description": "Longhorn upgrades one minor version at a time and has its own procedure: review by hand",
-      "matchDepNames": ["longhorn"],
       "automerge": false
     }
   ]

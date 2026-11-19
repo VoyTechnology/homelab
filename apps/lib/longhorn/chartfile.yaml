@@ -3,6 +3,7 @@ repositories:
 - name: longhorn
   url: https://charts.longhorn.io
 requires:
+# renovate: automerge=false
 - chart: longhorn/longhorn
   version: 1.13.0
 version: 1
