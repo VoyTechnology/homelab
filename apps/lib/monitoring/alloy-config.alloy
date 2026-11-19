@@ -315,6 +315,10 @@ prometheus.relabel "cloud_filter" {
       // Volume alerts skip read-only and excluded claims; PV phase for the errors alert.
       "kube_persistentvolumeclaim_(access_mode|labels)",
       "kube_persistentvolume_status_phase",
+      // Flux: Ready/suspended state per object (flux.libsonnet), and the reconcile count of the
+      // controllers, which stops growing when something is not reconciling. Not the histogram buckets.
+      "gotk_resource_info",
+      "gotk_reconcile_duration_seconds_count",
     ], "|")
   }
 }
