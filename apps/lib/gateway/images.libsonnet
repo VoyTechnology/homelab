@@ -3,7 +3,7 @@
 {
   _images+:: {
     // renovate: datasource=docker depName=docker.io/envoyproxy/gateway
-    envoyGateway: 'docker.io/envoyproxy/gateway:v1.7.0',
+    envoyGateway: 'docker.io/envoyproxy/gateway:v1.10.0',
     // renovate: datasource=docker depName=docker.io/envoyproxy/ratelimit
     envoyRatelimit: 'docker.io/envoyproxy/ratelimit:3fb70258',
     // The controller image also runs the tunnels (--tunnel-image).
