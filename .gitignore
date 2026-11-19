@@ -16,3 +16,6 @@ charts/*.tgz
 
 # Helm charts vendored for Flux apps by `tk tool charts vendor` (pinned in chartfile.yaml)
 apps/lib/*/charts/
+
+# Vendored Helm charts (regenerated from chartfile.yaml)
+apps/longhorn/charts/

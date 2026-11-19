@@ -8,26 +8,26 @@
   },
   otbr+: {
     _images+:: {
-      // renovate: datasource=docker depName=ghcr.io/ownbee/hass-otbr-docker automerge=false
+      // renovate: datasource=docker depName=ghcr.io/ownbee/hass-otbr-docker
       otbr: 'ghcr.io/ownbee/hass-otbr-docker:latest',
     },
   },
   matterServer+: {
     _images+:: {
-      // renovate: datasource=docker depName=ghcr.io/matter-js/matterjs-server automerge=false
+      // renovate: datasource=docker depName=ghcr.io/matter-js/matterjs-server
       matterServer: 'ghcr.io/matter-js/matterjs-server:1.5.5',
-      // renovate: datasource=docker depName=docker.io/library/busybox automerge=false
+      // renovate: datasource=docker depName=docker.io/library/busybox
       busybox: 'docker.io/library/busybox:1.38.0',
     },
   },
   matterhub+: {
     _images+:: {
-      // renovate: datasource=docker depName=ghcr.io/riddix/home-assistant-matter-hub automerge=false
+      // renovate: datasource=docker depName=ghcr.io/riddix/home-assistant-matter-hub
       matterhub: 'ghcr.io/riddix/home-assistant-matter-hub:2.0.60',
     },
   },
   _images+:: {
-    // renovate: datasource=docker depName=curlimages/curl automerge=false
+    // renovate: datasource=docker depName=curlimages/curl
     curl: 'curlimages/curl:8.23.0',
   },
 }
