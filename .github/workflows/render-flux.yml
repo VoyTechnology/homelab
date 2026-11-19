@@ -81,7 +81,7 @@ jobs:
       - name: Allow jb to clone the private ha-data repo
         # Read-only deploy key on VoyTechnology/ha-data; only that repo is
         # rewritten to ssh, other dependencies stay on https.
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.HA_DATA_DEPLOY_KEY }}
 

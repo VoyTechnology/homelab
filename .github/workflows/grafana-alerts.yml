@@ -35,7 +35,7 @@ jobs:
 
       - name: Allow jb to clone the private ha-data repo
         # Same read-only deploy key as the Render Flux workflow; only that repo is rewritten to ssh.
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.HA_DATA_DEPLOY_KEY }}
 
