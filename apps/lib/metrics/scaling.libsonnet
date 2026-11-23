@@ -8,6 +8,9 @@ local statefulSet = k.apps.v1.statefulSet;
 local resources(cpu, memory, memoryLimit) =
   k.util.resourcesRequests(cpu, memory) + k.util.resourcesLimits(null, memoryLimit);
 
+// The library asks for 500m CPU per memcached and 50m for its exporter; both idle at ~1m.
+local memcachedCpu = { cpu_requests: '20m', exporter_cpu_requests: '5m' };
+
 {
   _config+:: {
     // Garage.
@@ -32,19 +35,22 @@ local resources(cpu, memory, memoryLimit) =
 
   // The Mimir library defaults assume a production cluster (e.g. 25Gi ingester,
   // 24Gi querier). The workers are Raspberry Pis with ~4GiB each, so cap everything.
-  compactor_container+: resources('100m', '256Mi', '1Gi'),
+  // Observed over 30 days: compactor ~100Mi (peak 145Mi), ingester ~460Mi, querier ~280Mi (peak 320Mi),
+  // query-frontend ~70Mi, query-scheduler ~50Mi, store-gateway ~110Mi, ruler ~340Mi.
+  compactor_container+: resources('20m', '256Mi', '1Gi'),
   // 768Mi was OOMKilled at startup.
   distributor_container+: resources('100m', '1Gi', '1Gi'),
-  ingester_container+: resources('100m', '512Mi', '1Gi'),
-  querier_container+: resources('100m', '128Mi', '768Mi'),
-  query_frontend_container+: resources('100m', '128Mi', '384Mi'),
-  query_scheduler_container+: resources('50m', '64Mi', '256Mi'),
-  store_gateway_container+: resources('100m', '256Mi', '768Mi'),
-  ruler_container+: resources('100m', '128Mi', '512Mi') + k.util.resourcesLimits('1', '512Mi'),
+  ingester_container+: resources('50m', '512Mi', '1Gi'),
+  querier_container+: resources('20m', '384Mi', '768Mi'),
+  query_frontend_container+: resources('10m', '128Mi', '384Mi'),
+  query_scheduler_container+: resources('10m', '64Mi', '256Mi'),
+  // Mimir derives GOMEMLIMIT from the memory request, so keep it well above the ~110Mi in use.
+  store_gateway_container+: resources('20m', '192Mi', '768Mi'),
+  ruler_container+: resources('50m', '384Mi', '512Mi') + k.util.resourcesLimits('1', '512Mi'),
 
   // Memcached sizes are derived from memory_limit_mb (the library defaults to 6GiB for chunks).
-  memcached_chunks+: { memory_limit_mb: 256 },
-  memcached_frontend+: { memory_limit_mb: 64 },
-  memcached_index_queries+: { memory_limit_mb: 64 },
-  memcached_metadata+: { memory_limit_mb: 32 },
+  memcached_chunks+: { memory_limit_mb: 256 } + memcachedCpu,
+  memcached_frontend+: { memory_limit_mb: 64 } + memcachedCpu,
+  memcached_index_queries+: { memory_limit_mb: 64 } + memcachedCpu,
+  memcached_metadata+: { memory_limit_mb: 32 } + memcachedCpu,
 }

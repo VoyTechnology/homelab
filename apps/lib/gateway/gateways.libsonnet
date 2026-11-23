@@ -5,7 +5,7 @@ local envoyProxy = envoy.gateway.v1alpha1.envoyProxy;
 
 // Two gateways, each with its own Envoy proxy behind a MetalLB LoadBalancer, sharing one wildcard certificate.
 // `exposed` is port-forwarded from the router, `internal` is only reachable on the local network.
-local gateway(cfg, name, address, annotations={}) = {
+local gateway(cfg, name, address, proxyResources, annotations={}) = {
   local ns = cfg.namespace,
   local wildcard = '*.' + cfg.domain,
 
@@ -15,6 +15,8 @@ local gateway(cfg, name, address, annotations={}) = {
     + envoyProxy.spec.provider.withType('Kubernetes')
     // Envoy's tcmalloc crashes at startup on the arm64 Raspberry Pi node, so keep the proxies on amd64.
     + envoyProxy.spec.provider.kubernetes.envoyDeployment.pod.withNodeSelector({ 'kubernetes.io/arch': 'amd64' })
+    + envoyProxy.spec.provider.kubernetes.envoyDeployment.container.resources.withRequests(proxyResources.requests)
+    + envoyProxy.spec.provider.kubernetes.envoyDeployment.container.resources.withLimits(proxyResources.limits)
     + envoyProxy.spec.provider.kubernetes.envoyService.withType('LoadBalancer')
     + envoyProxy.spec.provider.kubernetes.envoyService.withAnnotations(
       { 'metallb.io/address-pool': cfg.addressPool }
@@ -77,7 +79,8 @@ local gateway(cfg, name, address, annotations={}) = {
     $._config,
     'exposed',
     $._config.exposedAddress,
+    $.proxyResources,
     if $._config.exposedDnsTarget != '' then { 'external-dns.alpha.kubernetes.io/target': $._config.exposedDnsTarget } else {},
   ),
-  internal: gateway($._config, 'internal', $._config.internalAddress),
+  internal: gateway($._config, 'internal', $._config.internalAddress, $.proxyResources),
 }
